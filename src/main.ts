@@ -4,6 +4,9 @@ import './style.css'
 import 'normalize.css'
 import App from './App.vue'
 
+//@Styles
+import '@/assets/styles/main.scss'
+
 const pinia = createPinia()
 const app = createApp(App)
 
