@@ -1,0 +1,39 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser"
+  },
+  "extends": [
+    "plugin:vue/strongly-recommended",
+    "eslint:recommended",
+    "@vue/typescript/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "@vue/prettier"
+  ],
+  "plugins": [
+    "vue",
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "vue/no-multiple-template-root": "off",
+    "no-unreachable": "error",
+    "no-unused-vars": "error",
+    "semi": "off",
+    "indent": "off",
+    "no-multi-spaces": "error",
+    "space-in-parens": "error",
+    "no-multiple-empty-lines": "error",
+    "prefer-const": "off",
+    "no-use-before-define": "error",
+    "@typescript-eslint/explicit-function-return-type": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "error",
+    "@typescript-eslint/no-var-requires": "off"
+  }
+}
