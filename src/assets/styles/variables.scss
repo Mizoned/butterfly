@@ -1,0 +1,9 @@
+:root {
+  --font-family-fallback: sans-serif;
+  --font-family-inter-regular: 'Inter Regular', var(--ff-fallback);
+  --font-family-inter-medium: 'Inter Medium', var(--ff-fallback);
+  --font-family-inter-semiBold: 'Inter Semi Bold', var(--ff-fallback);
+  --font-family-inter-bold-ff: 'Inter Bold', var(--ff-fallback);
+
+  --transition-duration: 0.3s;
+}
