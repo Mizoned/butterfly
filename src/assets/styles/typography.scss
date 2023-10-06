@@ -1,0 +1,96 @@
+:root {
+	--large-text-size: 14px;
+	--base-text-size: 12px;
+	--small-text-size: 10px;
+
+	--large-button-size: 14px;
+	--base-button-size: 12px;
+	--small-button-size: 10px;
+
+	--heading-1-size: 36px;
+	--heading-2-size: 28px;
+	--heading-3-size: 20px;
+	--heading-4-size: 18px;
+	--heading-5-size: 16px;
+	--heading-6-size: 14px;
+}
+
+.heading-1 {
+	font-size: var(--heading-2-size);
+	font-weight: var(--font-weight-semiBold);
+	color: var(--text-heading-dark-color);
+	letter-spacing: -0.36px;
+
+	@include use-media(tablet) {
+		font-size: var(--heading-1-size);
+		font-weight: var(--font-weight-bold);
+	}
+}
+
+.heading-2 {
+	font-size: var(--heading-3-size);
+	font-weight: var(--font-weight-semiBold);
+	color: var(--text-heading-dark-color);
+	letter-spacing: -0.36px;
+
+	@include use-media(tablet) {
+		font-size: var(--heading-2-size);
+	}
+}
+
+.heading-3 {
+	font-size: var(--heading-3-size);
+	font-weight: var(--font-weight-semiBold);
+	color: var(--text-heading-dark-color);
+	letter-spacing: -0.36px;
+}
+
+.heading-4 {
+	font-size: var(--heading-4-size);
+	font-weight: var(--font-weight-bold);
+	letter-spacing: -0.36px;
+}
+
+.heading-5 {
+	font-size: var(--heading-5-size);
+	font-weight: var(--font-weight-semiBold);
+	color: var(--text-heading-dark-color);
+	letter-spacing: -0.36px;
+}
+
+.heading-6 {
+	font-size: var(--heading-6-size);
+	font-weight: var(--font-weight-semiBold);
+	color: var(--text-heading-dark-color);
+	letter-spacing: -0.36px;
+}
+
+.p-lead-r {
+	font-size: var(--heading-4-size);
+}
+
+.p-lead-sb {
+	font-size: var(--heading-4-size);
+	font-weight: var(--font-weight-semiBold);
+}
+
+.text-small {
+	font-size: var(--small-text-size);
+}
+
+.text-extra-small-r {
+	font-size: var(--base-text-size);
+	font-weight: var(--font-weight-bold);
+	line-height: 20px;
+}
+
+.text-caption {
+	font-size: var(--base-text-size);
+	font-weight: var(--font-weight-bold);
+}
+
+.text-surtitle {
+	font-size: var(--large-text-size);
+	font-weight: var(--font-weight-semiBold);
+	text-transform: uppercase;
+}

@@ -1,4 +1,37 @@
 @import 'fonts';
+@import 'normalize.css';
 @import 'variables';
 @import 'colors';
 @import 'typography';
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	font-family: var(--font-family);
+	font-size: 14px;
+	color: var(--text-body-light-color);
+	background-color: var(--surface-secondary-color);
+	min-width: 375px;
+}
+
+html,
+body {
+	margin: 0;
+	width: 100%;
+	height: 100vh;
+	overflow: hidden;
+}
+
+body {
+	display: grid;
+	grid-template-rows: 100vh;
+}
+
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}
