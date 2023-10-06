@@ -1,0 +1,33 @@
+@use 'sass:math';
+@use 'sass:list';
+@import 'variables';
+
+@function strip-units($number) {
+	@return math.div($number, ($number * 0 + 1));
+}
+
+@mixin use-media($media, $maxMedia: 0) {
+	@if (
+		map-has-key($mq-breakpoints, $media) ==
+			false and
+			map-has-key($mq-breakpoints, $maxMedia) ==
+			true
+	) {
+		@media only screen and (max-width: map-get($mq-breakpoints, $maxMedia)) {
+			@content;
+		}
+	} @else if (
+		map-has-key($mq-breakpoints, $media) ==
+				true and
+				map-has-key($mq-breakpoints, $maxMedia) ==
+				true
+	) {
+		@media only screen and (min-width: map-get($mq-breakpoints, $media)) and (max-width: #{strip-units(map-get($mq-breakpoints, $maxMedia)) - 1}px) {
+			@content;
+		}
+	} @else {
+		@media only screen and (min-width: map-get($mq-breakpoints, $media)) {
+			@content;
+		}
+	}
+}
