@@ -15,7 +15,7 @@
 
 	const emit = defineEmits<IEmits>();
 
-	const updateHandler = (event: Event): void => {
+	const changeHandler = (event: Event): void => {
 		emit('update:modelValue', (event.target as HTMLInputElement).checked);
 	};
 </script>
@@ -26,7 +26,7 @@
 			class="base-checkbox__input"
 			@v-bind="$attrs"
 			:checked="modelValue"
-			@input="updateHandler"
+			@change="changeHandler"
 			type="checkbox"
 		/>
 		<span class="base-checkbox__box"></span>
@@ -37,7 +37,6 @@
 <style scoped lang="scss">
 	.base-checkbox {
 		$root: #{&};
-
 		position: relative;
 		cursor: pointer;
 		display: flex;
@@ -98,6 +97,7 @@
 		&__label {
 			color: var(--text-body-light-color);
 			font-weight: var(--font-weight-medium);
+			font-size: var(--large-text-size);
 			transition: color var(--transition-duration);
 		}
 
