@@ -1,5 +1,7 @@
 <script setup lang="ts">
 	import BaseButton from '@/components/ui/buttons/base-button.vue';
+	import BaseCheckbox from '@/components/ui/checkboxes/base-checkbox.vue';
+	import BaseSwitch from '@/components/ui/switches/base-switch.vue';
 </script>
 
 <template>
@@ -312,6 +314,29 @@
 				</div>
 			</div>
 		</div>
+		<div class="ui-components__layout">
+			<div class="ui-components__header heading-1">Checkbox</div>
+			<div class="ui-components__items">
+				<div class="ui-components__title heading-2">Without label</div>
+				<div class="ui-components__line">
+					<base-checkbox :model-value="true" />
+					<base-checkbox :model-value="false" />
+				</div>
+				<div class="ui-components__title heading-2">With label</div>
+				<div class="ui-components__line">
+					<base-checkbox :model-value="true" label="Checked" />
+					<base-checkbox :model-value="false" label="Unchecked" />
+				</div>
+			</div>
+		</div>
+		<div class="ui-components__layout">
+			<div class="ui-components__header heading-1">Switch</div>
+			<div class="ui-components__items">
+				<div class="ui-components__line">
+					<base-switch :model-value="false" />
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -323,6 +348,8 @@
 		max-width: 1380px;
 		padding: 30px;
 		margin: 0 auto;
+		height: 100%;
+		overflow: auto;
 
 		&__layout {
 			display: flex;

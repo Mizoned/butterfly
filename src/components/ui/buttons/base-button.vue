@@ -36,7 +36,7 @@
 	});
 
 	interface IEmits {
-		(event: 'click'): Event;
+		(event: 'click'): void;
 	}
 
 	const emit = defineEmits<IEmits>();
