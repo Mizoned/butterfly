@@ -2,6 +2,10 @@
 	import BaseButton from '@/components/ui/buttons/base-button.vue';
 	import BaseCheckbox from '@/components/ui/checkboxes/base-checkbox.vue';
 	import BaseSwitch from '@/components/ui/switches/base-switch.vue';
+	import { ref } from 'vue';
+	const checkboxArray = ref<Array<string>>([]);
+	const checkboxValue = ref<boolean>(false);
+	const switchValue = ref<boolean>(false);
 </script>
 
 <template>
@@ -319,13 +323,25 @@
 			<div class="ui-components__items">
 				<div class="ui-components__title heading-2">Without label</div>
 				<div class="ui-components__line">
-					<base-checkbox :model-value="true" />
-					<base-checkbox :model-value="false" />
+					<base-checkbox
+						v-model="checkboxArray"
+						name="checkbox-1"
+						value="checkbox-1"
+					/>
+					<base-checkbox
+						v-model="checkboxArray"
+						name="checkbox-2"
+						value="checkbox-2"
+					/>
 				</div>
 				<div class="ui-components__title heading-2">With label</div>
 				<div class="ui-components__line">
-					<base-checkbox :model-value="true" label="Checked" />
-					<base-checkbox :model-value="false" label="Unchecked" />
+					<base-checkbox
+						v-model="checkboxValue"
+						:label="checkboxValue ? 'Checked' : 'Unchecked'"
+						name="checkbox-1"
+						value="checkbox-1"
+					/>
 				</div>
 			</div>
 		</div>
@@ -333,7 +349,10 @@
 			<div class="ui-components__header heading-1">Switch</div>
 			<div class="ui-components__items">
 				<div class="ui-components__line">
-					<base-switch :model-value="false" />
+					<base-switch
+						v-model="switchValue"
+						:label="switchValue ? 'Active' : 'Default'"
+					/>
 				</div>
 			</div>
 		</div>
