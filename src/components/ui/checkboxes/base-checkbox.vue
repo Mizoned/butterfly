@@ -2,7 +2,7 @@
 	import { computed } from 'vue';
 
 	interface IProps {
-		modelValue: boolean | [];
+		modelValue: boolean | any[];
 		label?: string;
 		name: string;
 		value: any;
