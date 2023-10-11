@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	interface IProps {
 		modelValue: boolean;
+		label?: string;
 	}
 
 	interface IEmits {
@@ -8,7 +9,8 @@
 	}
 
 	withDefaults(defineProps<IProps>(), {
-		modelValue: false
+		modelValue: false,
+		label: ''
 	});
 
 	const emit = defineEmits<IEmits>();
@@ -28,6 +30,7 @@
 			type="checkbox"
 		/>
 		<span class="base-switch__box"></span>
+		<span v-if="label.length" class="base-switch__label">{{ label }}</span>
 	</label>
 </template>
 
@@ -36,6 +39,9 @@
 		$root: #{&};
 		position: relative;
 		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 12px;
 
 		&__input {
 			appearance: none;
@@ -73,6 +79,13 @@
 				transform: translateY(-50%);
 				transition: transform var(--transition-duration);
 			}
+		}
+
+		&__label {
+			color: var(--theme-dark-default-color);
+			font-weight: var(--font-weight-medium);
+			font-size: var(--large-text-size);
+			transition: color var(--transition-duration);
 		}
 	}
 </style>

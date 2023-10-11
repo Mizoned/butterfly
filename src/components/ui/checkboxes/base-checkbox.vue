@@ -1,32 +1,41 @@
 <script setup lang="ts">
+	import { computed } from 'vue';
+
 	interface IProps {
-		modelValue: boolean;
+		modelValue: boolean | any[];
 		label?: string;
+		name: string;
+		value: any;
 	}
 
 	interface IEmits {
-		(event: 'update:modelValue', boolean: boolean): void;
+		(event: 'update:modelValue', value: any[] | boolean): void;
 	}
 
-	withDefaults(defineProps<IProps>(), {
-		name: '',
+	const props = withDefaults(defineProps<IProps>(), {
+		modelValue: false,
 		label: ''
 	});
 
 	const emit = defineEmits<IEmits>();
 
-	const changeHandler = (event: Event): void => {
-		emit('update:modelValue', (event.target as HTMLInputElement).checked);
-	};
+	const modelComputed = computed({
+		get: () => {
+			return props.modelValue;
+		},
+		set: (value) => {
+			emit('update:modelValue', value);
+		}
+	});
 </script>
 
 <template>
 	<label class="base-checkbox">
 		<input
 			class="base-checkbox__input"
-			@v-bind="$attrs"
-			:checked="modelValue"
-			@change="changeHandler"
+			v-model="modelComputed"
+			:value="value"
+			:name="name"
 			type="checkbox"
 		/>
 		<span class="base-checkbox__box"></span>
@@ -41,7 +50,7 @@
 		cursor: pointer;
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 12px;
 
 		&__input {
 			appearance: none;
