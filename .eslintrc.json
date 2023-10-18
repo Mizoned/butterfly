@@ -16,7 +16,10 @@
 		"plugin:prettier/recommended",
 		"@vue/prettier"
 	],
-	"plugins": ["vue", "prettier"],
+	"plugins": [
+		"vue",
+		"prettier"
+	],
 	"rules": {
 		"prettier/prettier": "error",
 		"vue/no-multiple-template-root": "off",
@@ -27,7 +30,11 @@
 		"space-in-parens": "error",
 		"no-multiple-empty-lines": "error",
 		"prefer-const": "off",
-		"max-len": ["error", { "code": 80, "tabWidth": 2 }],
+		"vue/max-len": ["error", {
+			"code": 80,
+			"template": 80,
+			"ignorePattern": "d=\"([\\s\\S]*?)\""
+		}],
 		"no-use-before-define": "error",
 		"@typescript-eslint/explicit-function-return-type": [
 			"error",
@@ -37,7 +44,10 @@
 		],
 		"@typescript-eslint/explicit-module-boundary-types": "error",
 		"@typescript-eslint/no-explicit-any": "off",
-		"comma-dangle": ["error", "never"],
+		"comma-dangle": [
+			"error",
+			"never"
+		],
 		"@typescript-eslint/no-var-requires": "off"
 	}
 }
