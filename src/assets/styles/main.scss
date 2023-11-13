@@ -1,15 +1,15 @@
 @import 'fonts';
-@import 'normalize.css';
 @import 'variables';
 @import 'colors';
 @import 'typography';
+@import 'ant-design-vue/dist/reset.css';
 
 * {
 	box-sizing: border-box;
 }
 
 html {
-	font-family: var(--font-family);
+	font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
 	font-size: 14px;
 	color: var(--text-body-light-color);
 	background-color: var(--surface-secondary-color);
@@ -19,9 +19,6 @@ html {
 html,
 body {
 	margin: 0;
-	width: 100%;
-	height: 100vh;
-	overflow: hidden;
 }
 
 body {
