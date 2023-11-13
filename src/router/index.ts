@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import SignUp from '@/views/sign-up.vue';
-import SignIn from '@/views/sign-In.vue';
+import SignIn from '@/views/sign-in.vue';
 
 export default createRouter({
 	history: createWebHistory(),
