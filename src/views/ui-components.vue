@@ -4,6 +4,7 @@
 	import BaseSwitch from '@/components/ui/switches/base-switch.vue';
 	import { ref } from 'vue';
 	import UserAvatar from '@/components/commons/avatar/user-avatar.vue';
+	import NavItem from '@/components/ui/nav/nav-item.vue';
 
 	const checkboxArray = ref<Array<any>>([]);
 	const checkboxValue = ref<boolean>(false);
@@ -544,6 +545,16 @@
 						:rounded="true"
 						:indicator="true"
 					/>
+				</div>
+			</div>
+		</div>
+		<div class="ui-components__layout">
+			<div class="ui-components__header heading-1">Avatar</div>
+			<div class="ui-components__items">
+				<div class="ui-components__title heading-2">Sizes</div>
+				<div class="ui-components__line">
+					<nav-item to="/"></nav-item>
+					<nav-item to="/home"></nav-item>
 				</div>
 			</div>
 		</div>
