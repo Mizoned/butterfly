@@ -23,6 +23,7 @@
 	"rules": {
 		"prettier/prettier": "error",
 		"vue/no-multiple-template-root": "off",
+		"vue/no-v-model-argument": "off",
 		"no-unreachable": "error",
 		"semi": "off",
 		"indent": "off",
@@ -36,12 +37,7 @@
 			"ignorePattern": "d=\"([\\s\\S]*?)\""
 		}],
 		"no-use-before-define": "error",
-		"@typescript-eslint/explicit-function-return-type": [
-			"error",
-			{
-				"allowExpressions": true
-			}
-		],
+		"@typescript-eslint/explicit-function-return-type": "off",
 		"@typescript-eslint/explicit-module-boundary-types": "error",
 		"@typescript-eslint/no-explicit-any": "off",
 		"comma-dangle": [
