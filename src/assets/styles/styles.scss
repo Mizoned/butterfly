@@ -1,0 +1,9 @@
+/* You can add global styles to this file, and also import other style files */
+
+$gutter: 1rem;
+@import 'primevue/resources/themes/aura-light-blue/theme.css';
+@import '@/assets/styles/layout/layout.scss';
+
+/* PrimeVue */
+@import 'primeflex/primeflex.scss';
+@import 'primeicons/primeicons.css';
