@@ -7,10 +7,10 @@ const model = ref([
     {
         label: '',
         items: [
-          { label: 'Главная', icon: 'pi pi-fw pi-microsoft', to: '/' },
-          { label: 'Мои услуги', icon: 'pi pi-fw pi-star', to: '/products' },
-          { label: 'Мои клиенты', icon: 'pi pi-fw pi-users', to: '/clients' },
-          { label: 'Мои расходы', icon: 'pi pi-fw pi-money-bill', to: '/expenses' }
+          { label: 'Главная', icon: 'pi pi-fw pi-th-large', to: '/' },
+          { label: 'Услуги', icon: 'pi pi-fw pi-star', to: '/products' },
+          { label: 'Клиенты', icon: 'pi pi-fw pi-users', to: '/customers' },
+          { label: 'Расходы', icon: 'pi pi-fw pi-wallet', to: '/expenses' }
         ]
     }
 ]);
