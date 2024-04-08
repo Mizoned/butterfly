@@ -1,9 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
+import { useAuthStore } from '@/stores/AuthStore.js'
 
 const email = ref('');
 const password = ref('');
 
+const authStore = useAuthStore();
+
+const submitHandler = async () => {
+  await authStore.signUp(email.value, password.value);
+}
 </script>
 
 <template>
@@ -20,11 +26,37 @@ const password = ref('');
             <span class="text-600 font-medium">Зарегистрируйтесь чтобы продолжить</span>
           </div>
           <div class="mb-3">
-            <label for="email1" class="block text-900 text-lg font-medium mb-2">Email</label>
-            <InputText id="email1" type="text" placeholder="Электронный адрес" class="w-full lg:w-30rem mb-5" style="padding: 1rem" v-model="email" />
-            <label for="password1" class="block text-900 font-medium text-lg mb-2">Пароль</label>
-            <Password id="password1" v-model="password" placeholder="Пароль" :toggleMask="true" class="w-full mb-5" inputClass="w-full" :inputStyle="{ padding: '1rem' }"></Password>
-            <Button label="Создать аккаунт" class="w-full p-3 text-lg"></Button>
+            <div class="flex flex-column gap-2 mb-5">
+              <label for="email" class="block text-900 text-lg font-medium">Email</label>
+              <InputText
+                id="email"
+                type="text"
+                placeholder="Электронный адрес"
+                class="w-full lg:w-30rem"
+                aria-describedby="email-help"
+                style="padding: 1rem"
+                v-model="email"
+                invalid
+              />
+              <small id="email-help" class="p-error">Ошибка</small>
+            </div>
+            <div class="flex flex-column gap-2 mb-5">
+              <label for="password" class="block text-900 font-medium text-lg">Пароль</label>
+              <Password
+                id="password"
+                v-model="password"
+                placeholder="Пароль"
+                toggleMask
+                class="w-full"
+                aria-describedby="password-help"
+                inputClass="w-full"
+                promptLabel="Введите пароль" weakLabel="Слабый пароль" mediumLabel="Средний пароль" strongLabel="Сильный пароль"
+                :inputStyle="{ padding: '1rem' }"
+                invalid
+              />
+              <small id="password-help" class="p-error">Ошибка</small>
+            </div>
+            <Button @click="submitHandler" label="Создать аккаунт" class="w-full p-3 text-lg"></Button>
           </div>
           <div class="flex flex-column align-items-center justify-content-center">
             <span class="text-600 font-medium mb-2">Уже зарегистрированы?</span>

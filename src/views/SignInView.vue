@@ -1,9 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
+import { useAuthStore } from '@/stores/AuthStore.js'
 
-const email = ref('');
-const password = ref('');
+const email = ref<string>('');
+const password = ref<string>('');
 
+const authStore = useAuthStore();
+
+const submitHandler = async () => {
+  await authStore.signIn(email.value, password.value);
+}
 </script>
 
 <template>
@@ -24,7 +30,7 @@ const password = ref('');
             <InputText id="email1" type="text" placeholder="Электронный адрес" class="w-full lg:w-30rem mb-5" style="padding: 1rem" v-model="email" />
             <label for="password1" class="block text-900 font-medium text-lg mb-2">Пароль</label>
             <Password id="password1" v-model="password" placeholder="Пароль" :toggleMask="true" class="w-full mb-5" inputClass="w-full" :inputStyle="{ padding: '1rem' }"></Password>
-            <Button label="Войти" class="w-full p-3 text-lg"></Button>
+            <Button @click="submitHandler" label="Войти" class="w-full p-3 text-lg"></Button>
           </div>
           <div class="flex flex-column align-items-center justify-content-center">
             <span class="text-600 font-medium mb-2">У вас ещё нет аккаунта?</span>
@@ -34,7 +40,6 @@ const password = ref('');
       </div>
     </div>
   </div>
-  <AppConfig simple />
 </template>
 
 <style scoped>
