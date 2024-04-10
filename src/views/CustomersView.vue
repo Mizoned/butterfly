@@ -223,7 +223,7 @@ const customers = ref([
     <div class="flex align-items-center">
       <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
       <span v-if="customer">
-        Вы уверены, что хотите удалить <b>{{ customer.firstName + ' ' + customer.lastName }}</b> из своих клиентов?
+        Вы уверены, что хотите удалить <b>{{ customer.firstName + ' ' + customer.lastName }}</b>?
       </span>
     </div>
     <template #footer>
