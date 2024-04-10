@@ -55,6 +55,7 @@ const props = defineProps<IProps>()
   &__header {
     display: flex;
     justify-content: space-between;
+    gap: 1rem
   }
 
   &__title {
@@ -67,6 +68,7 @@ const props = defineProps<IProps>()
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     width: 2.5rem;
     height: 2.5rem;
   }

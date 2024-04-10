@@ -1,5 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
 import PrimeVue from 'primevue/config';
 
 //Styles
@@ -18,5 +20,7 @@ app.use(PrimeVue,
     ripple: true
   }
 );
+app.use(ToastService);
+app.component('Toast', Toast);
 
 app.mount('#app')

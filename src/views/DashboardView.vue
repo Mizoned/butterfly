@@ -36,11 +36,11 @@ const formatCurrency = (value) => {
     <div class="col-12 lg:col-6 xl:col-3">
       <StatisticCard
         title="Заказы"
-        :number-title="152"
+        number-title="152"
         icon="pi-shopping-cart"
         icon-color="blue"
         icon-background="blue"
-        :number="24"
+        number="24"
         number-description="новых"
       />
     </div>
