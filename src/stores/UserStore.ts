@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { IUser, JwtPayloadUser } from '@/shared/interfaces';
+import { jwtDecode } from 'jwt-decode';
+import type { Ref } from 'vue';
 
 export const useUserStore = defineStore('User', () => {
-  const user = ref<IUser | null>(null);
+  const user: Ref<IUser | null> = ref(null);
 
   const setUser = (data: JwtPayloadUser) => {
     user.value = {
@@ -19,6 +21,15 @@ export const useUserStore = defineStore('User', () => {
   const removeUser = () => {
     user.value = null;
   }
+
+  const token: string = localStorage.getItem('accessToken');
+
+  if (token) {
+    const jwtDecoded = jwtDecode<JwtPayloadUser>(token);
+
+    setUser(jwtDecoded);
+  }
+
 
   return { setUser, removeUser, user }
 });
