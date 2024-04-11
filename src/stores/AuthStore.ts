@@ -9,6 +9,7 @@ import AuthService from '@/services/AuthService';
 export const useAuthStore = defineStore('Auth', () => {
   const userStore = useUserStore();
   const accessToken = ref<string | null>(localStorage.getItem('accessToken') || null);
+  const isLoading = ref<boolean>(false);
 
   const setAccessToken = (token: string) => {
     localStorage.setItem('accessToken', token);
@@ -21,6 +22,8 @@ export const useAuthStore = defineStore('Auth', () => {
   }
 
   const signIn = async (email: string, password: string) => {
+    isLoading.value = true;
+
     return AuthService.signIn(email, password)
       .then((response) => {
         setAccessToken(response.data.accessToken);
@@ -30,6 +33,9 @@ export const useAuthStore = defineStore('Auth', () => {
       })
       .catch((error) => {
         return Promise.reject(error);
+      })
+      .finally(() => {
+        isLoading.value = false;
       });
   }
 
@@ -57,5 +63,5 @@ export const useAuthStore = defineStore('Auth', () => {
       });
   }
 
-  return { signIn, signUp, logout, accessToken }
+  return { signIn, signUp, logout, accessToken, isLoading }
 })

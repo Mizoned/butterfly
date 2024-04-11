@@ -1,78 +1,69 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue'
 import { useToast } from 'primevue/usetoast'
+import type { IProduct, IProductTable } from '@/shared/interfaces'
 
-const product = ref({});
-const productDialog = ref(false);
-const deleteProductDialog = ref(false);
-const submitted = ref(false);
-const toast = useToast();
+const product = ref<IProduct>();
+const productDialog = ref(false)
+const deleteProductDialog = ref(false)
+const submitted = ref(false)
+const toast = useToast()
 
 const confirmDeleteCustomer = (editProduct) => {
-  product.value = editProduct;
-  deleteProductDialog.value = true;
-};
+  product.value = editProduct
+  deleteProductDialog.value = true
+}
 
 const deleteCustomer = () => {
-  products.value = products.value.filter((val) => val.id !== product.value.id);
-  deleteProductDialog.value = false;
-  product.value = {};
-  toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга удалена', life: 3000 });
-};
+  products.value = products.value.filter((val) => val.id !== product.value.id)
+  deleteProductDialog.value = false
+  product.value = {} as IProduct;
+  toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга удалена', life: 3000 })
+}
 
 const editCustomer = (editProduct) => {
-  product.value = { ...editProduct };
-  productDialog.value = true;
-};
+  product.value = { ...editProduct }
+  productDialog.value = true
+}
 
 const openNew = () => {
-  product.value = {};
-  submitted.value = false;
-  productDialog.value = true;
-};
+  product.value = {} as IProduct;
+  submitted.value = false
+  productDialog.value = true
+}
 
 const hideDialog = () => {
-  productDialog.value = false;
-  submitted.value = false;
-};
+  productDialog.value = false
+  submitted.value = false
+}
 
 const saveProduct = () => {
-  submitted.value = true;
+  submitted.value = true
   if (product.value.name && product.value.name.trim()) {
     if (product.value.id) {
-      products.value[findIndexById(product.value.id)] = product.value;
-      toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга обновлена', life: 3000 });
+      const index = products.value.findIndex(p => p.id === product.value.id);
+      products.value[index] = product.value;
+      toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга обновлена', life: 3000 })
     } else {
-      product.value.id = createId();
-      products.value.push(product.value);
-      toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга создана', life: 3000 });
+      product.value.id = createId()
+      products.value.push(product.value)
+      toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга создана', life: 3000 })
     }
-    productDialog.value = false;
-    product.value = {};
+    productDialog.value = false
+    product.value = {} as IProduct
   }
-};
+}
 
 const createId = () => {
-  let id = '';
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let id = ''
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   for (let i = 0; i < 5; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
+    id += chars.charAt(Math.floor(Math.random() * chars.length))
   }
-  return id;
-};
+  return id
+}
 
-const findIndexById = (id) => {
-  let index = -1;
-  for (let i = 0; i < products.value.length; i++) {
-    if (products.value[i].id === id) {
-      index = i;
-      break;
-    }
-  }
-  return index;
-};
-
-const products = ref([
+const products = ref<IProductTable[]>([
   {
     id: 1,
     name: 'Депиляция зоны рук',
@@ -103,7 +94,7 @@ const products = ref([
     price: 699,
     lifeTime: 2656
   }
-]);
+])
 </script>
 
 <template>
@@ -112,7 +103,7 @@ const products = ref([
       <StatisticCard
         title="Всего услуг"
         number-title="5"
-        icon="pi-user"
+        icon="pi-star"
         icon-color="blue"
         icon-background="blue"
         number="3"
@@ -123,7 +114,7 @@ const products = ref([
       <StatisticCard
         title="Популярная услуга"
         number-title="Депиляция зоны рук"
-        icon="pi-star"
+        icon="pi-star-fill"
         icon-color="orange"
         icon-background="orange"
         number="12"
@@ -192,12 +183,12 @@ const products = ref([
   <Dialog v-model:visible="productDialog" :style="{ width: '450px' }" header="Услуга" :modal="true" class="p-fluid">
     <div class="field">
       <label for="name">Название</label>
-      <InputText id="name" v-model.trim="product.name" required="true" autofocus :invalid="submitted && !product.name" />
+      <InputText id="name" v-model.trim="product.name" required="true" :invalid="submitted && !product.name" />
       <small class="p-invalid p-error" v-if="submitted && !product.name">Name is required.</small>
     </div>
     <div class="field">
       <label for="name">Стоимость</label>
-      <InputText id="name" v-model.trim="product.price" required="true" autofocus :invalid="submitted && !product.price" />
+      <InputNumber id="name" v-model="product.price" required="true" :invalid="submitted && !product.price" />
       <small class="p-invalid p-error" v-if="submitted && !product.price">Name is required.</small>
     </div>
     <template #footer>
