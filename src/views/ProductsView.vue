@@ -1,100 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useToast } from 'primevue/usetoast'
-import type { IProduct, IProductTable } from '@/shared/interfaces'
+import { onMounted } from 'vue'
+import { useProductsStore } from '@/stores/ProductsStore'
+import DeleteProductModal from '@/components/modals/products/DeleteProductModal.vue';
+import EditProductModal from '@/components/modals/products/EditProductModal.vue';
+import CreateProductModal from '@/components/modals/products/CreateProductModal.vue';
 
-const product = ref<IProduct>();
-const productDialog = ref(false)
-const deleteProductDialog = ref(false)
-const submitted = ref(false)
-const toast = useToast()
+const productsStore = useProductsStore();
 
-const confirmDeleteCustomer = (editProduct) => {
-  product.value = editProduct
-  deleteProductDialog.value = true
-}
-
-const deleteCustomer = () => {
-  products.value = products.value.filter((val) => val.id !== product.value.id)
-  deleteProductDialog.value = false
-  product.value = {} as IProduct;
-  toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга удалена', life: 3000 })
-}
-
-const editCustomer = (editProduct) => {
-  product.value = { ...editProduct }
-  productDialog.value = true
-}
-
-const openNew = () => {
-  product.value = {} as IProduct;
-  submitted.value = false
-  productDialog.value = true
-}
-
-const hideDialog = () => {
-  productDialog.value = false
-  submitted.value = false
-}
-
-const saveProduct = () => {
-  submitted.value = true
-  if (product.value.name && product.value.name.trim()) {
-    if (product.value.id) {
-      const index = products.value.findIndex(p => p.id === product.value.id);
-      products.value[index] = product.value;
-      toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга обновлена', life: 3000 })
-    } else {
-      product.value.id = createId()
-      products.value.push(product.value)
-      toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга создана', life: 3000 })
-    }
-    productDialog.value = false
-    product.value = {} as IProduct
-  }
-}
-
-const createId = () => {
-  let id = ''
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  for (let i = 0; i < 5; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return id
-}
-
-const products = ref<IProductTable[]>([
-  {
-    id: 1,
-    name: 'Депиляция зоны рук',
-    price: 399,
-    lifeTime: 1456
-  },
-  {
-    id: 2,
-    name: 'Депиляция зоны ног',
-    price: 899,
-    lifeTime: 3956
-  },
-  {
-    id: 3,
-    name: 'Депиляция зоны лица',
-    price: 499,
-    lifeTime: 2356
-  },
-  {
-    id: 4,
-    name: 'Депиляция зоны бикини',
-    price: 1399,
-    lifeTime: 1656
-  },
-  {
-    id: 5,
-    name: 'Депиляция зоны подмышек',
-    price: 699,
-    lifeTime: 2656
-  }
-])
+onMounted(() => {
+  productsStore.getAllProducts();
+})
 </script>
 
 <template>
@@ -136,9 +51,9 @@ const products = ref<IProductTable[]>([
       <Card>
         <div class="flex gap-2 justify-content-between mb-3">
           <div class="text-xl font-medium">Список услуг</div>
-          <Button @click="openNew" label="Создать" icon="pi pi-plus" />
+          <Button @click="productsStore.isOpenCreateProductDialog = true" label="Создать" icon="pi pi-plus" />
         </div>
-        <DataTable :value="products" :rows="5" :paginator="true" responsiveLayout="scroll">
+        <DataTable :value="productsStore.products" :rows="5" :paginator="true" responsiveLayout="scroll">
           <Column field="name" header="Название" :sortable="true" style="width: 25%" headerStyle="min-width:12rem;"></Column>
           <Column field="price" header="Стоимость" :sortable="true" style="width: 15%" headerStyle="min-width:10rem;">
             <template #body="slotProps">
@@ -157,47 +72,19 @@ const products = ref<IProductTable[]>([
           <Column headerStyle="min-width:10rem;">
             <template #body="slotProps">
               <div class="flex align-items-center justify-content-end gap-2">
-                <Button icon="pi pi-pencil" rounded @click="editCustomer(slotProps.data)" />
-                <Button icon="pi pi-trash" severity="danger" rounded @click="confirmDeleteCustomer(slotProps.data)" />
+                <Button icon="pi pi-pencil" rounded @click="productsStore.openEditProductModal(slotProps.data)" />
+                <Button icon="pi pi-trash" severity="danger" rounded @click="productsStore.confirmDeleteProductDialog(slotProps.data)" />
               </div>
             </template>
           </Column>
+          <template #empty> Список услуг пуст. </template>
         </DataTable>
       </Card>
     </div>
   </div>
-
-  <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Подтвержение" :modal="true">
-    <div class="flex align-items-center">
-      <i class="pi pi-exclamation-triangle p-error mr-3" style="font-size: 2rem" />
-      <span v-if="product">
-        Вы уверены, что хотите удалить <b>{{ product.name }}</b>?
-      </span>
-    </div>
-    <template #footer>
-      <Button label="Нет" icon="pi pi-times text-red" text @click="deleteProductDialog = false" />
-      <Button label="Да" icon="pi pi-check" text @click="deleteCustomer" />
-    </template>
-  </Dialog>
-
-  <Dialog v-model:visible="productDialog" :style="{ width: '450px' }" header="Услуга" :modal="true" class="p-fluid">
-    <div class="field">
-      <label for="name">Название</label>
-      <InputText id="name" v-model.trim="product.name" required="true" :invalid="submitted && !product.name" />
-      <small class="p-invalid p-error" v-if="submitted && !product.name">Name is required.</small>
-    </div>
-    <div class="field">
-      <label for="name">Стоимость</label>
-      <InputNumber id="name" v-model="product.price" required="true" :invalid="submitted && !product.price" />
-      <small class="p-invalid p-error" v-if="submitted && !product.price">Name is required.</small>
-    </div>
-    <template #footer>
-      <Button label="Отменить" icon="pi pi-times" @click="hideDialog" />
-      <Button label="Сохранить" icon="pi pi-check" @click="saveProduct" />
-    </template>
-  </Dialog>
+  <DeleteProductModal />
+  <CreateProductModal />
+  <EditProductModal />
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

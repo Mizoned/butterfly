@@ -1,4 +1,5 @@
 export { ICustomer, ICreateCustomer, ICustomerTable } from "./customers";
+export { IProduct, ICreateProduct, IProductTable } from "./products";
 
 export interface IUser {
   id: number;
@@ -14,16 +15,10 @@ export interface JwtPayloadUser extends IUser {
   iat: number;
 }
 
-export interface IProduct {
-  id: number;
-  name: string;
-  price: number;
-}
 
-export interface IProductTable extends IProduct {
-  lifeTime?: number;
+export interface ResponseDelete {
+  deletedCount: number;
 }
-
 export interface ResponseError {
   property: string,
   message: string
