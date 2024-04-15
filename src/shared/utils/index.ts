@@ -12,6 +12,10 @@ export const removeEmptyFields = (obj: any): any => {
 }
 
 export const normalizePhoneNumber = (phoneNumber: string) => {
+  if (!phoneNumber) {
+    return '';
+  }
+
   return phoneNumber.replace(/[\s()-]/g, '');
 }
 

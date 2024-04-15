@@ -4,7 +4,6 @@ import CustomersService from '@/services/CustomersService';
 import type { ICreateCustomer, ICustomer } from '@/shared/interfaces';
 import type { Ref } from 'vue';
 
-
 export const useCustomersStore = defineStore('CustomersStore', () => {
   const customers = ref<ICustomer[]>([]);
   const currentCustomer = ref<ICustomer | null>(null);
@@ -51,7 +50,7 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
     try {
       isLoading.value = true;
       const response = await CustomersService.getAll();
-      customers.value = response.data as ICustomer[];
+      customers.value = response.data;
     } catch (error) {
       console.error('Не удалось получить клиентов', error);
       throw error;
@@ -64,7 +63,7 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
     try {
       isLoading.value = true;
       const response = await CustomersService.create(customer);
-      const customerData = response.data as ICustomer;
+      const customerData = response.data;
       customers.value.push(customerData);
       isOpenCreateCustomerDialog.value = false;
     } catch (error) {
@@ -78,11 +77,11 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
   const updateCustomer = async () => {
     try {
       isLoading.value = true;
-      const response = await CustomersService.update(editCustomer.value.id, editCustomer.value);
+      const response = await CustomersService.update(editCustomer.value);
       const index = customers.value.findIndex((c) => c.id === editCustomer.value.id);
 
       if (index !== -1) {
-        customers.value[index] = response.data as ICustomer;
+        customers.value[index] = response.data;
       }
 
       isOpenEditCustomerDialog.value = false;
