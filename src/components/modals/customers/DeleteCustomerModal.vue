@@ -8,7 +8,7 @@
 
   const fullName = computed<string>(() => {
     if (!customersStore.currentCustomer.firstName || !customersStore.currentCustomer.lastName) return '';
-    return ' ' + customersStore.currentCustomer.firstName + ' ' + customersStore.currentCustomer.lastName;
+    return ' ' + customersStore.currentCustomer.lastName + ' ' + customersStore.currentCustomer.firstName;
   });
 
   const submitHandler = async () => {

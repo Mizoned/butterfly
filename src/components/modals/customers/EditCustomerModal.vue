@@ -3,7 +3,7 @@ import { useCustomersStore } from '@/stores/CustomersStore'
 import { computed, ref, watch } from 'vue'
 import { email as emailValidator, helpers, required } from '@vuelidate/validators'
 import { VALIDATION_ERROR } from '@/shared/constants'
-import { useVuelidate } from '@vuelidate/core'
+import { type ServerErrors, useVuelidate } from '@vuelidate/core'
 import type { ICreateCustomer, ICustomer, ResponseError } from '@/shared/interfaces'
 import { useToast } from 'primevue/usetoast'
 
@@ -26,7 +26,7 @@ const rules = computed(() => ({
   },
 }));
 
-const $externalResults = ref<ICreateCustomer>({
+const $externalResults = ref<ServerErrors>({
   firstName: '',
   lastName: '',
   fatherName: '',

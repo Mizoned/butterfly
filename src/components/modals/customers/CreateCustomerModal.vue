@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import { useCustomersStore } from '@/stores/CustomersStore'
-  import { computed, ref } from 'vue'
-  import { email as emailValidator, helpers, required } from '@vuelidate/validators'
-  import { VALIDATION_ERROR } from '@/shared/constants'
-  import { useVuelidate } from '@vuelidate/core'
-  import type { ICreateCustomer, ResponseError } from '@/shared/interfaces'
-  import { useToast } from 'primevue/usetoast'
+  import { useCustomersStore } from '@/stores/CustomersStore';
+  import { computed, ref, watch } from 'vue';
+  import { email as emailValidator, helpers, required } from '@vuelidate/validators';
+  import { VALIDATION_ERROR } from '@/shared/constants';
+  import { type ServerErrors, useVuelidate } from '@vuelidate/core';
+  import type { ICreateCustomer, ResponseError } from '@/shared/interfaces';
+  import { useToast } from 'primevue/usetoast';
 
   const customerStore = useCustomersStore();
   const toast = useToast();
@@ -26,7 +26,7 @@
     },
   }));
 
-  const $externalResults = ref<ICreateCustomer>({
+  const $externalResults = ref<ServerErrors>({
     firstName: '',
     lastName: '',
     fatherName: '',
@@ -70,6 +70,20 @@
       $externalResults.value[propertyName] = '';
     }
   }
+
+  watch(() => customerStore.isOpenCreateCustomerDialog, (value: boolean) => {
+    if (!value) {
+      customerData.value = {
+        firstName: '',
+        lastName: '',
+        fatherName: '',
+        mobilePhone: '',
+        email: ''
+      }
+
+      $v.value.$reset();
+    }
+  });
 </script>
 
 <template>

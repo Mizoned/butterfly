@@ -2,10 +2,10 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/AuthStore.js';
-import { useVuelidate } from '@vuelidate/core';
+import { type ServerErrors, useVuelidate } from '@vuelidate/core';
 import { required, email as emailValidator, minLength, maxLength, helpers } from '@vuelidate/validators';
-import { VALIDATION_ERROR } from '@/shared/constants'
-import type { ResponseError } from '@/shared/interfaces'
+import { VALIDATION_ERROR } from '@/shared/constants';
+import type { ResponseError } from '@/shared/interfaces';
 
 const email = ref<string>('');
 const password = ref<string>('');
@@ -25,12 +25,7 @@ const rules = computed(() => ({
   }
 }));
 
-interface ExternalResults {
-  email: string;
-  password: string;
-}
-
-const $externalResults = ref<ExternalResults>({
+const $externalResults = ref<ServerErrors>({
   email: '',
   password: ''
 });
@@ -52,7 +47,7 @@ const submitHandler = async () => {
     });
 }
 
-const resetExternalResultProperty = (value: string | undefined, propertyName: keyof ExternalResults) => {
+const resetExternalResultProperty = (value: string | undefined, propertyName: keyof ServerErrors) => {
   if (value?.length > 0) {
     $externalResults.value[propertyName] = '';
   }

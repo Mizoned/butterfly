@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { useCustomersStore } from '@/stores/CustomersStore';
 import { DEFAULT_CUSTOMER_IMAGE } from '@/shared/constants';
 import { formatPhoneNumber } from '@/shared/utils';
-
 import DeleteCustomerModal from '@/components/modals/customers/DeleteCustomerModal.vue'
 import CreateCustomerModal from '@/components/modals/customers/CreateCustomerModal.vue'
 import EditCustomerModal from '@/components/modals/customers/EditCustomerModal.vue'
