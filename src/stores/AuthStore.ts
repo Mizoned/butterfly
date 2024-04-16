@@ -6,7 +6,7 @@ import type { JwtPayloadUser } from '@/shared/interfaces';
 import AuthService from '@/services/AuthService';
 
 
-export const useAuthStore = defineStore('Auth', () => {
+export const useAuthStore = defineStore('AuthStore', () => {
   const userStore = useUserStore();
   const accessToken = ref<string | null>(localStorage.getItem('accessToken') || null);
   const isLoading = ref<boolean>(false);
@@ -22,45 +22,40 @@ export const useAuthStore = defineStore('Auth', () => {
   }
 
   const signIn = async (email: string, password: string) => {
-    isLoading.value = true;
+    try {
+      isLoading.value = true;
+      const response = await AuthService.signIn(email, password);
+      setAccessToken(response.data.accessToken);
 
-    return AuthService.signIn(email, password)
-      .then((response) => {
-        setAccessToken(response.data.accessToken);
-
-        const jwtDecoded = jwtDecode<JwtPayloadUser>(response.data.accessToken);
-        userStore.setUser(jwtDecoded);
-      })
-      .catch((error) => {
-        return Promise.reject(error);
-      })
-      .finally(() => {
-        isLoading.value = false;
-      });
+      const jwtDecoded = jwtDecode<JwtPayloadUser>(response.data.accessToken);
+      userStore.setUser(jwtDecoded);
+    } catch (error) {
+      console.error(error)
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   const signUp = async (email: string, password: string) => {
-    return AuthService.signUp(email, password)
-      .then((response) => {
-        setAccessToken(response.data.accessToken);
-
-        const jwtDecoded = jwtDecode<JwtPayloadUser>(response.data.accessToken);
-        userStore.setUser(jwtDecoded);
-      })
-      .catch((error) => {
-        return Promise.reject(error);
-      });
+    try {
+      const response = await AuthService.signUp(email, password);
+      setAccessToken(response.data.accessToken);
+      const jwtDecoded = jwtDecode<JwtPayloadUser>(response.data.accessToken);
+      userStore.setUser(jwtDecoded);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
   const logout = async () => {
-    return AuthService.logout()
-      .then(() => {
-        removeAccessToken();
-        userStore.removeUser();
-      })
-      .catch((error) => {
-        return Promise.reject(error);
-      });
+    try {
+      removeAccessToken();
+      userStore.removeUser();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
   return { signIn, signUp, logout, accessToken, isLoading }

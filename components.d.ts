@@ -30,6 +30,7 @@ declare module 'vue' {
     InputSwitch: typeof import('primevue/inputswitch')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Menu: typeof import('primevue/menu')['default']
+    OverlayPanel: typeof import('primevue/overlaypanel')['default']
     Password: typeof import('primevue/password')['default']
     RadioButton: typeof import('primevue/radiobutton')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

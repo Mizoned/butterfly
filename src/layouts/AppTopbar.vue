@@ -1,13 +1,17 @@
-<script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { useLayout } from '@/layouts/composables/layout'
-import { useRouter } from 'vue-router'
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useLayout } from '@/layouts/composables/layout';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/AuthStore';
+import { useUserStore } from '@/stores/UserStore'
 
-const { onMenuToggle } = useLayout()
+const authStore = useAuthStore();
+const userStore = useUserStore();
 
-const outsideClickListener = ref(null)
-const topbarMenuActive = ref(false)
-const router = useRouter()
+const { onMenuToggle } = useLayout();
+const outsideClickListener = ref(null);
+const topbarMenuActive = ref(false);
+const router = useRouter();
 
 onMounted(() => {
 	bindOutsideClickListener()
@@ -15,6 +19,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
 	unbindOutsideClickListener()
+  window.removeEventListener('resize', onResize);
 })
 
 const onTopBarMenuButton = () => {
@@ -51,6 +56,31 @@ const isOutsideClicked = (event) => {
 
 	return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target))
 }
+
+const windowWidth = ref<number>(window.innerWidth);
+
+const onResize = () => {
+  windowWidth.value = window.innerWidth;
+}
+
+window.addEventListener('resize', onResize);
+
+const isMobile = computed(() => {
+  return !(windowWidth.value > 991);
+})
+
+const op = ref(null);
+
+const toggle = (event) => {
+  if (!isMobile.value) {
+    op.value.toggle(event);
+  }
+};
+
+const logoutHandler  = async () => {
+  await authStore.logout();
+  await router.push({ name: 'signIn'});
+}
 </script>
 
 <template>
@@ -79,11 +109,54 @@ const isOutsideClicked = (event) => {
         <span>Журнал записей</span>
       </router-link>
 
-      <router-link to="/settings" class="p-link layout-topbar-button" @click="onTopBarMenuButton()">
-        <i class="pi pi-user"></i>
-        <span>Имя пользователя</span>
+      <router-link
+        v-if="isMobile"
+        to="/settings" class="p-link layout-topbar-button">
+        <i class="pi pi-cog"></i>
+        <span>Настройки</span>
       </router-link>
-		</div>
+
+      <Button
+        v-if="isMobile"
+        @click="logoutHandler()"
+        class="p-link layout-topbar-button layout-topbar-logout-button"
+        label="Выйти"
+        icon="pi pi-sign-out"
+        text
+        severity="danger"
+      />
+
+      <Button
+        v-if="!isMobile"
+        class="p-link layout-topbar-button"
+        text @click="toggle"
+        severity="secondary"
+      >
+        <i class="pi pi-user"></i>
+        <span>{{ userStore.fullName ?? userStore.user.email }}</span>
+      </Button>
+      <OverlayPanel ref="op" appendTo="body">
+        <div class="flex flex-column">
+          <router-link to="/settings" class="p-link layout-topbar-button">
+            <Button
+              type="button"
+              text
+              label="Настройки"
+              severity="secondary"
+              icon="pi pi-cog"
+            />
+          </router-link>
+          <Button
+            class="p-link layout-topbar-button"
+            @click="logoutHandler()"
+            type="button"
+            text
+            label="Выйти"
+            severity="danger"
+            icon="pi pi-sign-out"/>
+        </div>
+      </OverlayPanel>
+    </div>
 	</div>
 </template>
 

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue'
 import type { IUser, JwtPayloadUser } from '@/shared/interfaces';
 import { jwtDecode } from 'jwt-decode';
 import type { Ref } from 'vue';
@@ -18,6 +18,12 @@ export const useUserStore = defineStore('User', () => {
     }
   }
 
+  const fullName = computed(() => {
+    if (!user.value?.lastName || !user.value?.firstName) return false;
+
+    return user.value?.lastName + ' ' + user.value?.firstName;
+  })
+
   const removeUser = () => {
     user.value = null;
   }
@@ -31,5 +37,5 @@ export const useUserStore = defineStore('User', () => {
   }
 
 
-  return { setUser, removeUser, user }
+  return { setUser, removeUser, user, fullName }
 });

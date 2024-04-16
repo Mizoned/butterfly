@@ -33,7 +33,7 @@ const formatCurrency = (value) => {
 
 <template>
   <div class="grid">
-    <div class="col-12 lg:col-6 xl:col-3">
+    <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Заказы"
         number-title="152"
@@ -44,7 +44,7 @@ const formatCurrency = (value) => {
         number-description="новых"
       />
     </div>
-    <div class="col-12 lg:col-6 xl:col-3">
+    <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Доход"
         number-title="2 100 ₽"
@@ -55,7 +55,7 @@ const formatCurrency = (value) => {
         number-description="с прошлой недели"
       />
     </div>
-    <div class="col-12 lg:col-6 xl:col-3">
+    <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
         title="Клиенты"
         number-title="28441"
@@ -64,17 +64,6 @@ const formatCurrency = (value) => {
         icon-background="cyan"
         number="520"
         number-description="новых созданных"
-      />
-    </div>
-    <div class="col-12 lg:col-6 xl:col-3">
-      <StatisticCard
-        title="Комментарии"
-        number-title="152 непрочитанных"
-        icon="pi-comment"
-        icon-color="purple"
-        icon-background="purple"
-        number="85"
-        number-description="отвеченных"
       />
     </div>
 

@@ -38,7 +38,7 @@ onMounted(() => {
         number-description="с прошлого месяца"
       />
     </div>
-    <div class="col-12 lg:col-6 xl:col-4">
+    <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
         title="Посещений"
         number-title="66"
