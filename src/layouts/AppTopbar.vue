@@ -99,15 +99,16 @@ const logoutHandler  = async () => {
 		</button>
 
 		<div class="layout-topbar-menu" :class="topbarMenuClasses">
-      <router-link to="/notifications" class="p-link layout-topbar-button" @click="onTopBarMenuButton()">
-        <i class="pi pi-bell"></i>
-        <span>Уведомления</span>
-      </router-link>
 
-      <router-link to="/calendar" class="p-link layout-topbar-button" @click="onTopBarMenuButton()">
-        <i class="pi pi-calendar"></i>
-        <span>Журнал записей</span>
-      </router-link>
+<!--      <router-link to="/notifications" class="p-link layout-topbar-button" @click="onTopBarMenuButton()">-->
+<!--        <i class="pi pi-bell" />-->
+<!--        <span>Уведомления</span>-->
+<!--      </router-link>-->
+
+<!--      <router-link to="/calendar" class="p-link layout-topbar-button" @click="onTopBarMenuButton()">-->
+<!--        <i class="pi pi-calendar"></i>-->
+<!--        <span>Журнал записей</span>-->
+<!--      </router-link>-->
 
       <router-link
         v-if="isMobile"
@@ -133,7 +134,7 @@ const logoutHandler  = async () => {
         severity="secondary"
       >
         <i class="pi pi-user"></i>
-        <span>{{ userStore.fullName ?? userStore.user.email }}</span>
+        <span>{{ userStore.fullName || userStore.user.email }}</span>
       </Button>
       <OverlayPanel ref="op" appendTo="body">
         <div class="flex flex-column">
