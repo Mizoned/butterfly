@@ -37,7 +37,7 @@ export const useProductsStore = defineStore('ProductsStore', () => {
     try {
       isLoadingDetail.value = true;
       const response = await ProductsService.getOne(id);
-      detailProduct.value = response.data as IProduct;
+      detailProduct.value = response.data;
     } catch (error) {
       console.error('Не удалось получить информацию об услуге', error);
       throw error;
@@ -50,7 +50,7 @@ export const useProductsStore = defineStore('ProductsStore', () => {
     try {
       isLoading.value = true;
       const response = await ProductsService.getAll();
-      products.value = response.data as IProduct[];
+      products.value = response.data;
     } catch (error) {
       console.error('Не удалось получить услуги', error);
       throw error;
@@ -85,7 +85,7 @@ export const useProductsStore = defineStore('ProductsStore', () => {
       }
 
       isOpenEditProductDialog.value = false;
-      editProduct.value = null
+      editProduct.value = null;
     } catch (error) {
       console.error('Не удалось обновить данные услуги', error);
       throw error;

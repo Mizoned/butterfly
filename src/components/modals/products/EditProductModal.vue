@@ -95,6 +95,8 @@
         v-model.trim="productStore.editProduct.price"
         id="name"
         @blur="$v.price.$touch()"
+        currency="RUB"
+        mode="currency"
         :invalid="$v.price.$invalid && $v.price.$error"
         @update:modelValue="resetExternalResultProperty($event, 'price')"
       />

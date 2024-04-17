@@ -5,6 +5,13 @@ interface ICreateProduct {
 
 interface IProduct extends ICreateProduct {
   id: number;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+  additional: {
+    priceAtSale: number;
+    quantity: number;
+  }
 }
 
 interface IProductTable extends IProduct {

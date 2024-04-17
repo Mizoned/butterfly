@@ -1,5 +1,6 @@
 export { ICustomer, ICreateCustomer, ICustomerTable } from "./customers";
 export { IProduct, ICreateProduct, IProductTable } from "./products";
+export { ISchedule, ICreateSchedule } from "./schedules";
 
 export interface IUser {
   id: number;

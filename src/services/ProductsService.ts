@@ -3,7 +3,7 @@ import type { ICreateProduct, IProduct, ResponseDelete } from '@/shared/interfac
 import { removeEmptyFields } from '@/shared/utils'
 import type { AxiosResponse } from 'axios'
 
-export default class CustomersService {
+export default class ProductsService {
   static async getAll(): Promise<AxiosResponse<IProduct[]>> {
     return API.get('/products');
   }
@@ -17,8 +17,8 @@ export default class CustomersService {
   }
 
   static async create(product: ICreateProduct): Promise<AxiosResponse<IProduct>> {
-    const customerData = removeEmptyFields(product);
-    return API.post(`/products`, customerData);
+    const productData = removeEmptyFields(product);
+    return API.post(`/products`, productData);
   }
 
   static async update(product: IProduct): Promise<AxiosResponse<IProduct>> {

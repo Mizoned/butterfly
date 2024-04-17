@@ -19,7 +19,7 @@ interface IProps {
   icon: string,
   iconColor: IconColor,
   iconBackground: IconBackground,
-  number: string,
+  number?: string,
   numberDescription: string
 }
 
@@ -39,7 +39,7 @@ const props = defineProps<IProps>()
         </div>
       </div>
       <div class="statistic-card__footer">
-        <span class="text-green-500 font-medium">{{ number }}</span>
+        <span v-if="number" class="text-green-500 font-medium">{{ number }}</span>
         <span class="text-500">{{ numberDescription }}</span>
       </div>
     </div>

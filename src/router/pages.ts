@@ -32,7 +32,7 @@ export const pages = [
       {
         path: '/calendar',
         name: 'calendar',
-        component: () => import('@/views/CalendarView.vue'),
+        component: () => import('@/views/SchedulesView.vue'),
         meta: { requiresAuth: true }
       },
       {

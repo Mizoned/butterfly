@@ -6,6 +6,7 @@ import { formatPhoneNumber } from '@/shared/utils';
 import DeleteCustomerModal from '@/components/modals/customers/DeleteCustomerModal.vue'
 import CreateCustomerModal from '@/components/modals/customers/CreateCustomerModal.vue'
 import EditCustomerModal from '@/components/modals/customers/EditCustomerModal.vue'
+import CustomerTableChip from '@/components/customers/CustomerChip.vue'
 
 const customersStore = useCustomersStore();
 
@@ -64,10 +65,10 @@ onMounted(() => {
             headerStyle="min-width:15rem;"
           >
             <template #body="slotProps">
-              <Chip>
-                <img :src="slotProps.data?.image ?? DEFAULT_CUSTOMER_IMAGE" alt="">
-                <span>{{ slotProps.data.lastName + ' ' + slotProps.data.firstName }}</span>
-              </Chip>
+              <CustomerTableChip
+                :name="slotProps.data.lastName + ' ' + slotProps.data.firstName"
+                :image="slotProps.data?.image"
+              />
             </template>
           </Column>
           <Column field="email" header="Email" style="width: 15%"></Column>

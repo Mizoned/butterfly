@@ -103,6 +103,8 @@ import type { ICreateProduct, ResponseError } from '@/shared/interfaces'
         v-model.trim="productData.price"
         id="name"
         @blur="$v.price.$touch()"
+        currency="RUB"
+        mode="currency"
         :invalid="$v.price.$invalid && $v.price.$error"
         @update:modelValue="resetExternalResultProperty($event, 'price')"
       />
