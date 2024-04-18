@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useCustomersStore } from '@/stores/CustomersStore';
-import { DEFAULT_CUSTOMER_IMAGE } from '@/shared/constants';
 import { formatPhoneNumber } from '@/shared/utils';
 import DeleteCustomerModal from '@/components/modals/customers/DeleteCustomerModal.vue'
 import CreateCustomerModal from '@/components/modals/customers/CreateCustomerModal.vue'
@@ -71,7 +70,12 @@ onMounted(() => {
               />
             </template>
           </Column>
-          <Column field="email" header="Email" style="width: 15%"></Column>
+          <Column field="email" header="Email" style="width: 15%">
+            <template #body="slotProps">
+              <template v-if="slotProps.data.email">{{ slotProps.data.email }}</template>
+              <template v-else>-</template>
+            </template>
+          </Column>
           <Column field="mobilePhone" header="Телефон" style="width: 15%;" headerStyle="min-width:12rem;">
             <template #body="slotProps">
               {{ formatPhoneNumber(slotProps.data.mobilePhone) }}

@@ -22,8 +22,18 @@ export default class SchedulesService {
     return API.post(`/schedules`, schedule);
   }
 
-  static async update(schedule: ISchedule): Promise<AxiosResponse<ISchedule>> {
-    return API.put(`/schedules/${schedule.id}`, schedule);
+  static async update(id: number, schedule: ICreateSchedule): Promise<AxiosResponse<ISchedule>> {
+    schedule.timeStart = getTimeFromDate(schedule.timeStart);
+    schedule.timeEnd = getTimeFromDate(schedule.timeEnd);
+    return API.put(`/schedules/${id}`, schedule);
+  }
+
+  static async accept(id: number) {
+    return API.put(`/schedules/accept/${id}`);
+  }
+
+  static async cancel(id: number) {
+    return API.put(`/schedules/cancel/${id}`);
   }
 
   static async getFreeTimeSlots(date: Date): Promise<AxiosResponse<Array<string>>> {

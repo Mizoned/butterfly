@@ -11,9 +11,9 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
   const products = ref<IProduct[]>([]);
   const freeTimeSlots = ref<Array<string>>([]);
   const currentSchedule = ref<ISchedule | null>(null);
-  const deleteScheduleId = ref<number | null>(null);
   const editSchedule = ref<ISchedule | null>(null);
-  const isOpenDeleteScheduleDialog = ref<boolean>(false);
+  const isOpenCancelScheduleDialog = ref<boolean>(false);
+  const isOpenAcceptScheduleDialog = ref<boolean>(false);
   const isOpenCreateScheduleDialog = ref<boolean>(false);
   const isOpenEditScheduleDialog = ref<boolean>(false);
   const isLoading = ref<boolean>(false);
@@ -21,11 +21,15 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
   const isLoadingProducts = ref<boolean>(false);
   const isLoadingSlots = ref<boolean>(false);
 
-  const confirmDeleteProductDialog = (schedule: ISchedule) => {
-    deleteScheduleId.value = schedule.id;
+  const confirmCancelScheduleDialog = (schedule: ISchedule) => {
     currentSchedule.value = { ...schedule };
-    isOpenDeleteScheduleDialog.value = true;
+    isOpenCancelScheduleDialog.value = true;
   };
+
+  const confirmAcceptScheduleDialog = (schedule: ISchedule) => {
+    currentSchedule.value = { ...schedule };
+    isOpenAcceptScheduleDialog.value = true;
+  }
 
   const openEditScheduleModal = (schedule: ISchedule) => {
     editSchedule.value = { ...schedule };
@@ -100,10 +104,10 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     }
   }
 
-  const updateSchedule = async () => {
+  const updateSchedule = async (schedule: ICreateSchedule) => {
     try {
       isLoading.value = true;
-      const response = await SchedulesService.update(editSchedule.value);
+      const response = await SchedulesService.update(editSchedule.value.id, schedule);
       const index = schedules.value.findIndex((c) => c.id === editSchedule.value.id);
 
       if (index !== -1) {
@@ -120,15 +124,30 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     }
   }
 
-  const deleteSchedule = async () => {
+  const acceptSchedule = async () => {
     try {
       isLoading.value = true;
-      const response = await SchedulesService.delete(deleteScheduleId.value);
-      schedules.value = schedules.value.filter((val) => val.id !== currentSchedule.value.id);
-      isOpenDeleteScheduleDialog.value = false;
-      deleteScheduleId.value = null;
+      const response = await SchedulesService.accept(currentSchedule.value.id);
+      schedules.value = [...schedules.value].filter((s) => s.id !== currentSchedule.value.id);
+      isOpenAcceptScheduleDialog.value = false;
+      currentSchedule.value = null;
     } catch (error) {
-      console.error('Не удалось удалить запись', error);
+      console.error(error)
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  const cancelSchedule = async () => {
+    try {
+      isLoading.value = true;
+      const response = await SchedulesService.cancel(currentSchedule.value.id);
+      schedules.value = [...schedules.value].filter((val) => val.id !== currentSchedule.value.id);
+      isOpenCancelScheduleDialog.value = false;
+      currentSchedule.value = null;
+    } catch (error) {
+      console.error('Не удалось отменить запись', error);
       throw error;
     } finally {
       isLoading.value = false;
@@ -139,8 +158,10 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     getAllSchedules,
     createSchedule,
     updateSchedule,
-    deleteSchedule,
-    confirmDeleteProductDialog,
+    cancelSchedule,
+    acceptSchedule,
+    confirmCancelScheduleDialog,
+    confirmAcceptScheduleDialog,
     openEditScheduleModal,
     getAllCustomers,
     getAllProducts,
@@ -149,7 +170,8 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     customers,
     products,
     freeTimeSlots,
-    isOpenDeleteScheduleDialog,
+    isOpenCancelScheduleDialog,
+    isOpenAcceptScheduleDialog,
     isOpenCreateScheduleDialog,
     isOpenEditScheduleDialog,
     currentSchedule,

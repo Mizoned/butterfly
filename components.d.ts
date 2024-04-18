@@ -7,9 +7,11 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AcceptScheduleModal: typeof import('./src/components/modals/schedules/AcceptScheduleModal.vue')['default']
     Badge: typeof import('primevue/badge')['default']
     Button: typeof import('primevue/button')['default']
     Calendar: typeof import('primevue/calendar')['default']
+    CancelScheduleModal: typeof import('./src/components/modals/schedules/CancelScheduleModal.vue')['default']
     Card: typeof import('./src/components/cards/Card.vue')['default']
     Carousel: typeof import('primevue/carousel')['default']
     Chart: typeof import('primevue/chart')['default']
@@ -31,6 +33,7 @@ declare module 'vue' {
     EditCustomer: typeof import('./src/components/modals/customers/EditCustomer.vue')['default']
     EditCustomerModal: typeof import('./src/components/modals/customers/EditCustomerModal.vue')['default']
     EditProductModal: typeof import('./src/components/modals/products/EditProductModal.vue')['default']
+    EditScheduleModal: typeof import('./src/components/modals/schedules/EditScheduleModal.vue')['default']
     FreeTimeSlots: typeof import('./src/components/schedules/FreeTimeSlots.vue')['default']
     InputMask: typeof import('primevue/inputmask')['default']
     InputNumber: typeof import('primevue/inputnumber')['default']
@@ -47,6 +50,7 @@ declare module 'vue' {
     SelectButton: typeof import('primevue/selectbutton')['default']
     Sidebar: typeof import('primevue/sidebar')['default']
     Skeleton: typeof import('primevue/skeleton')['default']
+    SpeedDial: typeof import('primevue/speeddial')['default']
     StatisticCard: typeof import('./src/components/cards/StatisticCard.vue')['default']
     Textarea: typeof import('primevue/textarea')['default']
   }

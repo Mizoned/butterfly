@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { computed, type ComputedRef, ref, watch } from 'vue'
+  import { computed, type ComputedRef, ref, watch } from 'vue';
   import { helpers, required } from '@vuelidate/validators';
   import { VALIDATION_ERROR } from '@/shared/constants';
   import { type ServerErrors, useVuelidate } from '@vuelidate/core';
-  import type { ICreateSchedule, ICustomer, IProduct, ResponseError } from '@/shared/interfaces'
+  import type { ICreateSchedule, ICustomer, IProduct, ResponseError } from '@/shared/interfaces';
   import { useToast } from 'primevue/usetoast';
   import { useScheduleStore } from '@/stores/ScheduleStore';
   import InputIcon from 'primevue/inputicon';
   import CustomerChip from '@/components/customers/CustomerChip.vue';
   import { plural } from '@/shared/utils';
   import FreeTimeSlots from '@/components/schedules/FreeTimeSlots.vue';
-  import { isDate } from '@/shared/validators'
+  import { isDate } from '@/shared/validators';
 
   const scheduleStore = useScheduleStore()
   const toast = useToast()
@@ -58,16 +58,55 @@ import { computed, type ComputedRef, ref, watch } from 'vue'
     } else {
       return null;
     }
-  })
+  });
 
-  const $v = useVuelidate<ICreateSchedule>(rules, scheduleData, { $externalResults })
+  const createDateWithTime = (time: string) => {
+    const splitTime = time.split(':');
+    const hours = Number(splitTime[0]);
+    const minutes = Number(splitTime[1]);
+
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    return date;
+  }
+
+  let $v = useVuelidate<ICreateSchedule>(rules, scheduleData, { $externalResults });
+
+  const showDialogHandler = async () => {
+    await scheduleStore.getAllProducts();
+    await scheduleStore.getAllCustomers();
+    await scheduleStore.getFreeTimeSlots(new Date(scheduleStore.editSchedule.date));
+
+    scheduleData.value = {
+      date: new Date(scheduleStore.editSchedule.date),
+      timeStart: createDateWithTime(scheduleStore.editSchedule.timeStart),
+      timeEnd: createDateWithTime(scheduleStore.editSchedule.timeEnd),
+      customerId: scheduleStore.editSchedule.customerId,
+      products: scheduleStore.editSchedule.products.map((p) => ({ id: p.id, quantity: p.additional.quantity }))
+    }
+  }
+
+  const hideDialogHandler = () => {
+    scheduleStore.editSchedule = null;
+
+    scheduleData.value = {
+      date: null,
+      timeStart: null,
+      timeEnd: null,
+      customerId: null,
+      products: []
+    }
+
+    $v.value.$reset();
+  }
 
   const submitHandler = async () => {
     if (!(await $v.value.$validate())) return;
 
-    await scheduleStore.createSchedule({ ...scheduleData.value })
+    await scheduleStore.updateSchedule({ ...scheduleData.value })
       .then(() => {
-        toast.add({ severity: 'success', summary: 'Успешно', detail: 'Запись успешно создана', life: 3000 })
+        toast.add({ severity: 'success', summary: 'Успешно', detail: 'Запись успешно обновлена', life: 3000 })
       })
       .catch((error) => {
         if (error.response.status === 500) {
@@ -78,28 +117,14 @@ import { computed, type ComputedRef, ref, watch } from 'vue'
 
           errors?.forEach((error: ResponseError) => {
             $externalResults.value[error.property] = error.message
-          })
+          });
         }
-      })
+      });
   }
 
   const resetExternalResultProperty = (propertyName: keyof ICreateSchedule) => {
     $externalResults.value[propertyName] = ''
   }
-
-  watch(() => scheduleStore.isOpenCreateScheduleDialog, (value: boolean) => {
-    if (!value) {
-      scheduleData.value = {
-        date: null,
-        timeStart: null,
-        timeEnd: null,
-        customerId: null,
-        products: []
-      }
-
-      $v.value.$reset()
-    }
-  });
 
   watch(() => scheduleData.value.date, async (value: Date) => {
     if (scheduleStore.isOpenCreateScheduleDialog) {
@@ -110,9 +135,11 @@ import { computed, type ComputedRef, ref, watch } from 'vue'
 
 <template>
   <Dialog
-    v-model:visible="scheduleStore.isOpenCreateScheduleDialog"
+    v-model:visible="scheduleStore.isOpenEditScheduleDialog"
     :style="{ width: '450px' }"
-    header="Создать запись"
+    @show="showDialogHandler"
+    @afterHide="hideDialogHandler"
+    header="Обновить запись"
     :modal="true"
     class="p-fluid"
   >
@@ -206,7 +233,7 @@ import { computed, type ComputedRef, ref, watch } from 'vue'
         @update:modelValue="resetExternalResultProperty('customerId')"
       >
         <template #value="slotProps">
-          <div v-if="slotProps.value" class="flex align-items-center">
+          <div v-if="slotProps.value && selectedCustomer" class="flex align-items-center">
             <div>{{ selectedCustomer.lastName + ' ' + selectedCustomer.firstName }}</div>
           </div>
           <span v-else>
@@ -280,7 +307,7 @@ import { computed, type ComputedRef, ref, watch } from 'vue'
       <Button
         label="Отменить"
         icon="pi pi-times"
-        @click="scheduleStore.isOpenCreateScheduleDialog = false"
+        @click="scheduleStore.isOpenEditScheduleDialog = false"
         severity="danger"
       />
       <Button

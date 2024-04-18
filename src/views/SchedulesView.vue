@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed, type WritableComputedRef, onMounted, ref } from 'vue'
-import type { ISchedule, IProduct } from '@/shared/interfaces'
-import CustomerTableChip from '@/components/customers/CustomerChip.vue'
-import { formatDate, formatPhoneNumber } from '@/shared/utils'
-import StatisticCard from '@/components/cards/StatisticCard.vue'
+import { computed, type WritableComputedRef, onMounted } from 'vue';
+import type { IProduct } from '@/shared/interfaces';
+import CustomerTableChip from '@/components/customers/CustomerChip.vue';
+import { formatDate, formatPhoneNumber } from '@/shared/utils';
+import StatisticCard from '@/components/cards/StatisticCard.vue';
 import { useScheduleStore } from '@/stores/ScheduleStore';
-import CreateScheduleModal from '@/components/modals/schedules/CreateScheduleModal.vue'
+import CreateScheduleModal from '@/components/modals/schedules/CreateScheduleModal.vue';
+import EditScheduleModal from '@/components/modals/schedules/EditScheduleModal.vue';
+import CancelScheduleModal from '@/components/modals/schedules/CancelScheduleModal.vue';
+import AcceptScheduleModal from '@/components/modals/schedules/AcceptScheduleModal.vue';
 
 const scheduleStore = useScheduleStore();
 
@@ -111,8 +114,23 @@ const products: WritableComputedRef<IProduct[][]> = computed({
           <Column headerStyle="min-width:10rem;">
             <template #body="slotProps">
               <div class="flex align-items-center justify-content-end gap-2">
-                <Button icon="pi pi-pencil" rounded @click="scheduleStore.openEditScheduleModal(slotProps.data)"/>
-                <Button icon="pi pi-trash" severity="danger" rounded @clcik="scheduleStore.confirmDeleteProductDialog(slotProps.data)"/>
+                <Button
+                  @click="scheduleStore.openEditScheduleModal(slotProps.data)"
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  rounded
+                />
+                <Button
+                  @click="scheduleStore.confirmCancelScheduleDialog(slotProps.data)"
+                  icon="pi pi-times"
+                  severity="danger"
+                  rounded
+                />
+                <Button
+                  @click="scheduleStore.confirmAcceptScheduleDialog(slotProps.data)"
+                  icon="pi pi-check"
+                  rounded
+                />
               </div>
             </template>
           </Column>
@@ -145,12 +163,15 @@ const products: WritableComputedRef<IProduct[][]> = computed({
               </DataTable>
             </div>
           </template>
-          <template #empty> Список услуг пуст. </template>
+          <template #empty> Список записей пуст. </template>
         </DataTable>
       </Card>
     </div>
   </div>
   <CreateScheduleModal />
+  <EditScheduleModal />
+  <CancelScheduleModal />
+  <AcceptScheduleModal />
 </template>
 
 <style scoped lang="scss"></style>
