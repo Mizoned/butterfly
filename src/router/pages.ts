@@ -30,8 +30,8 @@ export const pages = [
         meta: { requiresAuth: true }
       },
       {
-        path: '/calendar',
-        name: 'calendar',
+        path: '/schedule',
+        name: 'schedule',
         component: () => import('@/views/SchedulesView.vue'),
         meta: { requiresAuth: true }
       },

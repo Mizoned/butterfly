@@ -5,15 +5,42 @@ import AppMenuItem from './AppMenuItem.vue'
 
 const model = ref([
   {
-    label: '',
+    label: 'Главная',
     items: [
-      { label: 'Главная', icon: 'pi pi-fw pi-th-large', to: '/' },
-      { label: 'Услуги', icon: 'pi pi-fw pi-star', to: '/products' },
-      { label: 'Клиенты', icon: 'pi pi-fw pi-users', to: '/customers' },
-      { label: 'Журнал записей', icon: 'pi pi-fw pi-calendar', to: '/calendar' },
-      { label: 'Расходы', icon: 'pi pi-fw pi-wallet', to: '/expenses' }
+      { label: 'Общая статистика', icon: 'pi pi-fw pi-th-large', to: '/' },
     ]
-  }
+  },
+  {
+    label: 'Услуги',
+    items: [
+      { label: 'Обзор статистики', icon: 'pi pi-fw pi-chart-bar', to: '/products/overview' },
+      { label: 'Список услуг', icon: 'pi pi-fw pi-list', to: '/products' },
+    ]
+  },
+  {
+    label: 'Клиенты',
+    icon: 'pi pi-fw pi-users',
+    to: '/customers',
+    items: [
+      { label: 'Обзор статистики', icon: 'pi pi-fw pi-chart-bar', to: '/customers/overview' },
+      { label: 'Список клиентов', icon: 'pi pi-fw pi-users', to: '/customers' },
+    ]
+  },
+  {
+    label: 'Журнал записей',
+    items: [
+      { label: 'Расписание записей', icon: 'pi pi-fw pi-calendar-clock', to: '/schedule' },
+      { label: 'Завершенные записи', icon: 'pi pi-fw pi-calendar-plus', to: '/schedule/completed' },
+      { label: 'Отмененные записи', icon: 'pi pi-fw pi-calendar-times', to: '/schedule/canceled' }
+    ]
+  },
+  {
+    label: 'Расходы',
+    items: [
+      { label: 'Обзор статистики', icon: 'pi pi-fw pi-chart-bar', to: '/expenses/overview' },
+      { label: 'Список расходов', icon: 'pi pi-fw pi-wallet', to: '/expenses' },
+    ]
+  },
 ])
 </script>
 
