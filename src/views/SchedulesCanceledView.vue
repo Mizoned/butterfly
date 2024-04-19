@@ -13,7 +13,7 @@ import CompleteScheduleModal from '@/components/modals/schedules/CompleteSchedul
 const scheduleStore = useScheduleStore();
 
 onMounted(() => {
-  scheduleStore.getAllSchedules()
+  scheduleStore.getAllSchedulesCanceled()
 });
 
 const calculateTotalCostProducts = (products: IProduct[]) => {
@@ -72,18 +72,17 @@ const products: WritableComputedRef<IProduct[][]> = computed({
     <div class="col-12 xl:col-12">
       <Card>
         <div class="flex gap-2 justify-content-between mb-3">
-          <div class="text-xl font-medium">Список записей</div>
-          <Button @click="scheduleStore.isOpenCreateScheduleDialog = true" label="Создать" icon="pi pi-plus" />
+          <div class="text-xl font-medium">Список отмененных записей</div>
         </div>
         <DataTable
-          :value="scheduleStore.schedules"
+          :value="scheduleStore.schedulesCanceled"
           v-model:expandedRows="products"
           :rows="7"
           :paginator="true"
           responsiveLayout="scroll"
           dataKey="id"
         >
-          <Column expander style="width: 1rem" />
+          <Column v-if="scheduleStore.schedulesCanceled.length" expander style="width: 1rem" />
           <Column field="customer" header="Клиент" style="width: 20%" headerStyle="min-width:15rem;">
             <template #body="slotProps">
               <CustomerTableChip
@@ -97,41 +96,18 @@ const products: WritableComputedRef<IProduct[][]> = computed({
               {{ formatPhoneNumber(slotProps.data.customer.mobilePhone) }}
             </template>
           </Column>
-          <Column field="date" header="Дата записи" :sortable="true" style="width: 10%" headerStyle="min-width:12rem;">
+          <Column field="date" header="Дата записи" :sortable="true" style="width: 15%" headerStyle="min-width:12rem;">
             <template #body="slotProps">
               {{ formatDate(new Date(slotProps.data.date), 'dd.mm.yy') }}
             </template>
           </Column>
-          <Column field="timeStart" header="Время начала" style="width: 5%" headerStyle="min-width:12rem;"></Column>
-          <Column field="timeEnd" header="Время окончания" style="width: 5%" headerStyle="min-width:12rem;"></Column>
-          <Column field="products" header="Общая стоимость" style="width: 5%" headerStyle="min-width:12rem;">
+          <Column field="timeStart" header="Время начала" style="width: 15%" headerStyle="min-width:12rem;"></Column>
+          <Column field="timeEnd" header="Время окончания" style="width: 15%" headerStyle="min-width:12rem;"></Column>
+          <Column field="products" header="Общая стоимость" style="width: 15%" headerStyle="min-width:12rem;">
             <template #body="slotProps">
               <Chip class="border-round">
                 <span class="font-semibold">{{ calculateTotalCostProducts(slotProps.data.products) + ' ₽' }}</span>
               </Chip>
-            </template>
-          </Column>
-          <Column headerStyle="min-width:10rem;">
-            <template #body="slotProps">
-              <div class="flex align-items-center justify-content-end gap-2">
-                <Button
-                  @click="scheduleStore.openEditScheduleModal(slotProps.data)"
-                  icon="pi pi-pencil"
-                  severity="secondary"
-                  rounded
-                />
-                <Button
-                  @click="scheduleStore.confirmCancelScheduleDialog(slotProps.data)"
-                  icon="pi pi-times"
-                  severity="danger"
-                  rounded
-                />
-                <Button
-                  @click="scheduleStore.confirmCompleteScheduleDialog(slotProps.data)"
-                  icon="pi pi-check"
-                  rounded
-                />
-              </div>
             </template>
           </Column>
           <template #expansion="slotProps">
@@ -163,7 +139,7 @@ const products: WritableComputedRef<IProduct[][]> = computed({
               </DataTable>
             </div>
           </template>
-          <template #empty> Список записей пуст. </template>
+          <template #empty> Список отмененных записей пуст. </template>
         </DataTable>
       </Card>
     </div>

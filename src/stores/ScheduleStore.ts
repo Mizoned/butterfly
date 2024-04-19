@@ -7,13 +7,15 @@ import ProductsService from '@/services/ProductsService'
 
 export const useScheduleStore = defineStore('ScheduleStore', () => {
   const schedules = ref<ISchedule[]>([]);
+  const schedulesCompleted = ref<ISchedule[]>([]);
+  const schedulesCanceled = ref<ISchedule[]>([]);
   const customers = ref<ICustomer[]>([]);
   const products = ref<IProduct[]>([]);
   const freeTimeSlots = ref<Array<string>>([]);
   const currentSchedule = ref<ISchedule | null>(null);
   const editSchedule = ref<ISchedule | null>(null);
   const isOpenCancelScheduleDialog = ref<boolean>(false);
-  const isOpenAcceptScheduleDialog = ref<boolean>(false);
+  const isOpenCompleteScheduleDialog = ref<boolean>(false);
   const isOpenCreateScheduleDialog = ref<boolean>(false);
   const isOpenEditScheduleDialog = ref<boolean>(false);
   const isLoading = ref<boolean>(false);
@@ -26,9 +28,9 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     isOpenCancelScheduleDialog.value = true;
   };
 
-  const confirmAcceptScheduleDialog = (schedule: ISchedule) => {
+  const confirmCompleteScheduleDialog = (schedule: ISchedule) => {
     currentSchedule.value = { ...schedule };
-    isOpenAcceptScheduleDialog.value = true;
+    isOpenCompleteScheduleDialog.value = true;
   }
 
   const openEditScheduleModal = (schedule: ISchedule) => {
@@ -56,6 +58,32 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
       schedules.value = response.data;
     } catch (error) {
       console.error('Не удалось получить записи', error);
+      throw error;
+    } finally {
+      isLoadingCustomers.value = false;
+    }
+  }
+
+  const getAllSchedulesCompleted = async () => {
+    try {
+      isLoadingCustomers.value = true;
+      const response = await SchedulesService.getAllCompleted();
+      schedulesCompleted.value = response.data;
+    } catch (error) {
+      console.error('Не удалось получить завершенные записи', error);
+      throw error;
+    } finally {
+      isLoadingCustomers.value = false;
+    }
+  }
+
+  const getAllSchedulesCanceled = async () => {
+    try {
+      isLoadingCustomers.value = true;
+      const response = await SchedulesService.getAllCanceled();
+      schedulesCanceled.value = response.data;
+    } catch (error) {
+      console.error('Не удалось получить отмененные записи', error);
       throw error;
     } finally {
       isLoadingCustomers.value = false;
@@ -124,12 +152,12 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     }
   }
 
-  const acceptSchedule = async () => {
+  const completeSchedule = async () => {
     try {
       isLoading.value = true;
-      const response = await SchedulesService.accept(currentSchedule.value.id);
+      const response = await SchedulesService.complete(currentSchedule.value.id);
       schedules.value = [...schedules.value].filter((s) => s.id !== currentSchedule.value.id);
-      isOpenAcceptScheduleDialog.value = false;
+      isOpenCompleteScheduleDialog.value = false;
       currentSchedule.value = null;
     } catch (error) {
       console.error(error)
@@ -156,22 +184,26 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
 
   return {
     getAllSchedules,
+    getAllSchedulesCompleted,
+    getAllSchedulesCanceled,
     createSchedule,
     updateSchedule,
     cancelSchedule,
-    acceptSchedule,
+    completeSchedule,
     confirmCancelScheduleDialog,
-    confirmAcceptScheduleDialog,
+    confirmCompleteScheduleDialog,
     openEditScheduleModal,
     getAllCustomers,
     getAllProducts,
     getFreeTimeSlots,
     schedules,
+    schedulesCompleted,
+    schedulesCanceled,
     customers,
     products,
     freeTimeSlots,
     isOpenCancelScheduleDialog,
-    isOpenAcceptScheduleDialog,
+    isOpenCompleteScheduleDialog,
     isOpenCreateScheduleDialog,
     isOpenEditScheduleDialog,
     currentSchedule,

@@ -7,7 +7,6 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AcceptScheduleModal: typeof import('./src/components/modals/schedules/AcceptScheduleModal.vue')['default']
     Badge: typeof import('primevue/badge')['default']
     Button: typeof import('primevue/button')['default']
     Calendar: typeof import('primevue/calendar')['default']
@@ -17,6 +16,7 @@ declare module 'vue' {
     Chart: typeof import('primevue/chart')['default']
     Chip: typeof import('primevue/chip')['default']
     Column: typeof import('primevue/column')['default']
+    CompleteScheduleModal: typeof import('./src/components/modals/schedules/CompleteScheduleModal.vue')['default']
     CreateCustomer: typeof import('./src/components/modals/customers/CreateCustomer.vue')['default']
     CreateCustomerModal: typeof import('./src/components/modals/customers/CreateCustomerModal.vue')['default']
     CreateProductModal: typeof import('./src/components/modals/products/CreateProductModal.vue')['default']

@@ -7,7 +7,7 @@
 
   const submitHandler = async () => {
     try {
-      await scheduleStore.acceptSchedule();
+      await scheduleStore.completeSchedule();
       toast.add({ severity: 'success', summary: 'Успешно', detail: 'Запись завершена', life: 3000 });
     } catch (e) {
       const message = e.response.data.message;
@@ -17,7 +17,7 @@
 </script>
 
 <template>
-  <Dialog v-model:visible="scheduleStore.isOpenAcceptScheduleDialog" :style="{ width: '450px' }" header="Подтвержение" :modal="true">
+  <Dialog v-model:visible="scheduleStore.isOpenCompleteScheduleDialog" :style="{ width: '450px' }" header="Подтвержение" :modal="true">
     <div class="flex align-items-center">
       <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
       <span v-if="scheduleStore.currentSchedule">
@@ -26,7 +26,7 @@
     </div>
     <template #footer>
       <Button
-        @click="scheduleStore.isOpenAcceptScheduleDialog = false"
+        @click="scheduleStore.isOpenCompleteScheduleDialog = false"
         label="Нет"
         icon="pi pi-times text-red"
         text

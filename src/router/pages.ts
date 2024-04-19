@@ -36,6 +36,18 @@ export const pages = [
         meta: { requiresAuth: true }
       },
       {
+        path: '/schedule/completed',
+        name: 'scheduleCompleted',
+        component: () => import('@/views/SchedulesCompletedView.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/schedule/canceled',
+        name: 'scheduleCanceled',
+        component: () => import('@/views/SchedulesCanceledView.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
         path: '/notifications',
         name: 'notifications',
         component: () => import('@/views/NotificationView.vue'),

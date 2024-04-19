@@ -30,7 +30,8 @@ export const useAuthStore = defineStore('AuthStore', () => {
       const jwtDecoded = jwtDecode<JwtPayloadUser>(response.data.accessToken);
       userStore.setUser(jwtDecoded);
     } catch (error) {
-      console.error(error)
+      console.error(error);
+      throw error;
     } finally {
       isLoading.value = false;
     }

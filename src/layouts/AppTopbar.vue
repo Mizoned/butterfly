@@ -134,7 +134,7 @@ const logoutHandler  = async () => {
         severity="secondary"
       >
         <i class="pi pi-user"></i>
-        <span>{{ userStore.fullName || userStore.user.email }}</span>
+        <span>{{ userStore.fullName ?? userStore.user?.email ?? '' }}</span>
       </Button>
       <OverlayPanel ref="op" appendTo="body">
         <div class="flex flex-column">

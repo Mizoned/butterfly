@@ -8,6 +8,14 @@ export default class SchedulesService {
     return API.get('/schedules');
   }
 
+  static async getAllCompleted(): Promise<AxiosResponse<ISchedule[]>> {
+    return API.get('/schedules/completed');
+  }
+
+  static async getAllCanceled(): Promise<AxiosResponse<ISchedule[]>> {
+    return API.get('/schedules/canceled');
+  }
+
   static async getOne(id: number): Promise<AxiosResponse<ISchedule>> {
     return API.get(`/schedules/${id}`);
   }
@@ -28,8 +36,8 @@ export default class SchedulesService {
     return API.put(`/schedules/${id}`, schedule);
   }
 
-  static async accept(id: number) {
-    return API.put(`/schedules/accept/${id}`);
+  static async complete(id: number) {
+    return API.put(`/schedules/complete/${id}`);
   }
 
   static async cancel(id: number) {
