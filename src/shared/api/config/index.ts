@@ -1,26 +1,46 @@
 import axios from 'axios';
 
 const getEnvVariable = (key: string) => {
-    if (import.meta.env[key] === undefined) {
-        throw new Error(`Env variable ${key} is required`);
-    }
+  if (import.meta.env[key] === undefined) {
+    throw new Error(`Env variable ${key} is required`);
+  }
 
-    return import.meta.env[key]
-} 
+  return import.meta.env[key];
+};
 
-export const API_URL = getEnvVariable("VITE_APP_API_URL");
+export const API_URL = getEnvVariable('VITE_APP_API_URL');
 
 export const API = axios.create({
-    withCredentials: true,
-    baseURL: API_URL
+  withCredentials: true,
+  baseURL: API_URL
 });
 
 API.interceptors.request.use((config) => {
-    const accessToken = localStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
-    if (accessToken) {
-        config.headers.Authorization = `Bearer ${accessToken}`;
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  return config;
+});
+
+API.interceptors.response.use(
+  (config) => config,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error?.response?.status === 401 && error.config && !error.config._isRetry) {
+      originalRequest._isRetry = true;
+
+      try {
+        const response = await axios.get(`${API_URL}/auth/refresh`, { withCredentials: true });
+        localStorage.setItem('accessToken', response.data.accessToken);
+        return API.request(originalRequest);
+      } catch (error) {
+        localStorage.removeItem('accessToken');
+      }
     }
 
-    return config;
-});
+    return Promise.reject(error);
+  }
+);
