@@ -100,26 +100,24 @@ const logoutHandler  = async () => {
 
 		<div class="layout-topbar-menu" :class="topbarMenuClasses">
 
-<!--      <router-link to="/notifications" class="p-link layout-topbar-button" @click="onTopBarMenuButton()">-->
-<!--        <i class="pi pi-bell" />-->
-<!--        <span>Уведомления</span>-->
-<!--      </router-link>-->
-
-<!--      <router-link to="/calendar" class="p-link layout-topbar-button" @click="onTopBarMenuButton()">-->
-<!--        <i class="pi pi-calendar"></i>-->
-<!--        <span>Журнал записей</span>-->
-<!--      </router-link>-->
+      <router-link to="/notifications" class="p-link layout-topbar-button" @click="onTopBarMenuButton">
+        <i class="pi pi-bell" />
+        <span>Уведомления</span>
+      </router-link>
 
       <router-link
         v-if="isMobile"
-        to="/settings" class="p-link layout-topbar-button">
+        to="/settings"
+        class="p-link layout-topbar-button"
+        @click="toggle, onTopBarMenuButton()"
+      >
         <i class="pi pi-cog"></i>
         <span>Настройки</span>
       </router-link>
 
       <Button
         v-if="isMobile"
-        @click="logoutHandler()"
+        @click="logoutHandler"
         class="p-link layout-topbar-button layout-topbar-logout-button"
         label="Выйти"
         icon="pi pi-sign-out"
@@ -130,7 +128,8 @@ const logoutHandler  = async () => {
       <Button
         v-if="!isMobile"
         class="p-link layout-topbar-button"
-        text @click="toggle"
+        text
+        @click="toggle($event), onTopBarMenuButton()"
         severity="secondary"
       >
         <i class="pi pi-user"></i>
@@ -138,7 +137,11 @@ const logoutHandler  = async () => {
       </Button>
       <OverlayPanel ref="op" appendTo="body">
         <div class="flex flex-column">
-          <router-link to="/settings" class="p-link layout-topbar-button">
+          <router-link
+            @click="toggle"
+            to="/settings"
+            class="p-link layout-topbar-button"
+          >
             <Button
               type="button"
               text
@@ -149,7 +152,7 @@ const logoutHandler  = async () => {
           </router-link>
           <Button
             class="p-link layout-topbar-button"
-            @click="logoutHandler()"
+            @click="logoutHandler"
             type="button"
             text
             label="Выйти"
