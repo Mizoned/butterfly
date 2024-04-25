@@ -1,31 +1,52 @@
-import { toRefs, reactive, computed } from 'vue';
+import { toRefs, reactive, computed, type Ref } from 'vue';
 
-const layoutConfig = reactive({
+interface IlayoutConfig {
+    ripple: boolean,
+    darkTheme: boolean | string,
+    inputStyle: string,
+    menuMode: string,
+    theme: string,
+    scale: number,
+    activeMenuItem: string | Ref<string>
+}
+
+const layoutConfig = reactive<IlayoutConfig>({
     ripple: true,
     darkTheme: false,
     inputStyle: 'outlined',
     menuMode: 'static',
     theme: 'aura-light-green',
     scale: 14,
-    activeMenuItem: null
+    activeMenuItem: ''
 });
 
-const layoutState = reactive({
+interface IlayoutState {
+    staticMenuDesktopInactive: boolean,
+    overlayMenuActive: boolean,
+    profileSidebarVisible: boolean,
+    configSidebarVisible: boolean,
+    staticMenuMobileActive: boolean,
+    menuHoverActive: boolean,
+    activeMenuItem: string | Ref<string>
+}
+
+const layoutState = reactive<IlayoutState>({
     staticMenuDesktopInactive: false,
     overlayMenuActive: false,
     profileSidebarVisible: false,
     configSidebarVisible: false,
     staticMenuMobileActive: false,
-    menuHoverActive: false
+    menuHoverActive: false,
+    activeMenuItem: ''
 });
 
 export function useLayout() {
-    const setScale = (scale) => {
+    const setScale = (scale: number) => {
         layoutConfig.scale = scale;
     };
 
-    const setActiveMenuItem = (item) => {
-        layoutConfig.activeMenuItem = item.value || item;
+    const setActiveMenuItem = (item: Ref<string> | string) => {
+        layoutConfig.activeMenuItem = typeof item === 'string' ? item : item.value;
     };
 
     const onMenuToggle = () => {

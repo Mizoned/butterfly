@@ -1,8 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { jwtDecode } from "jwt-decode";
 import { useUserStore } from '@/stores/UserStore';
-import type { JwtPayloadUser } from '@/shared/interfaces';
 import AuthService from '@/services/AuthService';
 
 
@@ -26,9 +24,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
       isLoading.value = true;
       const response = await AuthService.signIn(email, password);
       setAccessToken(response.data.accessToken);
-
-      const jwtDecoded = jwtDecode<JwtPayloadUser>(response.data.accessToken);
-      userStore.setUser(jwtDecoded);
+      userStore.setUser(response.data.user);
     } catch (error) {
       console.error(error);
       throw error;
@@ -41,8 +37,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
     try {
       const response = await AuthService.signUp(email, password);
       setAccessToken(response.data.accessToken);
-      const jwtDecoded = jwtDecode<JwtPayloadUser>(response.data.accessToken);
-      userStore.setUser(jwtDecoded);
+      userStore.setUser(response.data.user);
     } catch (error) {
       console.error(error);
       throw error;

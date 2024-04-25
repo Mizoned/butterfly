@@ -18,7 +18,7 @@ interface IProductTable extends IProduct {
   lifeTime?: number;
 }
 
-export {
+export type {
   ICreateProduct,
   IProduct,
   IProductTable

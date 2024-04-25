@@ -1,6 +1,6 @@
 import type { ICustomer, IProduct } from '@/shared/interfaces'
 
-export interface ICreateSchedule {
+interface ICreateSchedule {
   date: Date;
   timeStart: Date;
   timeEnd: Date;
@@ -8,7 +8,7 @@ export interface ICreateSchedule {
   products: Array<{ id: number; quantity: number }>;
 }
 
-export interface ISchedule {
+interface ISchedule {
   id: number;
   date: string;
   timeStart: string;
@@ -19,4 +19,9 @@ export interface ISchedule {
   updatedAt: string;
   customer: ICustomer;
   products: IProduct[];
+}
+
+export type {
+  ICreateSchedule,
+  ISchedule
 }

@@ -6,7 +6,7 @@
     name: string;
   }
 
-  const props = withDefaults(defineProps<IProps>(), {
+  withDefaults(defineProps<IProps>(), {
     image: DEFAULT_CUSTOMER_IMAGE
   });
 </script>

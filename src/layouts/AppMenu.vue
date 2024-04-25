@@ -19,8 +19,6 @@ const model = ref([
   },
   {
     label: 'Клиенты',
-    icon: 'pi pi-fw pi-users',
-    to: '/customers',
     items: [
       { label: 'Обзор статистики', icon: 'pi pi-fw pi-chart-bar', to: '/customers/overview' },
       { label: 'Список клиентов', icon: 'pi pi-fw pi-users', to: '/customers' },

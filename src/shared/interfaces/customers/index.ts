@@ -18,7 +18,7 @@ interface ICustomerTable extends ICustomer {
   visits?: number;
 }
 
-export {
+export type {
   ICreateCustomer,
   ICustomer,
   ICustomerTable

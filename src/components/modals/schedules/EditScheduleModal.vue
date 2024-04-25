@@ -8,7 +8,7 @@
   import { useScheduleStore } from '@/stores/ScheduleStore';
   import InputIcon from 'primevue/inputicon';
   import CustomerChip from '@/components/customers/CustomerChip.vue';
-  import { plural } from '@/shared/utils';
+  import { createDateWithTime, plural } from '@/shared/utils';
   import FreeTimeSlots from '@/components/schedules/FreeTimeSlots.vue';
   import { isDate } from '@/shared/validators';
 
@@ -59,17 +59,6 @@
       return null;
     }
   });
-
-  const createDateWithTime = (time: string) => {
-    const splitTime = time.split(':');
-    const hours = Number(splitTime[0]);
-    const minutes = Number(splitTime[1]);
-
-    const date = new Date();
-    date.setHours(hours);
-    date.setMinutes(minutes);
-    return date;
-  }
 
   let $v = useVuelidate<ICreateSchedule>(rules, scheduleData, { $externalResults });
 

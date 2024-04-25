@@ -1,29 +1,24 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onBeforeMount, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useLayout } from '@/layouts/composables/layout';
+import { type IMenuItem } from '@/shared/interfaces';
 
 const route = useRoute();
 
 const { layoutConfig, layoutState, setActiveMenuItem, onMenuToggle } = useLayout();
 
-const props = defineProps({
-    item: {
-        type: Object,
-        default: () => ({})
-    },
-    index: {
-        type: Number,
-        default: 0
-    },
-    root: {
-        type: Boolean,
-        default: true
-    },
-    parentItemKey: {
-        type: String,
-        default: null
-    }
+interface IProps {
+    item: IMenuItem,
+    index?: number,
+    root?: boolean,
+    parentItemKey?: string
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+    index: 0,
+    root: true,
+    parentItemKey: ''
 });
 
 const isActiveMenu = ref(false);
@@ -34,7 +29,7 @@ onBeforeMount(() => {
 
     const activeItem = layoutState.activeMenuItem;
 
-    isActiveMenu.value = activeItem === itemKey.value || activeItem ? activeItem.startsWith(itemKey.value + '-') : false;
+    isActiveMenu.value = activeItem === itemKey.value || activeItem ? activeItem.value.startsWith(itemKey.value + '-') : false;
 });
 
 watch(
@@ -72,19 +67,19 @@ const checkActiveRoute = (item) => {
 <template>
     <li :class="{ 'layout-root-menuitem': root, 'active-menuitem': isActiveMenu }">
         <div v-if="root && item.visible !== false && item.label" class="layout-menuitem-root-text">{{ item.label }}</div>
-        <a v-if="(!item.to || item.items) && item.visible !== false" :href="item.url" @click="itemClick($event, item, index)" :class="item.class" :target="item.target" tabindex="0">
+        <a v-if="(!item.to || item.items) && item.visible !== false" :href="item.url" @click="itemClick($event, item)" :class="item.class" :target="item.target" tabindex="0">
             <i :class="item.icon" class="layout-menuitem-icon text-xl"></i>
             <span class="layout-menuitem-text">{{ item.label }}</span>
             <i class="pi pi-fw pi-angle-down layout-submenu-toggler" v-if="item.items"></i>
         </a>
-        <router-link v-if="item.to && !item.items && item.visible !== false" @click="itemClick($event, item, index)" :class="[item.class, { 'active-route': checkActiveRoute(item) }]" tabindex="0" :to="item.to">
+        <router-link v-if="item.to && !item.items && item.visible !== false" @click="itemClick($event, item)" :class="[item.class, { 'active-route': checkActiveRoute(item) }]" tabindex="0" :to="item.to">
             <i :class="item.icon" class="layout-menuitem-icon text-xl"></i>
             <span class="layout-menuitem-text">{{ item.label }}</span>
             <i class="pi pi-fw pi-angle-down layout-submenu-toggler" v-if="item.items"></i>
         </router-link>
         <Transition v-if="item.items && item.visible !== false" name="layout-submenu">
             <ul v-show="root ? true : isActiveMenu" class="layout-submenu">
-                <app-menu-item v-for="(child, i) in item.items" :key="child" :index="i" :item="child" :parentItemKey="itemKey" :root="false"></app-menu-item>
+                <app-menu-item v-for="(child, i) in item.items" :key="i" :index="i" :item="child" :parentItemKey="itemKey" :root="false"></app-menu-item>
             </ul>
         </Transition>
     </li>

@@ -17,13 +17,16 @@ interface IProps {
   title: string,
   numberTitle: string,
   icon: string,
-  iconColor: IconColor,
-  iconBackground: IconBackground,
+  iconColor?: IconColor,
+  iconBackground?: IconBackground,
   number?: string,
   numberDescription: string
 }
 
-const props = defineProps<IProps>()
+withDefaults(defineProps<IProps>(), {
+    iconColor: IconColor.blue,
+    iconBackground: IconBackground.blue
+  });
 </script>
 
 <template>
