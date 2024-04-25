@@ -1,6 +1,6 @@
-<script setup>
-import { reactive, ref } from 'vue'
-import StatisticCard from '@/components/cards/StatisticCard.vue'
+<script setup lang="ts">
+import { reactive, ref } from 'vue';
+import StatisticCard from '@/components/cards/StatisticCard.vue';
 
 const products = ref(null)
 const lineData = reactive({
@@ -24,9 +24,9 @@ const lineData = reactive({
     }
   ]
 })
-const lineOptions = ref(null)
+const lineOptions = ref({})
 
-const formatCurrency = (value) => {
+const formatCurrency = (value: number) => {
   return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
 }
 </script>

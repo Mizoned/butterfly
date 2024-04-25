@@ -25,15 +25,21 @@ export default class SchedulesService {
   }
 
   static async create(schedule: ICreateSchedule): Promise<AxiosResponse<ISchedule>> {
-    schedule.timeStart = getTimeFromDate(schedule.timeStart);
-    schedule.timeEnd = getTimeFromDate(schedule.timeEnd);
-    return API.post(`/schedules`, schedule);
+    const scheduleData = {
+      ...schedule,
+      timeStart: getTimeFromDate(schedule.timeStart as Date),
+      timeEnd: getTimeFromDate(schedule.timeEnd as Date)
+    }
+    return API.post(`/schedules`, scheduleData);
   }
 
   static async update(id: number, schedule: ICreateSchedule): Promise<AxiosResponse<ISchedule>> {
-    schedule.timeStart = getTimeFromDate(schedule.timeStart);
-    schedule.timeEnd = getTimeFromDate(schedule.timeEnd);
-    return API.put(`/schedules/${id}`, schedule);
+    const scheduleData = {
+      ...schedule,
+      timeStart: getTimeFromDate(schedule.timeStart as Date),
+      timeEnd: getTimeFromDate(schedule.timeEnd as Date)
+    }
+    return API.put(`/schedules/${id}`, scheduleData);
   }
 
   static async complete(id: number) {

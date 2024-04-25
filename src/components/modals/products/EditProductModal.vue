@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import { computed, ref, watch } from 'vue'
+  import { computed, ref, watch, type Ref } from 'vue'
   import { helpers, required } from '@vuelidate/validators'
   import { VALIDATION_ERROR } from '@/shared/constants'
-  import { type ServerErrors, useVuelidate } from '@vuelidate/core'
+  import { type ServerErrors, useVuelidate, type Validation, type ValidationArgs } from '@vuelidate/core'
   import type { ICreateProduct, IProduct, ResponseError } from '@/shared/interfaces'
   import { useToast } from 'primevue/usetoast'
   import { useProductsStore } from '@/stores/ProductsStore'
@@ -24,11 +24,11 @@
     price: ''
   });
 
-  let $v = null;
+  let $v: Ref<Validation<ValidationArgs<unknown>, IProduct>>;
 
   watch(() => productStore.isOpenEditProductDialog, (value: boolean) => {
     if (value) {
-      $v = useVuelidate<IProduct>(rules, productStore.editProduct, { $externalResults });
+      $v = useVuelidate<IProduct>(rules, productStore.editProduct!, { $externalResults });
     } else {
       productStore.editProduct = null;
     }
@@ -55,13 +55,8 @@
       });
   }
 
-  const resetExternalResultProperty = (value: string | number, propertyName: keyof ICreateProduct) => {
-    if (
-      (typeof value === 'string' && value?.length > 0)
-      || (typeof value === 'number' && value >= 0)
-    ) {
-      $externalResults.value[propertyName] = '';
-    }
+  const resetExternalResultProperty = (propertyName: keyof ICreateProduct) => {
+    $externalResults.value[propertyName] = '';
   }
 </script>
 
@@ -76,11 +71,11 @@
     <div class="field">
       <label for="name">Название</label>
       <InputText
-        v-model.trim="productStore.editProduct.name"
+        v-model.trim="productStore.editProduct!.name"
         id="name"
         @blur="$v.name.$touch()"
         :invalid="$v.name.$invalid && $v.name.$error"
-        @update:modelValue="resetExternalResultProperty($event, 'name')"
+        @update:modelValue="resetExternalResultProperty('name')"
       />
       <small
         v-if="$v.name.$errors[0]?.$message"
@@ -92,13 +87,13 @@
     <div class="field">
       <label for="name">Стоимость</label>
       <InputNumber
-        v-model.trim="productStore.editProduct.price"
+        v-model.trim="productStore.editProduct!.price"
         id="name"
         @blur="$v.price.$touch()"
         currency="RUB"
         mode="currency"
         :invalid="$v.price.$invalid && $v.price.$error"
-        @update:modelValue="resetExternalResultProperty($event, 'price')"
+        @update:modelValue="resetExternalResultProperty('price')"
       />
       <small
         v-if="$v.price.$errors[0]?.$message"

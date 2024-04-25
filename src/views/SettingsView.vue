@@ -7,6 +7,7 @@ import { areDateEqualInTime, areObjectsEqual, createDateWithTime } from '@/share
 import { computed, ref, watch } from 'vue';
 import { type ServerErrors, useVuelidate } from '@vuelidate/core';
 import { helpers, maxLength, minLength, requiredIf } from '@vuelidate/validators';
+import { type FileUploadUploadEvent } from 'primevue/fileupload';
 import type {
   IUpdatePassword,
   IUpdateProfile,
@@ -15,11 +16,12 @@ import type {
 } from '@/shared/interfaces';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
+import { AxiosError } from 'axios';
 
 const userStore = useUserStore();
 const toast = useToast();
 
-const uploadHandler = (event) => {
+const uploadHandler = (event: FileUploadUploadEvent) => {
   console.log(event);
 };
 
@@ -73,15 +75,17 @@ const submitSafetySettingsHandler = async () => {
     safetySettings.value.oldPassword = '';
     toast.add({ severity: 'success', summary: 'Успешно', detail: 'Пароль обновлен', life: 3000 });
   } catch (error) {
-    if (error.response.status === 500) {
-      const message = error.response.data.message;
-      toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
-    } else {
-      const errors: ResponseError[] = error?.response?.data?.errors as ResponseError[];
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 500) {
+        const message = error.response?.data.message;
+        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+      } else {
+        const errors: ResponseError[] = error?.response?.data?.errors as ResponseError[];
 
-      errors?.forEach((error: ResponseError) => {
-        $externalSafetySettingsResults.value[error.property] = error.message;
-      });
+        errors?.forEach((error: ResponseError) => {
+          $externalSafetySettingsResults.value[error.property] = error.message;
+        });
+      }
     }
   }
 };
@@ -108,15 +112,15 @@ const profileSettingsRules = computed(() => ({
 }));
 
 const fixedProfileSettings = {
-  lastName: userStore.user.lastName,
-  firstName: userStore.user.firstName,
-  fatherName: userStore.user.fatherName
+  lastName: userStore.user!.lastName,
+  firstName: userStore.user!.firstName,
+  fatherName: userStore.user!.fatherName
 };
 
 const profileSettings = ref<IUpdateProfile>({
-  lastName: userStore.user.lastName,
-  firstName: userStore.user.firstName,
-  fatherName: userStore.user.fatherName
+  lastName: userStore.user!.lastName,
+  firstName: userStore.user!.firstName,
+  fatherName: userStore.user!.fatherName
 });
 
 const isActiveSettingsButton = ref(false);
@@ -156,15 +160,17 @@ const submitProfileSettingsHandler = async () => {
       life: 3000
     });
   } catch (error) {
-    if (error.response.status === 500) {
-      const message = error.response.data.message;
-      toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
-    } else {
-      const errors: ResponseError[] = error?.response?.data?.errors as ResponseError[];
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 500) {
+        const message = error.response?.data.message;
+        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+      } else {
+        const errors: ResponseError[] = error?.response?.data?.errors as ResponseError[];
 
-      errors?.forEach((error: ResponseError) => {
-        $externalProfileSettingsResults.value[error.property] = error.message;
-      });
+        errors?.forEach((error: ResponseError) => {
+          $externalProfileSettingsResults.value[error.property] = error.message;
+        });
+      }
     }
   }
 };
@@ -203,13 +209,13 @@ const workspaceSettingsRules = computed(() => ({
 }));
 
 const fixedWorkspaceSettings = {
-  workdayStartTime: createDateWithTime(userStore.user.settings.workdayStartTime),
-  workdayEndTime: createDateWithTime(userStore.user.settings.workdayEndTime)
+  workdayStartTime: createDateWithTime(userStore.user!.settings!.workdayStartTime!) || new Date(),
+  workdayEndTime: createDateWithTime(userStore.user!.settings!.workdayEndTime!) || new Date()
 };
 
 const workspaceSettings = ref<IUpdateWorkspace>({
-  workdayStartTime: createDateWithTime(userStore.user.settings.workdayStartTime),
-  workdayEndTime: createDateWithTime(userStore.user.settings.workdayEndTime)
+  workdayStartTime: createDateWithTime(userStore.user!.settings!.workdayStartTime) || new Date(),
+  workdayEndTime: createDateWithTime(userStore.user!.settings!.workdayEndTime) || new Date()
 });
 
 const $externalWorkspaceSettingsResults = ref<ServerErrors>({
@@ -235,8 +241,8 @@ watch(
     isActiveWorkspaceButton.value =
       newValue.workdayStartTime &&
       newValue.workdayEndTime &&
-      (!areDateEqualInTime(newValue.workdayStartTime, fixedWorkspaceSettings.workdayStartTime) ||
-        !areDateEqualInTime(newValue.workdayEndTime, fixedWorkspaceSettings.workdayEndTime));
+      (!areDateEqualInTime(newValue.workdayStartTime, fixedWorkspaceSettings.workdayStartTime!) ||
+        !areDateEqualInTime(newValue.workdayEndTime, fixedWorkspaceSettings.workdayEndTime!));
   },
   { deep: true }
 );
@@ -254,15 +260,19 @@ const submitWorkspaceSettingsHandler = async () => {
       life: 3000
     });
   } catch (error) {
-    if (error.response.status === 500) {
-      const message = error.response.data.message;
-      toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
-    } else {
-      const errors: ResponseError[] = error?.response?.data?.errors as ResponseError[];
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 500) {
+        const message = error.response.data.message;
+        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+      } else {
+        const errors = error.response?.data.errors as ResponseError[];
 
-      errors?.forEach((error: ResponseError) => {
-        $externalWorkspaceSettingsResults.value[error.property] = error.message;
-      });
+        errors?.forEach((error: ResponseError) => {
+          $externalWorkspaceSettingsResults.value[error.property] = error.message;
+        });
+      }
+    } else {
+      console.error(error);
     }
   }
 };
@@ -390,7 +400,7 @@ const submitWorkspaceSettingsHandler = async () => {
             <IconField aria-label="email">
               <InputText
                 id="email"
-                :value="userStore.user.email"
+                :value="userStore.user!.email"
                 aria-describedby="emailHelp"
                 disabled
                 class="w-full"

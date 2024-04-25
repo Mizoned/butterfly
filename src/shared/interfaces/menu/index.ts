@@ -5,8 +5,10 @@ interface IMenuItem {
   items?: IMenuItem[];
   visible?: boolean;
   target?: string;
-  class: string;
-  url: string;
+  class?: string;
+  url?: string;
+  disabled?: boolean,
+  command?: ({ originalEvent, item }: { originalEvent: MouseEvent, item: IMenuItem }) => void
 }
 
 export type { IMenuItem };

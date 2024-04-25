@@ -1,11 +1,11 @@
 import type { ICustomer, IProduct } from '@/shared/interfaces'
 
 interface ICreateSchedule {
-  date: Date;
-  timeStart: Date;
-  timeEnd: Date;
-  customerId: number;
-  products: Array<{ id: number; quantity: number }>;
+  date: Date | null;
+  timeStart: Date | null;
+  timeEnd: Date | null;
+  customerId: number | null;
+  products: Array<{ id: number; quantity: number }> | [];
 }
 
 interface ISchedule {

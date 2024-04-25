@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, type ComputedRef, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
   import { helpers, required } from '@vuelidate/validators';
   import { VALIDATION_ERROR } from '@/shared/constants';
   import { type ServerErrors, useVuelidate } from '@vuelidate/core';
-  import type { ICreateSchedule, ICustomer, IProduct, ResponseError } from '@/shared/interfaces'
+  import type { ICreateSchedule, IProduct, ResponseError } from '@/shared/interfaces'
   import { useToast } from 'primevue/usetoast';
   import { useScheduleStore } from '@/stores/ScheduleStore';
   import InputIcon from 'primevue/inputicon';
@@ -52,13 +52,16 @@ import { computed, type ComputedRef, ref, watch } from 'vue'
     products: []
   })
 
-  const selectedCustomer: ComputedRef<ICustomer | null> = computed(() => {
-    if (scheduleData.value.customerId) {
-      return scheduleStore.customers.find((c) => c.id === scheduleData.value.customerId);
-    } else {
-      return null;
-    }
-  })
+  const selectedCustomer = computed({
+    get() {
+      if (scheduleData.value.customerId) {
+        return scheduleStore.customers.find((c) => c.id === scheduleData.value.customerId);
+      } else {
+        return null;
+      }
+    },
+    set() {}
+  });
 
   const $v = useVuelidate<ICreateSchedule>(rules, scheduleData, { $externalResults })
 
@@ -101,7 +104,7 @@ import { computed, type ComputedRef, ref, watch } from 'vue'
     }
   });
 
-  watch(() => scheduleData.value.date, async (value: Date) => {
+  watch(() => scheduleData.value.date!, async (value: Date) => {
     if (scheduleStore.isOpenCreateScheduleDialog) {
       await scheduleStore.getFreeTimeSlots(value);
     }
@@ -206,7 +209,7 @@ import { computed, type ComputedRef, ref, watch } from 'vue'
         @update:modelValue="resetExternalResultProperty('customerId')"
       >
         <template #value="slotProps">
-          <div v-if="slotProps.value" class="flex align-items-center">
+          <div v-if="slotProps.value && selectedCustomer" class="flex align-items-center">
             <div>{{ selectedCustomer.lastName + ' ' + selectedCustomer.firstName }}</div>
           </div>
           <span v-else>

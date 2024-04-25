@@ -48,7 +48,7 @@ const submitHandler = async () => {
 }
 
 const resetExternalResultProperty = (value: string | undefined, propertyName: keyof ServerErrors) => {
-  if (value?.length > 0) {
+  if (value && value.length > 0) {
     $externalResults.value[propertyName] = '';
   }
 }

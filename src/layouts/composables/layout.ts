@@ -1,4 +1,4 @@
-import { toRefs, reactive, computed, type Ref } from 'vue';
+import { toRefs, reactive, computed, type Ref, ref } from 'vue';
 
 interface IlayoutConfig {
     ripple: boolean,
@@ -7,7 +7,7 @@ interface IlayoutConfig {
     menuMode: string,
     theme: string,
     scale: number,
-    activeMenuItem: string | Ref<string>
+    activeMenuItem: Ref<string>
 }
 
 const layoutConfig = reactive<IlayoutConfig>({
@@ -17,7 +17,7 @@ const layoutConfig = reactive<IlayoutConfig>({
     menuMode: 'static',
     theme: 'aura-light-green',
     scale: 14,
-    activeMenuItem: ''
+    activeMenuItem: ref('')
 });
 
 interface IlayoutState {
@@ -27,7 +27,7 @@ interface IlayoutState {
     configSidebarVisible: boolean,
     staticMenuMobileActive: boolean,
     menuHoverActive: boolean,
-    activeMenuItem: string | Ref<string>
+    activeMenuItem: Ref<string>
 }
 
 const layoutState = reactive<IlayoutState>({
@@ -37,7 +37,7 @@ const layoutState = reactive<IlayoutState>({
     configSidebarVisible: false,
     staticMenuMobileActive: false,
     menuHoverActive: false,
-    activeMenuItem: ''
+    activeMenuItem: ref('')
 });
 
 export function useLayout() {

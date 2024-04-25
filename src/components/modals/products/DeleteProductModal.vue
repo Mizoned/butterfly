@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { useToast } from 'primevue/usetoast';
   import { useProductsStore } from '@/stores/ProductsStore'
+  import { AxiosError } from 'axios';
 
   const productsStore = useProductsStore();
   const toast = useToast();
@@ -9,9 +10,11 @@
     try {
       await productsStore.deleteProduct();
       toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга удалена', life: 3000 });
-    } catch (e) {
-      const message = e.response.data.message;
-      toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const message = error.response?.data.message;
+        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+      }
     }
   }
 </script>

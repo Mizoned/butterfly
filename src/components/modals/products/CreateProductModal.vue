@@ -52,13 +52,8 @@ import type { ICreateProduct, ResponseError } from '@/shared/interfaces'
       });
   }
 
-  const resetExternalResultProperty = (value: string | number, propertyName: keyof ICreateProduct) => {
-    if (
-      (typeof value === 'string' && value?.length > 0)
-      || (typeof value === 'number' && value >= 0)
-    ) {
-      $externalResults.value[propertyName] = '';
-    }
+  const resetExternalResultProperty = (propertyName: keyof ICreateProduct) => {
+    $externalResults.value[propertyName] = '';
   }
 
   watch(() => productStore.isOpenCreateProductDialog, (value: boolean) => {
@@ -88,7 +83,7 @@ import type { ICreateProduct, ResponseError } from '@/shared/interfaces'
         id="name"
         @blur="$v.name.$touch()"
         :invalid="$v.name.$invalid && $v.name.$error"
-        @update:modelValue="resetExternalResultProperty($event, 'name')"
+        @update:modelValue="resetExternalResultProperty('name')"
       />
       <small
         v-if="$v.name.$errors[0]?.$message"
@@ -106,7 +101,7 @@ import type { ICreateProduct, ResponseError } from '@/shared/interfaces'
         currency="RUB"
         mode="currency"
         :invalid="$v.price.$invalid && $v.price.$error"
-        @update:modelValue="resetExternalResultProperty($event, 'price')"
+        @update:modelValue="resetExternalResultProperty('price')"
       />
       <small
         v-if="$v.price.$errors[0]?.$message"

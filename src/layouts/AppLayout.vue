@@ -7,7 +7,7 @@ import { useLayout } from '@/layouts/composables/layout';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
-const outsideClickListener = ref(null);
+const outsideClickListener = ref<(event: MouseEvent) => void>();
 
 watch(isSidebarActive, (newVal) => {
     if (newVal) {
@@ -31,27 +31,35 @@ const containerClass = computed(() => {
 });
 const bindOutsideClickListener = () => {
     if (!outsideClickListener.value) {
-        outsideClickListener.value = (event) => {
+        outsideClickListener.value = (event: MouseEvent) => {
             if (isOutsideClicked(event)) {
                 layoutState.overlayMenuActive.value = false;
                 layoutState.staticMenuMobileActive.value = false;
                 layoutState.menuHoverActive.value = false;
             }
         };
-        document.addEventListener('click', outsideClickListener.value);
+
+        if (outsideClickListener.value !== undefined) {
+            document.addEventListener('click', outsideClickListener.value);
+        }
     }
 };
 const unbindOutsideClickListener = () => {
     if (outsideClickListener.value) {
         document.removeEventListener('click', outsideClickListener.value);
-        outsideClickListener.value = null;
+        outsideClickListener.value = undefined;
     }
 };
-const isOutsideClicked = (event) => {
+const isOutsideClicked = (event: MouseEvent) => {
     const sidebarEl = document.querySelector('.layout-sidebar');
     const topbarEl = document.querySelector('.layout-menu-button');
 
-    return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
+    return !(
+        sidebarEl?.isSameNode(event.target as HTMLElement) 
+        || sidebarEl?.contains(event.target as HTMLElement) 
+        || topbarEl?.isSameNode(event.target as HTMLElement) 
+        || topbarEl?.contains(event.target as HTMLElement)
+    );
 };
 </script>
 

@@ -77,8 +77,8 @@ export const useProductsStore = defineStore('ProductsStore', () => {
   const updateProduct = async () => {
     try {
       isLoading.value = true;
-      const response = await ProductsService.update(editProduct.value);
-      const index = products.value.findIndex((c) => c.id === editProduct.value.id);
+      const response = await ProductsService.update(editProduct.value as IProduct);
+      const index = products.value.findIndex((c) => c.id === editProduct.value!.id);
 
       if (index !== -1) {
         products.value[index] = response.data;
@@ -97,8 +97,8 @@ export const useProductsStore = defineStore('ProductsStore', () => {
   const deleteProduct = async () => {
     try {
       isLoading.value = true;
-      const response = await ProductsService.delete(deleteProductId.value);
-      products.value = products.value.filter((val) => val.id !== currentProduct.value.id);
+      await ProductsService.delete(deleteProductId.value as number);
+      products.value = products.value.filter((val) => val.id !== currentProduct.value!.id);
       isOpenDeleteProductDialog.value = false;
       deleteProductId.value = null;
     } catch (error) {

@@ -3,13 +3,14 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layouts/composables/layout';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/AuthStore';
-import { useUserStore } from '@/stores/UserStore'
+import { useUserStore } from '@/stores/UserStore';
+import OverlayPanel from 'primevue/overlaypanel';
 
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
 const { onMenuToggle } = useLayout();
-const outsideClickListener = ref(null);
+const outsideClickListener = ref<(event: MouseEvent) => void>();
 const topbarMenuActive = ref(false);
 const router = useRouter();
 
@@ -34,7 +35,7 @@ const topbarMenuClasses = computed(() => {
 
 const bindOutsideClickListener = () => {
 	if (!outsideClickListener.value) {
-		outsideClickListener.value = (event) => {
+		outsideClickListener.value = (event: MouseEvent) => {
 			if (isOutsideClicked(event)) {
 				topbarMenuActive.value = false
 			}
@@ -45,16 +46,21 @@ const bindOutsideClickListener = () => {
 const unbindOutsideClickListener = () => {
 	if (outsideClickListener.value) {
 		document.removeEventListener('click', outsideClickListener.value)
-		outsideClickListener.value = null
+		outsideClickListener.value = undefined
 	}
 }
-const isOutsideClicked = (event) => {
+const isOutsideClicked = (event: MouseEvent) => {
 	if (!topbarMenuActive.value) return
 
 	const sidebarEl = document.querySelector('.layout-topbar-menu')
 	const topbarEl = document.querySelector('.layout-topbar-menu-button')
 
-	return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target))
+	return !(
+    sidebarEl?.isSameNode(event.target as HTMLElement) 
+    || sidebarEl?.contains(event.target as HTMLElement) 
+    || topbarEl?.isSameNode(event.target as HTMLElement) 
+    || topbarEl?.contains(event.target as HTMLElement)
+  );
 }
 
 const windowWidth = ref<number>(window.innerWidth);
@@ -69,11 +75,11 @@ const isMobile = computed(() => {
   return !(windowWidth.value > 991);
 })
 
-const op = ref(null);
+const op = ref<OverlayPanel | null>(null);
 
-const toggle = (event) => {
+const toggle = (event: MouseEvent) => {
   if (!isMobile.value) {
-    op.value.toggle(event);
+    op.value!.toggle(event);
   }
 };
 

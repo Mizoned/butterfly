@@ -17,15 +17,15 @@ interface IProps {
   title: string,
   numberTitle: string,
   icon: string,
-  iconColor?: IconColor,
-  iconBackground?: IconBackground,
+  iconColor?: keyof typeof IconColor,
+  iconBackground?: keyof typeof IconBackground,
   number?: string,
   numberDescription: string
 }
 
 withDefaults(defineProps<IProps>(), {
-    iconColor: IconColor.blue,
-    iconBackground: IconBackground.blue
+    iconColor: 'blue',
+    iconBackground: 'blue'
   });
 </script>
 

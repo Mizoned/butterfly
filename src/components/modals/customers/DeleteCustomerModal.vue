@@ -2,22 +2,25 @@
   import { useCustomersStore } from '@/stores/CustomersStore';
   import { computed } from 'vue';
   import { useToast } from 'primevue/usetoast';
+import { AxiosError } from 'axios';
 
   const customersStore = useCustomersStore();
   const toast = useToast();
 
   const fullName = computed<string>(() => {
-    if (!customersStore.currentCustomer.firstName || !customersStore.currentCustomer.lastName) return '';
-    return ' ' + customersStore.currentCustomer.lastName + ' ' + customersStore.currentCustomer.firstName;
+    if (!customersStore.currentCustomer?.firstName || !customersStore.currentCustomer?.lastName) return '';
+    return ' ' + customersStore.currentCustomer!.lastName + ' ' + customersStore.currentCustomer!.firstName;
   });
 
   const submitHandler = async () => {
     try {
       await customersStore.deleteCustomer();
       toast.add({ severity: 'success', summary: 'Успешно', detail: 'Клиент удален', life: 3000 });
-    } catch (e) {
-      const message = e.response.data.message;
-      toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const message = error.response?.data.message;
+        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+      }
     }
   }
 </script>

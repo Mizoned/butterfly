@@ -7,7 +7,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const requiresAuth: boolean = to.meta.requiresAuth;
+  const requiresAuth = to.meta.requiresAuth as boolean;
   const isAuth: boolean = !!localStorage.getItem('accessToken');
 
   if (requiresAuth && !isAuth) {

@@ -6,6 +6,7 @@
   import { type ServerErrors, useVuelidate } from '@vuelidate/core';
   import type { ICreateCustomer, ResponseError } from '@/shared/interfaces';
   import { useToast } from 'primevue/usetoast';
+import { AxiosError } from 'axios';
 
   const customerStore = useCustomersStore();
   const toast = useToast();
@@ -52,21 +53,23 @@
         toast.add({ severity: 'success', summary: 'Успешно', detail: 'Клиент успешно создан', life: 3000 });
       })
       .catch((error) => {
-        if (error.response.status === 500) {
-          const message = error.response.data.message;
-          toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
-        } else {
-          const errors: ResponseError[] = error?.response?.data?.errors as ResponseError[];
+        if (error instanceof AxiosError) {
+          if (error.response?.status === 500) {
+            const message = error.response?.data.message;
+            toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+          } else {
+            const errors: ResponseError[] = error?.response?.data?.errors as ResponseError[];
 
-          errors?.forEach((error: ResponseError) => {
-            $externalResults.value[error.property] = error.message;
-          });
+            errors?.forEach((error: ResponseError) => {
+              $externalResults.value[error.property] = error.message;
+            });
+          }
         }
       });
   }
 
   const resetExternalResultProperty = (value: string | undefined, propertyName: keyof ICreateCustomer) => {
-    if (value?.length > 0) {
+    if (value && value.length > 0) {
       $externalResults.value[propertyName] = '';
     }
   }

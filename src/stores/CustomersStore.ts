@@ -77,8 +77,8 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
   const updateCustomer = async () => {
     try {
       isLoading.value = true;
-      const response = await CustomersService.update(editCustomer.value);
-      const index = customers.value.findIndex((c) => c.id === editCustomer.value.id);
+      const response = await CustomersService.update(editCustomer.value as ICustomer);
+      const index = customers.value.findIndex((c) => c.id === editCustomer.value!.id);
 
       if (index !== -1) {
         customers.value[index] = response.data;
@@ -97,8 +97,8 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
   const deleteCustomer = async () => {
     try {
       isLoading.value = true;
-      const response = await CustomersService.delete(deleteCustomerId.value);
-      customers.value = customers.value.filter((val) => val.id !== currentCustomer.value.id);
+      await CustomersService.delete(deleteCustomerId.value as number);
+      customers.value = customers.value.filter((val) => val.id !== currentCustomer.value!.id);
       isOpenDeleteCustomerDialog.value = false;
       deleteCustomerId.value = null;
     } catch (error) {

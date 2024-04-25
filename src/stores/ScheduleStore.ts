@@ -135,8 +135,8 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
   const updateSchedule = async (schedule: ICreateSchedule) => {
     try {
       isLoading.value = true;
-      const response = await SchedulesService.update(editSchedule.value.id, schedule);
-      const index = schedules.value.findIndex((c) => c.id === editSchedule.value.id);
+      const response = await SchedulesService.update(editSchedule.value!.id, schedule);
+      const index = schedules.value.findIndex((c) => c.id === editSchedule.value!.id);
 
       if (index !== -1) {
         schedules.value[index] = response.data;
@@ -155,8 +155,8 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
   const completeSchedule = async () => {
     try {
       isLoading.value = true;
-      const response = await SchedulesService.complete(currentSchedule.value.id);
-      schedules.value = [...schedules.value].filter((s) => s.id !== currentSchedule.value.id);
+      await SchedulesService.complete(currentSchedule.value!.id);
+      schedules.value = [...schedules.value].filter((s) => s.id !== currentSchedule.value!.id);
       isOpenCompleteScheduleDialog.value = false;
       currentSchedule.value = null;
     } catch (error) {
@@ -170,8 +170,8 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
   const cancelSchedule = async () => {
     try {
       isLoading.value = true;
-      const response = await SchedulesService.cancel(currentSchedule.value.id);
-      schedules.value = [...schedules.value].filter((val) => val.id !== currentSchedule.value.id);
+      await SchedulesService.cancel(currentSchedule.value!.id);
+      schedules.value = [...schedules.value].filter((val) => val.id !== currentSchedule.value!.id);
       isOpenCancelScheduleDialog.value = false;
       currentSchedule.value = null;
     } catch (error) {

@@ -1,13 +1,4 @@
-<script setup>
-import { useLayout } from '@/layouts/composables/layout';
-import { computed } from 'vue';
-
-const { layoutConfig } = useLayout();
-
-const logoUrl = computed(() => {
-    return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
-});
-</script>
+<script setup lang="ts"></script>
 
 <template>
     <div class="layout-footer">
@@ -15,4 +6,5 @@ const logoUrl = computed(() => {
         <span class="font-medium" style="color: rgb(80, 156, 245);">Butterfly</span>
     </div>
 </template>
+
 <style lang="scss" scoped></style>

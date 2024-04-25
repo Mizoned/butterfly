@@ -18,13 +18,21 @@ export default class CustomersService {
 
   static async create(customer: ICreateCustomer): Promise<AxiosResponse<ICustomer>> {
     const customerData = removeEmptyFields(customer);
-    customerData['mobilePhone'] = normalizePhoneNumber(customerData?.mobilePhone);
+
+    if (customerData?.mobilePhone) {
+      customerData['mobilePhone'] = normalizePhoneNumber(customerData?.mobilePhone);
+    }
+    
     return API.post(`/customers`, customerData);
   }
 
   static async update(customer: ICustomer): Promise<AxiosResponse<ICustomer>> {
     const customerData = removeEmptyFields(customer);
-    customerData['mobilePhone'] = normalizePhoneNumber(customerData.mobilePhone);
+
+    if (customerData?.mobilePhone) {
+      customerData['mobilePhone'] = normalizePhoneNumber(customerData?.mobilePhone);
+    }
+    
     return API.put(`/customers/${customer.id}`, customerData);
   }
 }

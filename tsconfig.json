@@ -7,17 +7,5 @@
     {
       "path": "./tsconfig.app.json"
     }
-  ],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@stores/*": ["./src/stores/*"]
-    }
-  },
-  "include": [
-    "env.d.ts",
-    "src/**/*",
-    "src/**/*,vue"
   ]
 }

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useCustomersStore } from '@/stores/CustomersStore'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 import { email as emailValidator, helpers, required } from '@vuelidate/validators'
 import { VALIDATION_ERROR } from '@/shared/constants'
-import { type ServerErrors, useVuelidate } from '@vuelidate/core'
+import { type ServerErrors, useVuelidate , type Validation, type ValidationArgs } from '@vuelidate/core'
 import type { ICreateCustomer, ICustomer, ResponseError } from '@/shared/interfaces'
-import { useToast } from 'primevue/usetoast'
+import { useToast } from 'primevue/usetoast';
 
 const customersStore = useCustomersStore();
 const toast = useToast();
@@ -34,11 +34,11 @@ const $externalResults = ref<ServerErrors>({
   email: ''
 });
 
-let $v = null;
+let $v: Ref<Validation<ValidationArgs<unknown>, ICustomer>>;
 
 watch(() => customersStore.isOpenEditCustomerDialog, (value: boolean) => {
   if (value) {
-    $v = useVuelidate<ICustomer>(rules, customersStore.editCustomer, { $externalResults });
+    $v = useVuelidate<ICustomer>(rules, customersStore.editCustomer!, { $externalResults });
   } else {
     customersStore.editCustomer = null;
   }
@@ -66,7 +66,7 @@ const submitHandler = async () => {
 }
 
 const resetExternalResultProperty = (value: string | undefined, propertyName: keyof ICreateCustomer) => {
-  if (value?.length > 0) {
+  if (value && value?.length > 0) {
     $externalResults.value[propertyName] = '';
   }
 }
@@ -83,7 +83,7 @@ const resetExternalResultProperty = (value: string | undefined, propertyName: ke
     <div class="field">
       <label for="name">Фамилия</label>
       <InputText
-        v-model.trim="customersStore.editCustomer.lastName"
+        v-model.trim="customersStore.editCustomer!.lastName"
         id="name"
         @blur="$v.lastName.$touch()"
         :invalid="$v.lastName.$invalid && $v.firstName.$error"
@@ -99,7 +99,7 @@ const resetExternalResultProperty = (value: string | undefined, propertyName: ke
     <div class="field">
       <label for="name">Имя</label>
       <InputText
-        v-model.trim="customersStore.editCustomer.firstName"
+        v-model.trim="customersStore.editCustomer!.firstName"
         id="name"
         @blur="$v.firstName.$touch()"
         :invalid="$v.firstName.$invalid && $v.firstName.$error"
@@ -115,7 +115,7 @@ const resetExternalResultProperty = (value: string | undefined, propertyName: ke
     <div class="field">
       <label for="name">Отчество</label>
       <InputText
-        v-model.trim="customersStore.editCustomer.fatherName"
+        v-model.trim="customersStore.editCustomer!.fatherName"
         id="name"
         @blur="$v.fatherName.$touch()"
         :invalid="$v.fatherName.$invalid && $v.fatherName.$error"
@@ -131,10 +131,10 @@ const resetExternalResultProperty = (value: string | undefined, propertyName: ke
     <div class="field">
       <label for="name">Email</label>
       <InputText
-        v-model.trim="customersStore.editCustomer.email"
+        v-model.trim="customersStore.editCustomer!.email"
         id="name"
         @blur="$v.email.$touch()"
-        :invalid="$v.email.$invalid && $v.email.$error"
+        :invalid="$v!.email.$invalid && $v!.email.$error"
         @update:modelValue="resetExternalResultProperty($event, 'email')"
       />
       <small
@@ -148,7 +148,7 @@ const resetExternalResultProperty = (value: string | undefined, propertyName: ke
       <label for="name">Телефон</label>
       <InputMask
         id="mobilePhone"
-        v-model="customersStore.editCustomer.mobilePhone"
+        v-model="customersStore.editCustomer!.mobilePhone"
         mask="+7 (999) 999-99-99"
         placeholder="+7 (999)-999-99-99"
         @blur="$v.mobilePhone.$touch()"

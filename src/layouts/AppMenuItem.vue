@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, watch } from 'vue';
+import { ref, onBeforeMount, watch, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useLayout } from '@/layouts/composables/layout';
 import { type IMenuItem } from '@/shared/interfaces';
@@ -12,7 +12,7 @@ interface IProps {
     item: IMenuItem,
     index?: number,
     root?: boolean,
-    parentItemKey?: string
+    parentItemKey?: string | null
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -21,15 +21,15 @@ const props = withDefaults(defineProps<IProps>(), {
     parentItemKey: ''
 });
 
-const isActiveMenu = ref(false);
-const itemKey = ref(null);
+const isActiveMenu = ref<boolean>(false);
+const itemKey: Ref<string> = ref('');
 
 onBeforeMount(() => {
     itemKey.value = props.parentItemKey ? props.parentItemKey + '-' + props.index : String(props.index);
 
     const activeItem = layoutState.activeMenuItem;
 
-    isActiveMenu.value = activeItem === itemKey.value || activeItem ? activeItem.value.startsWith(itemKey.value + '-') : false;
+    isActiveMenu.value = activeItem.value === itemKey.value || activeItem ? activeItem.value.startsWith(itemKey.value + '-') : false;
 });
 
 watch(
@@ -38,8 +38,8 @@ watch(
         isActiveMenu.value = newVal === itemKey.value || newVal.startsWith(itemKey.value + '-');
     }
 );
-const itemClick = (event, item) => {
-    if (item.disabled) {
+const itemClick = (event: MouseEvent, item: IMenuItem) => {
+    if (item?.disabled) {
         event.preventDefault();
         return;
     }
@@ -54,12 +54,12 @@ const itemClick = (event, item) => {
         item.command({ originalEvent: event, item: item });
     }
 
-    const foundItemKey = item.items ? (isActiveMenu.value ? props.parentItemKey : itemKey) : itemKey.value;
+    const foundItemKey = (item.items ? (isActiveMenu.value ? props.parentItemKey : itemKey) : itemKey.value) as string | Ref<string>;
 
     setActiveMenuItem(foundItemKey);
 };
 
-const checkActiveRoute = (item) => {
+const checkActiveRoute = (item: IMenuItem) => {
     return route.path === item.to;
 };
 </script>

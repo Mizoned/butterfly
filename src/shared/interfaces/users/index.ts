@@ -14,14 +14,14 @@ interface IUserSettings {
 }
 
 interface IUpdatePassword {
-  oldPassword: string;
-  newPassword: string;
+  oldPassword: string | null;
+  newPassword: string | null;
 }
 
 interface IUpdateProfile {
-  lastName?: string;
-  firstName?: string;
-  fatherName?: string;
+  lastName?: string | null;
+  firstName?: string | null;
+  fatherName?: string | null;
 }
 
 interface IUpdateWorkspace {
