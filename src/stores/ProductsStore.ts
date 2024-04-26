@@ -31,7 +31,7 @@ export const useProductsStore = defineStore('ProductsStore', () => {
   const openDetailProductModal = async (product: IProduct) => {
     isOpenDetailProductDialog.value = true;
     await getOneProduct(product.id);
-  }
+  };
 
   const getOneProduct = async (id: number) => {
     try {
@@ -44,7 +44,7 @@ export const useProductsStore = defineStore('ProductsStore', () => {
     } finally {
       isLoadingDetail.value = false;
     }
-  }
+  };
 
   const getAllProducts = async () => {
     try {
@@ -57,7 +57,7 @@ export const useProductsStore = defineStore('ProductsStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   const createProduct = async (product: ICreateProduct) => {
     try {
@@ -72,7 +72,7 @@ export const useProductsStore = defineStore('ProductsStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   const updateProduct = async () => {
     try {
@@ -92,7 +92,7 @@ export const useProductsStore = defineStore('ProductsStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   const deleteProduct = async () => {
     try {
@@ -107,7 +107,7 @@ export const useProductsStore = defineStore('ProductsStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   return {
     getAllProducts,
@@ -124,5 +124,5 @@ export const useProductsStore = defineStore('ProductsStore', () => {
     currentProduct,
     editProduct,
     isLoading
-  }
+  };
 });

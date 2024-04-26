@@ -1,16 +1,26 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted } from 'vue';
 import { useCustomersStore } from '@/stores/CustomersStore';
 import { formatPhoneNumber } from '@/shared/utils';
-import DeleteCustomerModal from '@/components/modals/customers/DeleteCustomerModal.vue'
-import CreateCustomerModal from '@/components/modals/customers/CreateCustomerModal.vue'
-import EditCustomerModal from '@/components/modals/customers/EditCustomerModal.vue'
-import CustomerTableChip from '@/components/customers/CustomerChip.vue'
+import DeleteCustomerModal from '@/components/modals/customers/DeleteCustomerModal.vue';
+import CreateCustomerModal from '@/components/modals/customers/CreateCustomerModal.vue';
+import EditCustomerModal from '@/components/modals/customers/EditCustomerModal.vue';
+import CustomerTableChip from '@/components/customers/CustomerChip.vue';
+import { useToast } from 'primevue/usetoast';
 
 const customersStore = useCustomersStore();
+const toast = useToast();
 
 onMounted(() => {
-  customersStore.getAllCustomers();
+  customersStore.getAllCustomers().catch(() => {
+    toast.add({
+      severity: 'error',
+      summary: 'Произошла ошибка',
+      detail: 'Не удалось получить клиентов',
+      life: 3000,
+      closable: false
+    });
+  });
 });
 </script>
 
@@ -53,9 +63,19 @@ onMounted(() => {
       <Card>
         <div class="flex gap-2 justify-content-between mb-3">
           <div class="text-xl font-medium">Список клиентов</div>
-          <Button @click="customersStore.isOpenCreateCustomerDialog = true" label="Создать" icon="pi pi-plus" />
+          <Button
+            @click="customersStore.isOpenCreateCustomerDialog = true"
+            label="Создать"
+            icon="pi pi-plus"
+          />
         </div>
-        <DataTable :loading="customersStore.isLoading" :value="customersStore.customers" :rows="5" :paginator="true" responsiveLayout="scroll">
+        <DataTable
+          :loading="customersStore.isLoading"
+          :value="customersStore.customers"
+          :rows="5"
+          :paginator="true"
+          responsiveLayout="scroll"
+        >
           <Column
             field="lastName"
             header="Клиент"
@@ -76,19 +96,36 @@ onMounted(() => {
               <template v-else>-</template>
             </template>
           </Column>
-          <Column field="mobilePhone" header="Телефон" style="width: 15%;" headerStyle="min-width:12rem;">
+          <Column
+            field="mobilePhone"
+            header="Телефон"
+            style="width: 15%"
+            headerStyle="min-width:12rem;"
+          >
             <template #body="slotProps">
               {{ formatPhoneNumber(slotProps.data.mobilePhone) }}
             </template>
           </Column>
-          <Column field="visits" header="Посещений" :sortable="true"  style="width: 15%" headerStyle="min-width:10rem;">
+          <Column
+            field="visits"
+            header="Посещений"
+            :sortable="true"
+            style="width: 15%"
+            headerStyle="min-width:10rem;"
+          >
             <template #body="slotProps">
               <Chip class="bg-green-100 border-round pr-2 pl-2 pt-0 pb-0 h-2rem">
                 <span class="font-semibold">{{ slotProps.data?.visits ?? 0 }}</span>
               </Chip>
             </template>
           </Column>
-          <Column field="lifeTime" header="Суммарная прибыль" :sortable="true" style="width: 15%" headerStyle="min-width:10rem;">
+          <Column
+            field="lifeTime"
+            header="Суммарная прибыль"
+            :sortable="true"
+            style="width: 15%"
+            headerStyle="min-width:10rem;"
+          >
             <template #body="slotProps">
               <Chip class="border-round">
                 <span class="font-semibold">{{ (slotProps.data?.lifeTime ?? 0) + ' ₽' }}</span>
@@ -98,12 +135,23 @@ onMounted(() => {
           <Column headerStyle="min-width:10rem;">
             <template #body="slotProps">
               <div class="flex align-items-center justify-content-end gap-2">
-                <Button icon="pi pi-pencil" rounded @click="customersStore.openEditCustomerModal(slotProps.data)" />
-                <Button icon="pi pi-trash" severity="danger" rounded @click="customersStore.confirmDeleteCustomerDialog(slotProps.data)" />
+                <Button
+                  icon="pi pi-pencil"
+                  rounded
+                  @click="customersStore.openEditCustomerModal(slotProps.data)"
+                />
+                <Button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  rounded
+                  @click="customersStore.confirmDeleteCustomerDialog(slotProps.data)"
+                />
               </div>
             </template>
           </Column>
-          <template #empty> Список клиентов пуст. </template>
+          <template #empty>
+            <span v-if="!customersStore.isLoading">Список клиентов пуст.</span>
+          </template>
         </DataTable>
       </Card>
     </div>
@@ -113,6 +161,4 @@ onMounted(() => {
   <EditCustomerModal />
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

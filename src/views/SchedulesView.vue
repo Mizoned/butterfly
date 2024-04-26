@@ -9,22 +9,26 @@ import CreateScheduleModal from '@/components/modals/schedules/CreateScheduleMod
 import EditScheduleModal from '@/components/modals/schedules/EditScheduleModal.vue';
 import CancelScheduleModal from '@/components/modals/schedules/CancelScheduleModal.vue';
 import CompleteScheduleModal from '@/components/modals/schedules/CompleteScheduleModal.vue';
+import { useToast } from 'primevue/usetoast';
 
 const scheduleStore = useScheduleStore();
+const toast = useToast();
 
 onMounted(() => {
-  scheduleStore.getAllSchedules()
+  scheduleStore.getAllSchedules().catch(() => {
+    toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: 'Не удалось получить записи', life: 3000, closable: false });
+  });
 });
 
 const calculateTotalCostProducts = (products: IProduct[]) => {
   let totalCost = 0;
 
-  products.forEach(product => {
+  products.forEach((product) => {
     totalCost += product.additional.priceAtSale * product.additional.quantity;
   });
 
   return totalCost;
-}
+};
 
 const products: WritableComputedRef<IProduct[][]> = computed({
   get() {
@@ -32,7 +36,6 @@ const products: WritableComputedRef<IProduct[][]> = computed({
   },
   set() {}
 });
-
 </script>
 
 <template>
@@ -73,7 +76,11 @@ const products: WritableComputedRef<IProduct[][]> = computed({
       <Card>
         <div class="flex gap-2 justify-content-between mb-3">
           <div class="text-xl font-medium">Список записей</div>
-          <Button @click="scheduleStore.isOpenCreateScheduleDialog = true" label="Создать" icon="pi pi-plus" />
+          <Button
+            @click="scheduleStore.isOpenCreateScheduleDialog = true"
+            label="Создать"
+            icon="pi pi-plus"
+          />
         </div>
         <DataTable
           :value="scheduleStore.schedules"
@@ -82,9 +89,15 @@ const products: WritableComputedRef<IProduct[][]> = computed({
           :paginator="true"
           responsiveLayout="scroll"
           dataKey="id"
+          :loading="scheduleStore.isLoadingCustomers"
         >
           <Column expander style="width: 1rem" />
-          <Column field="customer" header="Клиент" style="width: 20%" headerStyle="min-width:15rem;">
+          <Column
+            field="customer"
+            header="Клиент"
+            style="width: 20%"
+            headerStyle="min-width:15rem;"
+          >
             <template #body="slotProps">
               <CustomerTableChip
                 :name="slotProps.data.customer.lastName + ' ' + slotProps.data.customer.firstName"
@@ -92,22 +105,50 @@ const products: WritableComputedRef<IProduct[][]> = computed({
               />
             </template>
           </Column>
-          <Column field="customer" header="Номер телефона" style="width: 15%" headerStyle="min-width:12rem;">
+          <Column
+            field="customer"
+            header="Номер телефона"
+            style="width: 15%"
+            headerStyle="min-width:12rem;"
+          >
             <template #body="slotProps">
               {{ formatPhoneNumber(slotProps.data.customer.mobilePhone) }}
             </template>
           </Column>
-          <Column field="date" header="Дата записи" :sortable="true" style="width: 10%" headerStyle="min-width:12rem;">
+          <Column
+            field="date"
+            header="Дата записи"
+            :sortable="true"
+            style="width: 10%"
+            headerStyle="min-width:12rem;"
+          >
             <template #body="slotProps">
               {{ formatDate(new Date(slotProps.data.date), 'dd.mm.yy') }}
             </template>
           </Column>
-          <Column field="timeStart" header="Время начала" style="width: 5%" headerStyle="min-width:12rem;"></Column>
-          <Column field="timeEnd" header="Время окончания" style="width: 5%" headerStyle="min-width:12rem;"></Column>
-          <Column field="products" header="Общая стоимость" style="width: 5%" headerStyle="min-width:12rem;">
+          <Column
+            field="timeStart"
+            header="Время начала"
+            style="width: 5%"
+            headerStyle="min-width:12rem;"
+          ></Column>
+          <Column
+            field="timeEnd"
+            header="Время окончания"
+            style="width: 5%"
+            headerStyle="min-width:12rem;"
+          ></Column>
+          <Column
+            field="products"
+            header="Общая стоимость"
+            style="width: 5%"
+            headerStyle="min-width:12rem;"
+          >
             <template #body="slotProps">
               <Chip class="border-round">
-                <span class="font-semibold">{{ calculateTotalCostProducts(slotProps.data.products) + ' ₽' }}</span>
+                <span class="font-semibold">{{
+                  calculateTotalCostProducts(slotProps.data.products) + ' ₽'
+                }}</span>
               </Chip>
             </template>
           </Column>
@@ -149,7 +190,9 @@ const products: WritableComputedRef<IProduct[][]> = computed({
                 <Column field="price" header="Стоимость продажи">
                   <template #body="slotProps">
                     <Chip class="border-round">
-                      <span class="font-semibold">{{ (slotProps.data.additional.priceAtSale ?? 0) + ' ₽' }}</span>
+                      <span class="font-semibold">{{
+                        (slotProps.data.additional.priceAtSale ?? 0) + ' ₽'
+                      }}</span>
                     </Chip>
                   </template>
                 </Column>
@@ -163,7 +206,9 @@ const products: WritableComputedRef<IProduct[][]> = computed({
               </DataTable>
             </div>
           </template>
-          <template #empty> Список записей пуст. </template>
+          <template #empty>
+            <span v-if="!scheduleStore.isLoadingCustomers">Список записей пуст.</span>
+          </template>
         </DataTable>
       </Card>
     </div>

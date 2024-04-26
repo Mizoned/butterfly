@@ -81,6 +81,7 @@ const products: WritableComputedRef<IProduct[][]> = computed({
           :paginator="true"
           responsiveLayout="scroll"
           dataKey="id"
+          :loading="scheduleStore.isLoadingCustomers"
         >
           <Column v-if="scheduleStore.schedulesCompleted.length" expander style="width: 1rem" />
           <Column field="customer" header="Клиент" style="width: 20%" headerStyle="min-width:15rem;">
@@ -139,7 +140,9 @@ const products: WritableComputedRef<IProduct[][]> = computed({
               </DataTable>
             </div>
           </template>
-          <template #empty> Список завершенных записей пуст. </template>
+          <template #empty>
+            <span v-if="!scheduleStore.isLoadingCustomers">Список завершенных записей пуст.</span>
+          </template>
         </DataTable>
       </Card>
     </div>

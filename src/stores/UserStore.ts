@@ -1,15 +1,19 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue'
+import { computed, ref } from 'vue';
 import { UserService } from '@/services/UserService';
+import { useAuthStore } from './AuthStore';
 import type { IUpdatePassword, IUpdateWorkspace, IUser } from '@/shared/interfaces';
 import type { Ref } from 'vue';
 import type { IUpdateProfile } from '@/shared/interfaces/users';
 
 export const useUserStore = defineStore('User', () => {
-  const user: Ref<IUser | null> = ref(null);
+  const userData = localStorage.getItem('user');
+  const userJSON = userData ? JSON.parse(userData) : null;
+  const user: Ref<IUser | null> = ref(userJSON);
   const isLoadingMe = ref<boolean>(false);
   const isLoadingProfile = ref<boolean>(false);
   const isLoadingPassword = ref<boolean>(false);
+  const authStore = useAuthStore();
 
   const setUser = (data: IUser) => {
     user.value = {
@@ -20,8 +24,10 @@ export const useUserStore = defineStore('User', () => {
       mobilePhone: data.mobilePhone,
       email: data.email,
       settings: data.settings
-    }
-  }
+    };
+
+    localStorage.setItem('user', JSON.stringify(user.value));
+  };
 
   const fullName = computed(() => {
     if (!user.value?.lastName || !user.value?.firstName) return false;
@@ -31,7 +37,8 @@ export const useUserStore = defineStore('User', () => {
 
   const removeUser = () => {
     user.value = null;
-  }
+    localStorage.removeItem('user');
+  };
 
   const me = async () => {
     try {
@@ -39,15 +46,17 @@ export const useUserStore = defineStore('User', () => {
       const { data: user } = await UserService.me();
       setUser(user);
     } catch (error) {
-      console.error(error);
+      removeUser();
+      authStore.removeAccessToken();
+      console.log(error);
       throw error;
     } finally {
-      //TODO Убрать искуственную задаржку
+      //TODO Позже убрать искусственную задержку
       setTimeout(() => {
         isLoadingMe.value = false;
       }, 1000);
     }
-  }
+  };
 
   const updateProfile = async (profileData: IUpdateProfile) => {
     try {
@@ -60,7 +69,7 @@ export const useUserStore = defineStore('User', () => {
     } finally {
       isLoadingProfile.value = false;
     }
-  }
+  };
 
   const updatePassword = async (settings: IUpdatePassword) => {
     try {
@@ -73,7 +82,7 @@ export const useUserStore = defineStore('User', () => {
     } finally {
       isLoadingPassword.value = false;
     }
-  }
+  };
 
   const isLoadingWorkspace = ref<boolean>(false);
 
@@ -88,7 +97,7 @@ export const useUserStore = defineStore('User', () => {
     } finally {
       isLoadingWorkspace.value = false;
     }
-  }
+  };
 
   return {
     me,
@@ -103,5 +112,5 @@ export const useUserStore = defineStore('User', () => {
     isLoadingProfile,
     isLoadingPassword,
     isLoadingWorkspace
-  }
+  };
 });

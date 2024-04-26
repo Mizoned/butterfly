@@ -1,96 +1,106 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-  import { helpers, required } from '@vuelidate/validators';
-  import { VALIDATION_ERROR } from '@/shared/constants';
-  import { type ServerErrors, useVuelidate } from '@vuelidate/core';
-  import type { ICreateSchedule, IProduct, ResponseError } from '@/shared/interfaces'
-  import { useToast } from 'primevue/usetoast';
-  import { useScheduleStore } from '@/stores/ScheduleStore';
-  import InputIcon from 'primevue/inputicon';
-  import CustomerChip from '@/components/customers/CustomerChip.vue';
-  import { plural } from '@/shared/utils';
-  import FreeTimeSlots from '@/components/schedules/FreeTimeSlots.vue';
-  import { isDate } from '@/shared/validators'
+import { computed, ref, watch } from 'vue';
+import { helpers, required } from '@vuelidate/validators';
+import { VALIDATION_ERROR } from '@/shared/constants';
+import { type ServerErrors, useVuelidate } from '@vuelidate/core';
+import type { ICreateSchedule, IProduct, ResponseError } from '@/shared/interfaces';
+import { useToast } from 'primevue/usetoast';
+import { useScheduleStore } from '@/stores/ScheduleStore';
+import InputIcon from 'primevue/inputicon';
+import CustomerChip from '@/components/customers/CustomerChip.vue';
+import { createDateWithTime, plural } from '@/shared/utils';
+import FreeTimeSlots from '@/components/schedules/FreeTimeSlots.vue';
+import { isDate } from '@/shared/validators';
+import { useUserStore } from '@/stores/UserStore';
 
-  const scheduleStore = useScheduleStore()
-  const toast = useToast()
+const scheduleStore = useScheduleStore();
+const userStore = useUserStore();
+const toast = useToast();
 
-  const rules = computed(() => ({
-    date: {
-      required: helpers.withMessage(VALIDATION_ERROR.IS_NOT_EMPTY, required),
-      date: helpers.withMessage(VALIDATION_ERROR.IS_DATE, isDate)
-    },
-    timeStart: {
-      required: helpers.withMessage(VALIDATION_ERROR.IS_NOT_EMPTY, required),
-      date: helpers.withMessage(VALIDATION_ERROR.IS_TIME, isDate)
-    },
-    timeEnd: {
-      required: helpers.withMessage(VALIDATION_ERROR.IS_NOT_EMPTY, required),
-      date: helpers.withMessage(VALIDATION_ERROR.IS_TIME, isDate)
-    },
-    customerId: {
-      required: helpers.withMessage(VALIDATION_ERROR.IS_NOT_EMPTY, required)
-    },
-    products: {
-      required: helpers.withMessage(VALIDATION_ERROR.IS_NOT_EMPTY, required)
+const rules = computed(() => ({
+  date: {
+    required: helpers.withMessage(VALIDATION_ERROR.IS_NOT_EMPTY, required),
+    date: helpers.withMessage(VALIDATION_ERROR.IS_DATE, isDate)
+  },
+  timeStart: {
+    required: helpers.withMessage(VALIDATION_ERROR.IS_NOT_EMPTY, required),
+    date: helpers.withMessage(VALIDATION_ERROR.IS_TIME, isDate)
+  },
+  timeEnd: {
+    required: helpers.withMessage(VALIDATION_ERROR.IS_NOT_EMPTY, required),
+    date: helpers.withMessage(VALIDATION_ERROR.IS_TIME, isDate)
+  },
+  customerId: {
+    required: helpers.withMessage(VALIDATION_ERROR.IS_NOT_EMPTY, required)
+  },
+  products: {
+    required: helpers.withMessage(VALIDATION_ERROR.IS_NOT_EMPTY, required)
+  }
+}));
+
+const $externalResults = ref<ServerErrors>({
+  date: '',
+  timeStart: '',
+  timeEnd: '',
+  customerId: '',
+  products: ''
+});
+
+const scheduleData = ref<ICreateSchedule>({
+  date: null,
+  timeStart: null,
+  timeEnd: null,
+  customerId: null,
+  products: []
+});
+
+const selectedCustomer = computed({
+  get() {
+    if (scheduleData.value.customerId) {
+      return scheduleStore.customers.find((c) => c.id === scheduleData.value.customerId);
+    } else {
+      return null;
     }
-  }))
+  },
+  set() {}
+});
 
-  const $externalResults = ref<ServerErrors>({
-    date: '',
-    timeStart: '',
-    timeEnd: '',
-    customerId: '',
-    products: ''
-  })
+const $v = useVuelidate<ICreateSchedule>(rules, scheduleData, { $externalResults });
 
-  const scheduleData = ref<ICreateSchedule>({
-    date: null,
-    timeStart: null,
-    timeEnd: null,
-    customerId: null,
-    products: []
-  })
+const submitHandler = async () => {
+  if (!(await $v.value.$validate())) return;
 
-  const selectedCustomer = computed({
-    get() {
-      if (scheduleData.value.customerId) {
-        return scheduleStore.customers.find((c) => c.id === scheduleData.value.customerId);
+  await scheduleStore
+    .createSchedule({ ...scheduleData.value })
+    .then(() => {
+      toast.add({
+        severity: 'success',
+        summary: 'Успешно',
+        detail: 'Запись успешно создана',
+        life: 3000
+      });
+    })
+    .catch((error) => {
+      if (error.response.status === 500) {
+        const message = error.response.data.message;
+        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
       } else {
-        return null;
+        const errors: ResponseError[] = error?.response?.data?.errors as ResponseError[];
+
+        errors?.forEach((error: ResponseError) => {
+          $externalResults.value[error.property] = error.message;
+        });
       }
-    },
-    set() {}
-  });
+    });
+};
 
-  const $v = useVuelidate<ICreateSchedule>(rules, scheduleData, { $externalResults })
+const resetExternalResultProperty = (propertyName: keyof ICreateSchedule) => {
+  $externalResults.value[propertyName] = '';
+};
 
-  const submitHandler = async () => {
-    if (!(await $v.value.$validate())) return;
-
-    await scheduleStore.createSchedule({ ...scheduleData.value })
-      .then(() => {
-        toast.add({ severity: 'success', summary: 'Успешно', detail: 'Запись успешно создана', life: 3000 })
-      })
-      .catch((error) => {
-        if (error.response.status === 500) {
-          const message = error.response.data.message
-          toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 })
-        } else {
-          const errors: ResponseError[] = error?.response?.data?.errors as ResponseError[]
-
-          errors?.forEach((error: ResponseError) => {
-            $externalResults.value[error.property] = error.message
-          })
-        }
-      })
-  }
-
-  const resetExternalResultProperty = (propertyName: keyof ICreateSchedule) => {
-    $externalResults.value[propertyName] = ''
-  }
-
-  watch(() => scheduleStore.isOpenCreateScheduleDialog, (value: boolean) => {
+watch(
+  () => scheduleStore.isOpenCreateScheduleDialog,
+  (value: boolean) => {
     if (!value) {
       scheduleData.value = {
         date: null,
@@ -98,17 +108,24 @@ import { computed, ref, watch } from 'vue'
         timeEnd: null,
         customerId: null,
         products: []
-      }
+      };
 
-      $v.value.$reset()
+      $v.value.$reset();
     }
-  });
+  }
+);
 
-  watch(() => scheduleData.value.date!, async (value: Date) => {
+watch(
+  () => scheduleData.value.date!,
+  async (value: Date) => {
     if (scheduleStore.isOpenCreateScheduleDialog) {
       await scheduleStore.getFreeTimeSlots(value);
     }
-  });
+  }
+);
+
+const minDate = createDateWithTime(userStore.user!.settings.workdayEndTime);
+const maxDate = createDateWithTime(userStore.user!.settings.workdayStartTime);
 </script>
 
 <template>
@@ -133,38 +150,38 @@ import { computed, ref, watch } from 'vue'
         :min-date="new Date()"
         date-format="dd.mm.yy"
       />
-      <small
-        v-if="$v.date.$errors[0]?.$message"
-        class="p-invalid p-error"
-      >
+      <small v-if="$v.date.$errors[0]?.$message" class="p-invalid p-error">
         {{ $v.date.$errors[0]?.$message }}
       </small>
     </div>
     <div v-if="scheduleData.date" class="field">
       <label for="freeSlots">Свободные слоты</label>
-      <FreeTimeSlots id="freeSlots" item-class="flex justify-content-center m-1" :slots="scheduleStore.freeTimeSlots"
-                     :loading="scheduleStore.isLoadingSlots" />
+      <FreeTimeSlots
+        id="freeSlots"
+        item-class="flex justify-content-center m-1"
+        :slots="scheduleStore.freeTimeSlots"
+        :loading="scheduleStore.isLoadingSlots"
+      />
     </div>
     <div class="field">
       <label for="timeStart">Начало приема</label>
       <Calendar
         id="timeStart"
         v-model="scheduleData.timeStart"
-        showIcon iconDisplay="input"
+        showIcon
+        iconDisplay="input"
         timeOnly
         placeholder="10:00"
         @dateSelect="$v.timeStart.$touch()"
         :invalid="$v.timeStart.$invalid && $v.timeStart.$error"
         @update:modelValue="resetExternalResultProperty('timeStart')"
+        :min-date="minDate"
       >
         <template #inputicon="{ clickCallback }">
           <InputIcon class="pi pi-clock cursor-pointer" @click="clickCallback" />
         </template>
       </Calendar>
-      <small
-        v-if="$v.timeStart.$errors[0]?.$message"
-        class="p-invalid p-error"
-      >
+      <small v-if="$v.timeStart.$errors[0]?.$message" class="p-invalid p-error">
         {{ $v.timeStart.$errors[0]?.$message }}
       </small>
     </div>
@@ -179,15 +196,13 @@ import { computed, ref, watch } from 'vue'
         @dateSelect="$v.timeEnd.$touch()"
         :invalid="$v.timeEnd.$invalid && $v.timeEnd.$error"
         @update:modelValue="resetExternalResultProperty('timeEnd')"
+        :max-date="maxDate"
       >
         <template #inputicon="{ clickCallback }">
           <InputIcon class="pi pi-clock cursor-pointer" @click="clickCallback" />
         </template>
       </Calendar>
-      <small
-        v-if="$v.timeEnd.$errors[0]?.$message"
-        class="p-invalid p-error"
-      >
+      <small v-if="$v.timeEnd.$errors[0]?.$message" class="p-invalid p-error">
         {{ $v.timeEnd.$errors[0]?.$message }}
       </small>
     </div>
@@ -221,17 +236,10 @@ import { computed, ref, watch } from 'vue'
             <CustomerChip :name="slotProps.option.lastName + ' ' + slotProps.option.firstName" />
           </div>
         </template>
-        <template #empty>
-          Список пуст
-        </template>
-        <template #emptyfilter>
-          Нет результатов
-        </template>
+        <template #empty> Список пуст </template>
+        <template #emptyfilter> Нет результатов </template>
       </Dropdown>
-      <small
-        v-if="$v.customerId.$errors[0]?.$message"
-        class="p-invalid p-error"
-      >
+      <small v-if="$v.customerId.$errors[0]?.$message" class="p-invalid p-error">
         {{ $v.customerId.$errors[0]?.$message }}
       </small>
     </div>
@@ -247,23 +255,23 @@ import { computed, ref, watch } from 'vue'
         placeholder="Выберите услуги"
         :maxSelectedLabels="3"
         class="w-full"
-        :option-value="(product: IProduct) => {
-          return { id: product.id, quantity: 1 }
-        }"
+        :option-value="
+          (product: IProduct) => {
+            return { id: product.id, quantity: 1 };
+          }
+        "
         :loading="scheduleStore.isLoadingProducts"
         @change="$v.products.$touch()"
         :invalid="$v.products.$invalid && $v.products.$error"
         @update:modelValue="resetExternalResultProperty('products')"
       >
-        <template #empty>
-          Список пуст
-        </template>
-        <template #emptyfilter>
-          Нет результатов
-        </template>
+        <template #empty> Список пуст </template>
+        <template #emptyfilter> Нет результатов </template>
         <template #value="slotProps">
           <div v-if="slotProps.value.length" class="flex align-items-center">
-            <div>{{ plural(['Выбрана', 'Выбрано', 'Выбрано'], slotProps.value.length) }} {{ slotProps.value.length }}
+            <div>
+              {{ plural(['Выбрана', 'Выбрано', 'Выбрано'], slotProps.value.length) }}
+              {{ slotProps.value.length }}
               {{ plural(['услуга', 'услуги', 'услуг'], slotProps.value.length) }}
             </div>
           </div>
@@ -272,10 +280,7 @@ import { computed, ref, watch } from 'vue'
           </span>
         </template>
       </MultiSelect>
-      <small
-        v-if="$v.products.$errors[0]?.$message"
-        class="p-invalid p-error"
-      >
+      <small v-if="$v.products.$errors[0]?.$message" class="p-invalid p-error">
         {{ $v.products.$errors[0]?.$message }}
       </small>
     </div>
@@ -286,11 +291,7 @@ import { computed, ref, watch } from 'vue'
         @click="scheduleStore.isOpenCreateScheduleDialog = false"
         severity="danger"
       />
-      <Button
-        label="Сохранить"
-        icon="pi pi-check"
-        @click="submitHandler"
-      />
+      <Button label="Сохранить" icon="pi pi-check" @click="submitHandler" />
     </template>
   </Dialog>
 </template>

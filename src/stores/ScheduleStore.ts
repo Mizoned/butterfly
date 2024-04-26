@@ -1,9 +1,9 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import type { ICreateSchedule, ICustomer, IProduct, ISchedule } from '@/shared/interfaces'
+import type { ICreateSchedule, ICustomer, IProduct, ISchedule } from '@/shared/interfaces';
 import SchedulesService from '@/services/SchedulesService';
 import CustomersService from '@/services/CustomersService';
-import ProductsService from '@/services/ProductsService'
+import ProductsService from '@/services/ProductsService';
 
 export const useScheduleStore = defineStore('ScheduleStore', () => {
   const schedules = ref<ISchedule[]>([]);
@@ -31,7 +31,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
   const confirmCompleteScheduleDialog = (schedule: ISchedule) => {
     currentSchedule.value = { ...schedule };
     isOpenCompleteScheduleDialog.value = true;
-  }
+  };
 
   const openEditScheduleModal = (schedule: ISchedule) => {
     editSchedule.value = { ...schedule };
@@ -49,7 +49,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     } finally {
       isLoadingCustomers.value = false;
     }
-  }
+  };
 
   const getAllSchedules = async () => {
     try {
@@ -62,7 +62,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     } finally {
       isLoadingCustomers.value = false;
     }
-  }
+  };
 
   const getAllSchedulesCompleted = async () => {
     try {
@@ -75,7 +75,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     } finally {
       isLoadingCustomers.value = false;
     }
-  }
+  };
 
   const getAllSchedulesCanceled = async () => {
     try {
@@ -88,7 +88,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     } finally {
       isLoadingCustomers.value = false;
     }
-  }
+  };
 
   const getFreeTimeSlots = async (date: Date) => {
     try {
@@ -101,7 +101,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     } finally {
       isLoadingSlots.value = false;
     }
-  }
+  };
 
   const getAllProducts = async () => {
     try {
@@ -114,7 +114,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     } finally {
       isLoadingProducts.value = false;
     }
-  }
+  };
 
   const createSchedule = async (schedule: ICreateSchedule) => {
     try {
@@ -130,7 +130,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   const updateSchedule = async (schedule: ICreateSchedule) => {
     try {
@@ -150,7 +150,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   const completeSchedule = async () => {
     try {
@@ -160,12 +160,12 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
       isOpenCompleteScheduleDialog.value = false;
       currentSchedule.value = null;
     } catch (error) {
-      console.error(error)
+      console.error(error);
       throw error;
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   const cancelSchedule = async () => {
     try {
@@ -180,7 +180,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   return {
     getAllSchedules,
@@ -212,5 +212,5 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     isLoadingCustomers,
     isLoadingProducts,
     isLoadingSlots
-  }
-})
+  };
+});

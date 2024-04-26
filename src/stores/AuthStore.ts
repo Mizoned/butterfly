@@ -3,7 +3,6 @@ import { defineStore } from 'pinia';
 import { useUserStore } from '@/stores/UserStore';
 import AuthService from '@/services/AuthService';
 
-
 export const useAuthStore = defineStore('AuthStore', () => {
   const userStore = useUserStore();
   const accessToken = ref<string | null>(localStorage.getItem('accessToken') || null);
@@ -12,12 +11,12 @@ export const useAuthStore = defineStore('AuthStore', () => {
   const setAccessToken = (token: string) => {
     localStorage.setItem('accessToken', token);
     accessToken.value = token;
-  }
+  };
 
   const removeAccessToken = () => {
     localStorage.removeItem('accessToken');
     accessToken.value = null;
-  }
+  };
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -31,7 +30,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   const signUp = async (email: string, password: string) => {
     try {
@@ -42,7 +41,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
       console.error(error);
       throw error;
     }
-  }
+  };
 
   const logout = async () => {
     try {
@@ -52,7 +51,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
       console.error(error);
       throw error;
     }
-  }
+  };
 
-  return { signIn, signUp, logout, accessToken, isLoading }
-})
+  return { signIn, signUp, logout, accessToken, isLoading, removeAccessToken };
+});

@@ -31,7 +31,7 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
   const openDetailCustomerModal = async (customer: ICustomer) => {
     isOpenDetailCustomerDialog.value = true;
     await getOneCustomer(customer.id);
-  }
+  };
 
   const getOneCustomer = async (id: number) => {
     try {
@@ -44,7 +44,7 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
     } finally {
       isLoadingDetail.value = false;
     }
-  }
+  };
 
   const getAllCustomers = async () => {
     try {
@@ -57,7 +57,7 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   const createCustomer = async (customer: ICreateCustomer) => {
     try {
@@ -72,7 +72,7 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   const updateCustomer = async () => {
     try {
@@ -85,14 +85,14 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
       }
 
       isOpenEditCustomerDialog.value = false;
-      editCustomer.value = null
+      editCustomer.value = null;
     } catch (error) {
       console.error('Не удалось обновить данные клиента', error);
       throw error;
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   const deleteCustomer = async () => {
     try {
@@ -107,7 +107,7 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
     } finally {
       isLoading.value = false;
     }
-  }
+  };
 
   return {
     getAllCustomers,
@@ -124,5 +124,5 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
     currentCustomer,
     editCustomer,
     isLoading
-  }
+  };
 });

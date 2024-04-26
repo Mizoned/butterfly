@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useProductsStore } from '@/stores/ProductsStore'
+import { onMounted } from 'vue';
+import { useProductsStore } from '@/stores/ProductsStore';
 import DeleteProductModal from '@/components/modals/products/DeleteProductModal.vue';
 import EditProductModal from '@/components/modals/products/EditProductModal.vue';
 import CreateProductModal from '@/components/modals/products/CreateProductModal.vue';
+import { useToast } from 'primevue/usetoast';
 
 const productsStore = useProductsStore();
+const toast = useToast();
 
 onMounted(() => {
-  productsStore.getAllProducts();
-})
+  productsStore.getAllProducts().catch(() => {
+    toast.add({
+      severity: 'error',
+      summary: 'Произошла ошибка',
+      detail: 'Не удалось получить услуги',
+      life: 3000,
+      closable: false
+    });
+  });
+});
 </script>
 
 <template>
@@ -51,18 +61,46 @@ onMounted(() => {
       <Card>
         <div class="flex gap-2 justify-content-between mb-3">
           <div class="text-xl font-medium">Список услуг</div>
-          <Button @click="productsStore.isOpenCreateProductDialog = true" label="Создать" icon="pi pi-plus" />
+          <Button
+            @click="productsStore.isOpenCreateProductDialog = true"
+            label="Создать"
+            icon="pi pi-plus"
+          />
         </div>
-        <DataTable :value="productsStore.products" :rows="5" :paginator="true" responsiveLayout="scroll">
-          <Column field="name" header="Название" :sortable="true" style="width: 25%" headerStyle="min-width:12rem;"></Column>
-          <Column field="price" header="Стоимость" :sortable="true" style="width: 15%" headerStyle="min-width:10rem;">
+        <DataTable
+          :value="productsStore.products"
+          :rows="5"
+          :paginator="true"
+          responsiveLayout="scroll"
+          :loading="productsStore.isLoading"
+        >
+          <Column
+            field="name"
+            header="Название"
+            :sortable="true"
+            style="width: 25%"
+            headerStyle="min-width:12rem;"
+          ></Column>
+          <Column
+            field="price"
+            header="Стоимость"
+            :sortable="true"
+            style="width: 15%"
+            headerStyle="min-width:10rem;"
+          >
             <template #body="slotProps">
               <Chip class="border-round">
                 <span class="font-semibold">{{ (slotProps.data.price ?? 0) + ' ₽' }}</span>
               </Chip>
             </template>
           </Column>
-          <Column field="lifeTime" header="Суммарная прибыль" :sortable="true" style="width: 15%" headerStyle="min-width:10rem;">
+          <Column
+            field="lifeTime"
+            header="Суммарная прибыль"
+            :sortable="true"
+            style="width: 15%"
+            headerStyle="min-width:10rem;"
+          >
             <template #body="slotProps">
               <Chip class="border-round">
                 <span class="font-semibold">{{ (slotProps.data.lifeTime ?? 0) + ' ₽' }}</span>
@@ -72,12 +110,23 @@ onMounted(() => {
           <Column headerStyle="min-width:10rem;">
             <template #body="slotProps">
               <div class="flex align-items-center justify-content-end gap-2">
-                <Button icon="pi pi-pencil" rounded @click="productsStore.openEditProductModal(slotProps.data)" />
-                <Button icon="pi pi-trash" severity="danger" rounded @click="productsStore.confirmDeleteProductDialog(slotProps.data)" />
+                <Button
+                  icon="pi pi-pencil"
+                  rounded
+                  @click="productsStore.openEditProductModal(slotProps.data)"
+                />
+                <Button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  rounded
+                  @click="productsStore.confirmDeleteProductDialog(slotProps.data)"
+                />
               </div>
             </template>
           </Column>
-          <template #empty> Список услуг пуст. </template>
+          <template #empty>
+            <span v-if="!productsStore.isLoading">Список услуг пуст.</span>
+          </template>
         </DataTable>
       </Card>
     </div>
