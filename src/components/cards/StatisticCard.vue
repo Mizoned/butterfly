@@ -14,34 +14,41 @@ enum IconColor {
 }
 
 interface IProps {
-  title: string,
-  numberTitle: string,
-  icon: string,
-  iconColor?: keyof typeof IconColor,
-  iconBackground?: keyof typeof IconBackground,
-  number?: string,
-  numberDescription: string
+  title: string;
+  numberTitle: string;
+  icon: string;
+  iconColor?: keyof typeof IconColor;
+  iconBackground?: keyof typeof IconBackground;
+  number?: string;
+  numberDescription: string;
+  isSoon: boolean;
 }
 
 withDefaults(defineProps<IProps>(), {
-    iconColor: 'blue',
-    iconBackground: 'blue'
-  });
+  iconColor: 'blue',
+  iconBackground: 'blue',
+  isSoon: true
+});
 </script>
 
 <template>
-  <Card>
+  <Card class="relative">
     <div class="statistic-card">
       <div class="statistic-card__header">
         <div class="statistic-card__title">
-          <div class="text-500 font-medium">{{ title }}</div>
-          <div class="text-900 font-medium text-xl">{{ numberTitle }}</div>
+          <div class="flex align-items-center gap-2">
+            <span class="text-500 font-medium">{{ title }}</span>
+            <Tag value="Скоро" severity="secondary" />
+          </div>
+          <Skeleton v-if="isSoon" height="1.4rem" class="mb-2"></Skeleton>
+          <div v-else class="text-900 font-medium text-xl">{{ numberTitle }}</div>
         </div>
         <div class="statistic-card__icon border-round" :class="IconBackground[iconBackground]">
           <i class="pi text-xl" :class="[IconColor[iconColor], icon]"></i>
         </div>
       </div>
-      <div class="statistic-card__footer">
+      <Skeleton v-if="isSoon" height="1rem" class="mb-2"></Skeleton>
+      <div v-else class="statistic-card__footer">
         <span v-if="number" class="text-green-500 font-medium">{{ number }}</span>
         <span class="text-500">{{ numberDescription }}</span>
       </div>
@@ -58,7 +65,7 @@ withDefaults(defineProps<IProps>(), {
   &__header {
     display: flex;
     justify-content: space-between;
-    gap: 1rem
+    gap: 1rem;
   }
 
   &__title {
@@ -78,7 +85,7 @@ withDefaults(defineProps<IProps>(), {
 
   &__footer {
     display: flex;
-    gap: 0.25rem
+    gap: 0.25rem;
   }
 }
 </style>

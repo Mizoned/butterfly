@@ -297,8 +297,9 @@ const submitWorkspaceSettingsHandler = async () => {
       <Card class="relative">
         <h5>Аватар</h5>
         <Tag
-          class="absolute top-0 right-0 mt-3 mr-3 bg-bluegray-100 text-black-alpha-50"
+          class="absolute top-0 right-0 mt-3 mr-3"
           value="Скоро"
+          severity="secondary"
         />
         <div class="mb-5">Здесь настраивается изображение учетной записи</div>
         <div class="flex gap-4">

@@ -2,8 +2,9 @@
 import { ref } from 'vue'
 
 import AppMenuItem from './AppMenuItem.vue'
+import type { IMenuItem } from '@/shared/interfaces';
 
-const model = ref([
+const model = ref<IMenuItem[]>([
   {
     label: 'Главная',
     items: [
@@ -13,14 +14,14 @@ const model = ref([
   {
     label: 'Услуги',
     items: [
-      { label: 'Обзор статистики', icon: 'pi pi-fw pi-chart-bar', to: '/products/overview' },
+      { label: 'Обзор статистики', icon: 'pi pi-fw pi-chart-bar', to: '/products/overview', soon: true },
       { label: 'Список услуг', icon: 'pi pi-fw pi-list', to: '/products' },
     ]
   },
   {
     label: 'Клиенты',
     items: [
-      { label: 'Обзор статистики', icon: 'pi pi-fw pi-chart-bar', to: '/customers/overview' },
+      { label: 'Обзор статистики', icon: 'pi pi-fw pi-chart-bar', to: '/customers/overview', soon: true },
       { label: 'Список клиентов', icon: 'pi pi-fw pi-users', to: '/customers' },
     ]
   },
@@ -35,8 +36,8 @@ const model = ref([
   {
     label: 'Расходы',
     items: [
-      { label: 'Обзор статистики', icon: 'pi pi-fw pi-chart-bar', to: '/expenses/overview' },
-      { label: 'Список расходов', icon: 'pi pi-fw pi-wallet', to: '/expenses' },
+      { label: 'Обзор статистики', icon: 'pi pi-fw pi-chart-bar', to: '/expenses/overview', soon: true },
+      { label: 'Список расходов', icon: 'pi pi-fw pi-wallet', to: '/expenses', soon: true }
     ]
   },
 ])

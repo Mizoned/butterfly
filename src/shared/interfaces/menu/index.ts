@@ -8,7 +8,8 @@ interface IMenuItem {
   class?: string;
   url?: string;
   disabled?: boolean,
-  command?: ({ originalEvent, item }: { originalEvent: MouseEvent, item: IMenuItem }) => void
+  command?: ({ originalEvent, item }: { originalEvent: MouseEvent, item: IMenuItem }) => void,
+  soon?: boolean
 }
 
 export type { IMenuItem };

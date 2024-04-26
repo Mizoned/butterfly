@@ -43,6 +43,7 @@
         }
     }
 
+
     li.active-menuitem {
         > a {
             .layout-submenu-toggler {
@@ -56,7 +57,7 @@
         padding: 0;
         list-style-type: none;
 
-        a {
+        a, .fake-link {
             display: flex;
             align-items: center;
             position: relative;
@@ -88,6 +89,14 @@
 
             &:focus {
                 @include focused-inset();
+            }
+        }
+
+        .fake-link {
+            cursor: default;
+
+            &:hover {
+                background-color: unset;
             }
         }
 
