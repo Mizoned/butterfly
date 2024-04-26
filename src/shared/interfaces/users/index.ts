@@ -1,9 +1,9 @@
 interface IUser {
   id: number;
-  firstName: string | null;
-  lastName: string | null;
-  fatherName: string | null;
-  mobilePhone: string | null;
+  firstName: string;
+  lastName: string;
+  fatherName: string;
+  mobilePhone: string;
   email: string;
   settings: IUserSettings
 }

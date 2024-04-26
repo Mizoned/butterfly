@@ -68,14 +68,14 @@ export const getTimeFromDate = (date: Date): string => {
   return `${hours}:${minutes}`;
 };
 
-export const createDateWithTime = (time: string): Date | null => {
+export const createDateWithTime = (time: string): Date => {
   const [hoursStr, minutesStr] = time.split(':');
   
   const hours = parseInt(hoursStr, 10);
   const minutes = parseInt(minutesStr, 10);
   
   if (isNaN(hours) || isNaN(minutes)) {
-    return null;
+    throw new Error('Переданое время не соответствует формату HH:mm');
   }
 
   const date = new Date();

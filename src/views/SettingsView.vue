@@ -111,7 +111,7 @@ const profileSettingsRules = computed(() => ({
   }
 }));
 
-const fixedProfileSettings = {
+let fixedProfileSettings = {
   lastName: userStore.user!.lastName,
   firstName: userStore.user!.firstName,
   fatherName: userStore.user!.fatherName
@@ -152,6 +152,13 @@ const submitProfileSettingsHandler = async () => {
 
   try {
     await userStore.updateProfile({ ...profileSettings.value });
+
+    fixedProfileSettings = {
+      lastName: userStore.user!.lastName,
+      firstName: userStore.user!.firstName,
+      fatherName: userStore.user!.fatherName
+    };
+
     isActiveSettingsButton.value = false;
     toast.add({
       severity: 'success',
@@ -175,7 +182,7 @@ const submitProfileSettingsHandler = async () => {
   }
 };
 
-const validateWorkspaceTime = (_: Date, sibling: IUpdateWorkspace) => {
+const validateWorkspaceTime = (_: Date, sibling: IUpdateWorkspace): boolean => {
   if (sibling.workdayStartTime && sibling.workdayEndTime) {
     return !compareDatesInTime(sibling.workdayStartTime, sibling.workdayEndTime);
   } else {
@@ -208,14 +215,14 @@ const workspaceSettingsRules = computed(() => ({
   }
 }));
 
-const fixedWorkspaceSettings = {
-  workdayStartTime: createDateWithTime(userStore.user!.settings!.workdayStartTime!) || new Date(),
-  workdayEndTime: createDateWithTime(userStore.user!.settings!.workdayEndTime!) || new Date()
+let fixedWorkspaceSettings = {
+  workdayStartTime: createDateWithTime(userStore.user!.settings!.workdayStartTime),
+  workdayEndTime: createDateWithTime(userStore.user!.settings!.workdayEndTime)
 };
 
 const workspaceSettings = ref<IUpdateWorkspace>({
-  workdayStartTime: createDateWithTime(userStore.user!.settings!.workdayStartTime) || new Date(),
-  workdayEndTime: createDateWithTime(userStore.user!.settings!.workdayEndTime) || new Date()
+  workdayStartTime: fixedWorkspaceSettings.workdayStartTime,
+  workdayEndTime: fixedWorkspaceSettings.workdayEndTime
 });
 
 const $externalWorkspaceSettingsResults = ref<ServerErrors>({
@@ -252,6 +259,12 @@ const submitWorkspaceSettingsHandler = async () => {
 
   try {
     await userStore.updateWorkspace({ ...workspaceSettings.value });
+
+    fixedWorkspaceSettings = {
+      workdayStartTime: createDateWithTime(userStore.user!.settings.workdayStartTime)!,
+      workdayEndTime: createDateWithTime(userStore.user!.settings.workdayEndTime)!
+    };
+
     isActiveWorkspaceButton.value = false;
     toast.add({
       severity: 'success',
