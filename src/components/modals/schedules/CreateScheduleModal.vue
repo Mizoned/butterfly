@@ -124,8 +124,10 @@ watch(
   }
 );
 
-const minDate = createDateWithTime(userStore.user!.settings.workdayEndTime);
-const maxDate = createDateWithTime(userStore.user!.settings.workdayStartTime);
+const minDate = ref<Date>(createDateWithTime(userStore.user!.settings.workdayStartTime));
+const date = createDateWithTime(userStore.user!.settings.workdayEndTime);
+date.setMinutes(1);
+const maxDate = ref<Date>(date);
 </script>
 
 <template>
@@ -176,6 +178,7 @@ const maxDate = createDateWithTime(userStore.user!.settings.workdayStartTime);
         :invalid="$v.timeStart.$invalid && $v.timeStart.$error"
         @update:modelValue="resetExternalResultProperty('timeStart')"
         :min-date="minDate"
+        :max-date="maxDate"
       >
         <template #inputicon="{ clickCallback }">
           <InputIcon class="pi pi-clock cursor-pointer" @click="clickCallback" />
@@ -197,6 +200,7 @@ const maxDate = createDateWithTime(userStore.user!.settings.workdayStartTime);
         :invalid="$v.timeEnd.$invalid && $v.timeEnd.$error"
         @update:modelValue="resetExternalResultProperty('timeEnd')"
         :max-date="maxDate"
+        :min-date="minDate"
       >
         <template #inputicon="{ clickCallback }">
           <InputIcon class="pi pi-clock cursor-pointer" @click="clickCallback" />

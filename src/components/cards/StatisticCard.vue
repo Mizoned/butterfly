@@ -21,7 +21,7 @@ interface IProps {
   iconBackground?: keyof typeof IconBackground;
   number?: string;
   numberDescription: string;
-  isSoon: boolean;
+  isSoon?: boolean;
 }
 
 withDefaults(defineProps<IProps>(), {

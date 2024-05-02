@@ -11,9 +11,11 @@
   import { createDateWithTime, plural } from '@/shared/utils';
   import FreeTimeSlots from '@/components/schedules/FreeTimeSlots.vue';
   import { isDate } from '@/shared/validators';
+  import { useUserStore } from '@/stores/UserStore';
 
-  const scheduleStore = useScheduleStore()
-  const toast = useToast()
+  const scheduleStore = useScheduleStore();
+  const userStore = useUserStore();
+  const toast = useToast();
 
   const rules = computed(() => ({
     date: {
@@ -123,6 +125,11 @@
       await scheduleStore.getFreeTimeSlots(value);
     }
   });
+
+  const minDate = ref<Date>(createDateWithTime(userStore.user!.settings.workdayStartTime));
+  const date = createDateWithTime(userStore.user!.settings.workdayEndTime);
+  date.setMinutes(1);
+  const maxDate = ref<Date>(date);
 </script>
 
 <template>
@@ -172,6 +179,8 @@
         @dateSelect="$v.timeStart.$touch()"
         :invalid="$v.timeStart.$invalid && $v.timeStart.$error"
         @update:modelValue="resetExternalResultProperty('timeStart')"
+        :min-date="minDate"
+        :max-date="maxDate"
       >
         <template #inputicon="{ clickCallback }">
           <InputIcon class="pi pi-clock cursor-pointer" @click="clickCallback" />
@@ -195,6 +204,8 @@
         @dateSelect="$v.timeEnd.$touch()"
         :invalid="$v.timeEnd.$invalid && $v.timeEnd.$error"
         @update:modelValue="resetExternalResultProperty('timeEnd')"
+        :max-date="maxDate"
+        :min-date="minDate"
       >
         <template #inputicon="{ clickCallback }">
           <InputIcon class="pi pi-clock cursor-pointer" @click="clickCallback" />
