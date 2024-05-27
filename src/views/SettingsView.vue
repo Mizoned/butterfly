@@ -17,13 +17,10 @@ import type {
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import { AxiosError } from 'axios';
+import { getEnvVariable } from '@shared/utils';
 
 const userStore = useUserStore();
 const toast = useToast();
-
-const uploadHandler = (event: FileUploadUploadEvent) => {
-  console.log(event);
-};
 
 const safetySettingsRules = computed(() => ({
   newPassword: {
@@ -289,6 +286,60 @@ const submitWorkspaceSettingsHandler = async () => {
     }
   }
 };
+
+const userAvatar = computed(() => {
+  if (userStore.user?.avatar) {
+    return getEnvVariable('VITE_APP_API_URL') + '/' + userStore.user.avatar;
+  } else {
+    return DEFAULT_CUSTOMER_IMAGE;
+  }
+});
+
+const changeUploadAvatarHandler = async (event:  FileUploadUploaderEvent) => {
+  try {
+    await userStore.uploadAvatar(event.files[0])
+
+    toast.add({
+      severity: 'success',
+      summary: 'Успешно',
+      detail: 'Изображение учетной записи загружено',
+      life: 3000
+    });
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 500) {
+        const message = error.response.data.message;
+        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+      } else {
+      }
+    } else {
+      console.error(error);
+    }
+  }
+}
+
+const removeAvatarHandler = async () => {
+  try {
+    await userStore.removeAvatar()
+
+    toast.add({
+      severity: 'success',
+      summary: 'Успешно',
+      detail: 'Изображение учетной записи удалено',
+      life: 3000
+    });
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 500) {
+        const message = error.response.data.message;
+        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+      } else {
+      }
+    } else {
+      console.error(error);
+    }
+  }
+}
 </script>
 
 <template>
@@ -296,36 +347,40 @@ const submitWorkspaceSettingsHandler = async () => {
     <div class="col-12 lg:col-6">
       <Card class="relative">
         <h5>Аватар</h5>
-        <Tag
-          class="absolute top-0 right-0 mt-3 mr-3"
-          value="Скоро"
-          severity="secondary"
-        />
         <div class="mb-5">Здесь настраивается изображение учетной записи</div>
         <div class="flex gap-4">
           <Avatar
-            :image="DEFAULT_CUSTOMER_IMAGE"
+            :image="userAvatar"
             class="flex-shrink-0"
             size="xlarge"
             shape="circle"
+            :pt="{
+              image: 'object-fit-cover'
+            }"
           />
           <div class="flex flex-column align-items-start gap-3">
             <div class="flex flex-column gap-2">
               <FileUpload
                 mode="basic"
-                name="demo[]"
-                url="/api/upload"
+                name="avatar"
                 accept="image/*"
-                :maxFileSize="2000000"
-                @upload="uploadHandler"
+                :max-file-size="2000000"
                 choose-label="Загрузить"
+                invalid-file-size-message="Размер файла превышает допустимый лимит (2 МБ)"
+                invalid-file-type-message="Неподдерживаемый формат файла (JPEG, PNG)"
                 aria-describedby="avatarHelp"
-                :multiple="true"
-                disabled
+                custom-upload
+                @uploader="changeUploadAvatarHandler"
               />
               <small id="avatarHelp" class="">Максимально допустимый размер файла — 2 MB.</small>
             </div>
-            <Button label="Удалить аватар" severity="danger" outlined :disabled="true" />
+            <Button
+              @click="removeAvatarHandler"
+              label="Удалить аватар"
+              severity="danger"
+              outlined
+              :disabled="!userStore.user?.avatar"
+            />
           </div>
         </div>
       </Card>
@@ -414,7 +469,7 @@ const submitWorkspaceSettingsHandler = async () => {
             <IconField aria-label="email">
               <InputText
                 id="email"
-                :value="userStore.user!.email"
+                :value="userStore.user.email"
                 aria-describedby="emailHelp"
                 disabled
                 class="w-full"

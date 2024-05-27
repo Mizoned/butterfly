@@ -103,3 +103,11 @@ export const areObjectsEqual = <T extends Record<string, any>>(obj1: T, obj2: T)
 export const areDateEqualInTime = (date1: Date, date2: Date): boolean => {
   return date1.getTime() === date2.getTime();
 };
+
+export const getEnvVariable = (key: string) => {
+  if (import.meta.env[key] === undefined) {
+    throw new Error(`Env variable ${key} is required`);
+  }
+
+  return import.meta.env[key];
+};

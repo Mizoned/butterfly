@@ -13,6 +13,7 @@ export const useUserStore = defineStore('User', () => {
   const isLoadingMe = ref<boolean>(false);
   const isLoadingProfile = ref<boolean>(false);
   const isLoadingPassword = ref<boolean>(false);
+  const isLoadingAvatar = ref<boolean>(false);
   const authStore = useAuthStore();
 
   const setUser = (data: IUser) => {
@@ -23,6 +24,7 @@ export const useUserStore = defineStore('User', () => {
       fatherName: data.fatherName,
       mobilePhone: data.mobilePhone,
       email: data.email,
+      avatar: data.avatar,
       settings: data.settings
     };
 
@@ -99,6 +101,39 @@ export const useUserStore = defineStore('User', () => {
     }
   };
 
+  const uploadAvatar = async (image: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('avatar', image);
+
+      isLoadingAvatar.value = true;
+
+      const { data: user } = await UserService.updateAvatar(formData);
+
+      setUser(user);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    } finally {
+      isLoadingAvatar.value = false;
+    }
+  }
+
+  const removeAvatar = async () => {
+    try {
+      isLoadingAvatar.value = true;
+
+      const { data: user } = await UserService.removeAvatar();
+
+      setUser(user);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    } finally {
+      isLoadingAvatar.value = false;
+    }
+  }
+
   return {
     me,
     setUser,
@@ -106,11 +141,14 @@ export const useUserStore = defineStore('User', () => {
     updateProfile,
     updatePassword,
     updateWorkspace,
+    uploadAvatar,
+    removeAvatar,
     user,
     fullName,
     isLoadingMe,
     isLoadingProfile,
     isLoadingPassword,
-    isLoadingWorkspace
+    isLoadingWorkspace,
+    isLoadingAvatar
   };
 });

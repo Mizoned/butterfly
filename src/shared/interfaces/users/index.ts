@@ -4,6 +4,7 @@ interface IUser {
   lastName: string;
   fatherName: string;
   mobilePhone: string;
+  avatar?: string;
   email: string;
   settings: IUserSettings
 }

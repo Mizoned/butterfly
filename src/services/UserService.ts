@@ -23,4 +23,12 @@ export class UserService {
     }
     return API.put('/user/profile/workspace', data);
   }
+
+  static async updateAvatar(data: FormData): Promise<AxiosResponse<IUser>> {
+    return API.post('/user/profile/avatar', data);
+  }
+
+  static async removeAvatar(): Promise<AxiosResponse<IUser>> {
+    return API.delete('/user/profile/avatar');
+  }
 }
