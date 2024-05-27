@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type WritableComputedRef, onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import type { IProduct } from '@/shared/interfaces';
 import CustomerTableChip from '@/components/customers/CustomerChip.vue';
 import { formatDate, formatPhoneNumber } from '@/shared/utils';
@@ -26,12 +26,7 @@ const calculateTotalCostProducts = (products: IProduct[]) => {
   return totalCost;
 }
 
-const products: WritableComputedRef<IProduct[][]> = computed({
-  get() {
-    return scheduleStore.schedules.map((c) => c.products);
-  },
-  set() {}
-});
+const expandedRows = ref({});
 
 </script>
 
@@ -76,7 +71,7 @@ const products: WritableComputedRef<IProduct[][]> = computed({
         </div>
         <DataTable
           :value="scheduleStore.schedulesCanceled"
-          v-model:expandedRows="products"
+          v-model:expandedRows="expandedRows"
           :rows="7"
           :paginator="true"
           responsiveLayout="scroll"

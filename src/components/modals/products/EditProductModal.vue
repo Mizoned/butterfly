@@ -64,7 +64,7 @@
   <Dialog
     v-model:visible="productStore.isOpenEditProductDialog"
     :style="{ width: '450px' }"
-    header="Обновить клиента"
+    header="Обновить услугу"
     :modal="true"
     class="p-fluid"
   >

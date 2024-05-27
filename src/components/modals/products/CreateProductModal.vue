@@ -72,7 +72,7 @@ import type { ICreateProduct, ResponseError } from '@/shared/interfaces'
   <Dialog
     v-model:visible="productStore.isOpenCreateProductDialog"
     :style="{ width: '450px' }"
-    header="Создать клиента"
+    header="Создать услугу"
     :modal="true"
     class="p-fluid"
   >
