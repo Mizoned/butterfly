@@ -84,7 +84,7 @@ const expandedRows = ref({});
           :paginator="true"
           responsiveLayout="scroll"
           dataKey="id"
-          :loading="scheduleStore.isLoadingCustomers"
+          :loading="scheduleStore.isLoading"
         >
           <Column expander style="width: 1rem" />
           <Column

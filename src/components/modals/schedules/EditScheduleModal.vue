@@ -126,6 +126,16 @@
     }
   });
 
+  const totalProductPrice = computed(() => {
+    return scheduleData.value.products?.reduce((sum, selectedProduct) => {
+      const productStore = scheduleStore.products?.find(p => p.id === selectedProduct.id);
+      if (productStore) {
+        return sum + (selectedProduct.quantity * productStore.price);
+      }
+      return sum;
+    }, 0);
+  });
+
   const minDate = ref<Date>(createDateWithTime(userStore.user!.settings.workdayStartTime));
   const date = createDateWithTime(userStore.user!.settings.workdayEndTime);
   date.setMinutes(1);
@@ -306,6 +316,7 @@
         {{ $v.products.$errors[0]?.$message }}
       </small>
     </div>
+    <div v-if="totalProductPrice" class="text-right font-medium text-lg">Итого: {{ totalProductPrice }} ₽</div>
     <template #footer>
       <Button
         label="Отменить"
