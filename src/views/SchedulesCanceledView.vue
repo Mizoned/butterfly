@@ -78,7 +78,7 @@ const expandedRows = ref({});
           dataKey="id"
           :loading="scheduleStore.isLoadingCustomers"
         >
-          <Column v-if="scheduleStore.schedulesCanceled.length" expander style="width: 1rem" />
+          <Column expander style="width: 1rem" />
           <Column field="customer" header="Клиент" style="width: 20%" headerStyle="min-width:15rem;">
             <template #body="slotProps">
               <CustomerTableChip
