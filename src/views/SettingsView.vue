@@ -7,7 +7,7 @@ import { areDateEqualInTime, areObjectsEqual, createDateWithTime } from '@/share
 import { computed, ref, watch } from 'vue';
 import { type ServerErrors, useVuelidate } from '@vuelidate/core';
 import { helpers, maxLength, minLength, requiredIf } from '@vuelidate/validators';
-import { type FileUploadUploadEvent } from 'primevue/fileupload';
+import { type FileUploadUploaderEvent } from 'primevue/fileupload';
 import type {
   IUpdatePassword,
   IUpdateProfile,
@@ -286,31 +286,40 @@ const submitWorkspaceSettingsHandler = async () => {
     }
   }
 };
+const isLoadingAvatarError = ref<boolean>(false);
+
+const errorAvatarHandler = () => {
+  isLoadingAvatarError.value = true;
+}
 
 const userAvatar = computed(() => {
-  if (userStore.user?.avatar) {
+  if (userStore.user?.avatar && !isLoadingAvatarError.value) {
     return getEnvVariable('VITE_APP_API_URL') + '/' + userStore.user.avatar;
   } else {
     return DEFAULT_CUSTOMER_IMAGE;
   }
 });
 
-const changeUploadAvatarHandler = async (event:  FileUploadUploaderEvent) => {
+const uploadAvatarHandler = async (event:  FileUploadUploaderEvent) => {
   try {
-    await userStore.uploadAvatar(event.files[0])
+    const file = Array.isArray(event.files) ? event.files[0] : event.files;
+    await userStore.uploadAvatar(file);
 
     toast.add({
       severity: 'success',
       summary: 'Успешно',
-      detail: 'Изображение учетной записи загружено',
+      detail: 'Изображение учетной записи обновлено',
       life: 3000
     });
+    isLoadingAvatarError.value = false;
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 500) {
         const message = error.response.data.message;
         toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
       } else {
+        const errors = error.response?.data.errors as ResponseError[];
+        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: errors[0].message, life: 3000 });
       }
     } else {
       console.error(error);
@@ -334,6 +343,8 @@ const removeAvatarHandler = async () => {
         const message = error.response.data.message;
         toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
       } else {
+        const errors = error.response?.data.errors as ResponseError[];
+        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: errors[0].message, life: 3000 });
       }
     } else {
       console.error(error);
@@ -357,6 +368,7 @@ const removeAvatarHandler = async () => {
             :pt="{
               image: 'object-fit-cover'
             }"
+            @error="errorAvatarHandler"
           />
           <div class="flex flex-column align-items-start gap-3">
             <div class="flex flex-column gap-2">
@@ -370,7 +382,7 @@ const removeAvatarHandler = async () => {
                 invalid-file-type-message="Неподдерживаемый формат файла (JPEG, PNG)"
                 aria-describedby="avatarHelp"
                 custom-upload
-                @uploader="changeUploadAvatarHandler"
+                @uploader="uploadAvatarHandler"
               />
               <small id="avatarHelp" class="">Максимально допустимый размер файла — 2 MB.</small>
             </div>
@@ -379,7 +391,7 @@ const removeAvatarHandler = async () => {
               label="Удалить аватар"
               severity="danger"
               outlined
-              :disabled="!userStore.user?.avatar"
+              :disabled="!userStore.user?.avatar || isLoadingAvatarError"
             />
           </div>
         </div>
