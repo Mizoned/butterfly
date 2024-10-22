@@ -1,3 +1,5 @@
+import type { IProduct } from '@shared/interfaces';
+
 export const removeEmptyFields = <T extends Record<string, any>>(obj: T): Partial<T> => {
   const newObj: Partial<T> = {};
   Object.entries(obj).forEach(([key, value]) => {
@@ -110,4 +112,15 @@ export const getEnvVariable = (key: string) => {
   }
 
   return import.meta.env[key];
+};
+
+//TODO когда будет переделка по FSD вынести в Products
+export const calculateTotalCostProducts = (products: IProduct[]) => {
+  let totalCost = 0;
+
+  products.forEach((product) => {
+    totalCost += product.additional.priceAtSale * product.additional.quantity;
+  });
+
+  return totalCost;
 };

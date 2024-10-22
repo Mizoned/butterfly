@@ -23,7 +23,6 @@ declare module 'vue' {
     CreateProductModal: typeof import('./src/components/modals/products/CreateProductModal.vue')['default']
     CreateScheduleModal: typeof import('./src/components/modals/schedules/CreateScheduleModal.vue')['default']
     CustomerChip: typeof import('./src/components/customers/CustomerChip.vue')['default']
-    CustomerTableChip: typeof import('./src/components/customers/CustomerChip.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
     DeleteCustomer: typeof import('./src/components/modals/customers/DeleteCustomerModal.vue')['default']
     DeleteCustomerModal: typeof import('./src/components/modals/customers/DeleteCustomerModal.vue')['default']

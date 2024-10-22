@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import type { IProduct } from '@/shared/interfaces';
-import CustomerTableChip from '@/components/customers/CustomerChip.vue';
-import { formatDate, formatPhoneNumber } from '@/shared/utils';
+import CustomerChip from '@/components/customers/CustomerChip.vue';
+import { formatDate, formatPhoneNumber, calculateTotalCostProducts } from '@/shared/utils';
 import StatisticCard from '@/components/cards/StatisticCard.vue';
 import { useScheduleStore } from '@/stores/ScheduleStore';
 import CreateScheduleModal from '@/components/modals/schedules/CreateScheduleModal.vue';
@@ -20,16 +19,6 @@ onMounted(() => {
   });
 });
 
-const calculateTotalCostProducts = (products: IProduct[]) => {
-  let totalCost = 0;
-
-  products.forEach((product) => {
-    totalCost += product.additional.priceAtSale * product.additional.quantity;
-  });
-
-  return totalCost;
-};
-
 const expandedRows = ref({});
 </script>
 
@@ -43,7 +32,7 @@ const expandedRows = ref({});
         icon-color="blue"
         icon-background="blue"
         number="3"
-        number-description="новых"
+        number-description="завершены"
       />
     </div>
     <div class="col-12 lg:col-6 xl:col-4">
@@ -94,7 +83,7 @@ const expandedRows = ref({});
             headerStyle="min-width:15rem;"
           >
             <template #body="slotProps">
-              <CustomerTableChip
+              <CustomerChip
                 :name="slotProps.data.customer.lastName + ' ' + slotProps.data.customer.firstName"
                 :image="slotProps.data?.image"
               />

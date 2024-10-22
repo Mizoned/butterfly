@@ -43,7 +43,7 @@ onMounted(() => {
         icon-color="orange"
         icon-background="orange"
         number="12"
-        number-description="раз заказывали"
+        number-description="раз заказывали в этом месяце"
       />
     </div>
     <div class="col-12 lg:col-12 xl:col-4">

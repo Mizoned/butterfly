@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import type { IProduct } from '@/shared/interfaces';
-import CustomerTableChip from '@/components/customers/CustomerChip.vue';
+import CustomerChip from '@/components/customers/CustomerChip.vue';
 import { formatDate, formatPhoneNumber } from '@/shared/utils';
 import StatisticCard from '@/components/cards/StatisticCard.vue';
 import { useScheduleStore } from '@/stores/ScheduleStore';
@@ -34,34 +34,35 @@ const expandedRows = ref({});
   <div class="grid">
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
-        title="Записи на сегодня"
+        title="Отменено записей"
         number-title="5"
-        icon="pi-play"
-        icon-color="blue"
-        icon-background="blue"
+        icon="pi-times"
+        icon-color="red"
+        icon-background="red"
         number="3"
         number-description="новых"
       />
     </div>
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
-        title="Записей на неделе"
-        number-title="15"
-        icon="pi-book"
+        title="Процент отмененных записей"
+        number-title="12%"
+        icon="pi-percentage"
         icon-color="orange"
         icon-background="orange"
-        number="12"
-        number-description="завершены"
+        number="1%"
+        number-description="в этом месяце"
       />
     </div>
     <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
-        title="Ближайшая запись"
-        number-title="03.15.2024"
+        title="Упущенная прибыль"
+        number-title="5 645 ₽"
         icon="pi-star-fill"
         icon-color="cyan"
         icon-background="cyan"
-        number-description="с 10:00 до 10:30"
+        number="1 432 ₽"
+        number-description="в этом месяце"
       />
     </div>
     <div class="col-12 xl:col-12">
@@ -81,7 +82,7 @@ const expandedRows = ref({});
           <Column expander style="width: 1rem" />
           <Column field="customer" header="Клиент" style="width: 20%" headerStyle="min-width:15rem;">
             <template #body="slotProps">
-              <CustomerTableChip
+              <CustomerChip
                 :name="slotProps.data.customer.lastName + ' ' + slotProps.data.customer.firstName"
                 :image="slotProps.data?.image"
               />

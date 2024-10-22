@@ -5,7 +5,7 @@ import { formatPhoneNumber } from '@/shared/utils';
 import DeleteCustomerModal from '@/components/modals/customers/DeleteCustomerModal.vue';
 import CreateCustomerModal from '@/components/modals/customers/CreateCustomerModal.vue';
 import EditCustomerModal from '@/components/modals/customers/EditCustomerModal.vue';
-import CustomerTableChip from '@/components/customers/CustomerChip.vue';
+import CustomerChip from '@/components/customers/CustomerChip.vue';
 import { useToast } from 'primevue/usetoast';
 
 const customersStore = useCustomersStore();
@@ -30,7 +30,7 @@ onMounted(() => {
       <StatisticCard
         title="Всего клиентов"
         number-title="152"
-        icon="pi-user"
+        icon="pi-users"
         icon-color="blue"
         icon-background="blue"
         number="24"
@@ -39,13 +39,13 @@ onMounted(() => {
     </div>
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
-        title="Прибыль"
-        number-title="4359 ₽"
-        icon="pi-dollar"
+        title="Активный клиент"
+        number-title="Щербинин Валерий"
+        icon="pi-user"
         icon-color="orange"
         icon-background="orange"
-        number="%12+"
-        number-description="с прошлого месяца"
+        number="12 посещений"
+        number-description="в этом месяце"
       />
     </div>
     <div class="col-12 lg:col-12 xl:col-4">
@@ -59,7 +59,7 @@ onMounted(() => {
         number-description="в этом месяце"
       />
     </div>
-    <div class="col-12 xl:col-12">
+    <div class="col-12">
       <Card>
         <div class="flex gap-2 justify-content-between mb-3">
           <div class="text-xl font-medium">Список клиентов</div>
@@ -84,7 +84,7 @@ onMounted(() => {
             headerStyle="min-width:15rem;"
           >
             <template #body="slotProps">
-              <CustomerTableChip
+              <CustomerChip
                 :name="slotProps.data.lastName + ' ' + slotProps.data.firstName"
                 :image="slotProps.data?.image"
               />

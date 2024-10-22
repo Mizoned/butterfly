@@ -1,5 +1,7 @@
 <script setup lang="ts">
 enum IconBackground {
+  red = 'bg-red-100',
+  green = 'bg-green-100',
   blue = 'bg-blue-100',
   orange = 'bg-orange-100',
   cyan = 'bg-cyan-100',
@@ -7,6 +9,8 @@ enum IconBackground {
 }
 
 enum IconColor {
+  red = 'text-red-500',
+  green = 'text-green-500',
   blue = 'text-blue-500',
   orange = 'text-orange-500',
   cyan = 'text-cyan-500',
@@ -27,7 +31,7 @@ interface IProps {
 withDefaults(defineProps<IProps>(), {
   iconColor: 'blue',
   iconBackground: 'blue',
-  isSoon: true
+  isSoon: false
 });
 </script>
 
@@ -38,7 +42,7 @@ withDefaults(defineProps<IProps>(), {
         <div class="statistic-card__title">
           <div class="flex align-items-center gap-2">
             <span class="text-500 font-medium">{{ title }}</span>
-            <Tag value="Скоро" severity="secondary" />
+            <Tag v-if="false" value="Скоро" severity="secondary" />
           </div>
           <Skeleton v-if="isSoon" height="1.4rem" class="mb-2"></Skeleton>
           <div v-else class="text-900 font-medium text-xl">{{ numberTitle }}</div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import type { IProduct } from '@/shared/interfaces';
-import CustomerTableChip from '@/components/customers/CustomerChip.vue';
+import CustomerChip from '@/components/customers/CustomerChip.vue';
 import { formatDate, formatPhoneNumber } from '@/shared/utils';
 import StatisticCard from '@/components/cards/StatisticCard.vue';
 import { useScheduleStore } from '@/stores/ScheduleStore';
@@ -34,34 +34,35 @@ const expandedRows = ref({});
   <div class="grid">
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
-        title="Записи на сегодня"
-        number-title="5"
-        icon="pi-play"
+        title="Завершенные записи"
+        number-title="152"
+        icon="pi-check"
         icon-color="blue"
         icon-background="blue"
-        number="3"
-        number-description="новых"
+        number="12"
+        number-description="за этот месяц"
       />
     </div>
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
-        title="Записей на неделе"
-        number-title="15"
-        icon="pi-book"
-        icon-color="orange"
-        icon-background="orange"
-        number="12"
-        number-description="завершены"
+        title="Доход"
+        number-title="15 439 ₽"
+        icon="pi-dollar"
+        icon-color="green"
+        icon-background="green"
+        number="4 320 ₽"
+        number-description="в этом месяце"
       />
     </div>
     <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
-        title="Ближайшая запись"
-        number-title="03.15.2024"
-        icon="pi-star-fill"
+        title="Средний чек за все время"
+        number-title="3 453 ₽"
+        icon="pi-wallet"
         icon-color="cyan"
         icon-background="cyan"
-        number-description="с 10:00 до 10:30"
+        number="4 567 ₽"
+        number-description="в этом месяце"
       />
     </div>
     <div class="col-12 xl:col-12">
@@ -81,7 +82,7 @@ const expandedRows = ref({});
           <Column expander style="width: 1rem" />
           <Column field="customer" header="Клиент" style="width: 20%" headerStyle="min-width:15rem;">
             <template #body="slotProps">
-              <CustomerTableChip
+              <CustomerChip
                 :name="slotProps.data.customer.lastName + ' ' + slotProps.data.customer.firstName"
                 :image="slotProps.data?.image"
               />
