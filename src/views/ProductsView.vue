@@ -5,8 +5,11 @@ import DeleteProductModal from '@/components/modals/products/DeleteProductModal.
 import EditProductModal from '@/components/modals/products/EditProductModal.vue';
 import CreateProductModal from '@/components/modals/products/CreateProductModal.vue';
 import { useToast } from 'primevue/usetoast';
+import { formatToCurrency, plural } from '@shared/utils';
+import { useProductsStatisticsStore } from '@stores/statistics/ProductsStatisticsStore';
 
 const productsStore = useProductsStore();
+const productsStatisticsStore = useProductsStatisticsStore();
 const toast = useToast();
 
 onMounted(() => {
@@ -19,6 +22,8 @@ onMounted(() => {
       closable: false
     });
   });
+
+  productsStatisticsStore.getSummaryStatistics();
 });
 </script>
 
@@ -27,34 +32,37 @@ onMounted(() => {
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Всего услуг"
-        number-title="5"
+        :number-title="productsStatisticsStore.totalProducts.totalCount"
         icon="pi-star"
         icon-color="blue"
         icon-background="blue"
-        number="3"
-        number-description="новых в этом месяце"
+        :number="String(productsStatisticsStore.totalProducts.newTotalCount)"
+        :number-description="plural(['новая', 'новых', 'новых'], productsStatisticsStore.totalProducts.newTotalCount) + ' в этом месяце'"
+        :is-loading="productsStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Популярная услуга"
-        number-title="Депиляция зоны рук"
+        :number-title="productsStatisticsStore.popularProduct.name"
         icon="pi-star-fill"
         icon-color="orange"
         icon-background="orange"
-        number="12"
+        :number="productsStatisticsStore.popularProduct.count"
         number-description="раз заказывали в этом месяце"
+        :is-loading="productsStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
         title="Прибыльная услуга"
-        number-title="Депиляция зоны ног"
+        :number-title="productsStatisticsStore.profitableProduct.name"
         icon="pi-dollar"
         icon-color="cyan"
         icon-background="cyan"
-        number="4877 ₽"
+        :number="formatToCurrency(productsStatisticsStore.profitableProduct.income)"
         number-description="в этом месяце"
+        :is-loading="productsStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 xl:col-12">
@@ -91,19 +99,6 @@ onMounted(() => {
             <template #body="slotProps">
               <Chip class="border-round">
                 <span class="font-semibold">{{ (slotProps.data.price ?? 0) + ' ₽' }}</span>
-              </Chip>
-            </template>
-          </Column>
-          <Column
-            field="lifeTime"
-            header="Суммарная прибыль"
-            :sortable="true"
-            style="width: 15%"
-            headerStyle="min-width:10rem;"
-          >
-            <template #body="slotProps">
-              <Chip class="border-round">
-                <span class="font-semibold">{{ (slotProps.data.lifeTime ?? 0) + ' ₽' }}</span>
               </Chip>
             </template>
           </Column>

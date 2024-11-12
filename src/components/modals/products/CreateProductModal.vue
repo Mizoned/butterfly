@@ -6,8 +6,10 @@ import { computed, ref, watch } from 'vue'
 import type { ICreateProduct, ResponseError } from '@/shared/interfaces'
   import { useToast } from 'primevue/usetoast';
   import { useProductsStore } from '@/stores/ProductsStore';
+import { useProductsStatisticsStore } from '@stores/statistics/ProductsStatisticsStore';
 
   const productStore = useProductsStore();
+  const productsStatisticsStore = useProductsStatisticsStore();
   const toast = useToast();
 
   const rules = computed(() => ({
@@ -35,8 +37,9 @@ import type { ICreateProduct, ResponseError } from '@/shared/interfaces'
     if (!(await $v.value.$validate())) return;
 
     await productStore.createProduct(productData.value)
-      .then(() => {
+      .then(async () => {
         toast.add({ severity: 'success', summary: 'Успешно', detail: 'Услуга успешно создана', life: 3000 });
+        await productsStatisticsStore.getSummaryStatistics();
       })
       .catch((error) => {
         if (error.response.status === 500) {

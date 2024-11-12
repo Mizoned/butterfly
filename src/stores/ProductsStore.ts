@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import ProductsService from '@/services/ProductsService';
 import type { ICreateProduct, IProduct } from '@/shared/interfaces';
 import type { Ref } from 'vue';
+import { isCurrentMonth } from '@shared/utils';
 
 export const useProductsStore = defineStore('ProductsStore', () => {
   const products = ref<IProduct[]>([]);
@@ -16,6 +17,45 @@ export const useProductsStore = defineStore('ProductsStore', () => {
   const isOpenDetailProductDialog = ref<boolean>(false);
   const isLoading = ref<boolean>(false);
   const isLoadingDetail = ref<boolean>(false);
+
+  const newProductInCurrentMonth = computed(() => {
+    let counter: number = 0;
+
+    products.value.forEach((product) => {
+      if (isCurrentMonth(product.createdAt)) {
+        counter++;
+      }
+    });
+
+    return counter;
+  });
+
+  const mostPopularProduct = computed<{ product: IProduct, count: number }>(() => {
+    const productCount: { [key: string]: number } = {};
+
+    products.value.forEach((product: IProduct) => {
+      if (productCount[product.id]) {
+        productCount[product.id]++;
+      } else {
+        productCount[product.id] = 1;
+      }
+    });
+
+    let mostPopularProductId: null | number = null;
+    let maxCount = 0;
+
+    for (const product in productCount) {
+      if (productCount[product] > maxCount) {
+        mostPopularProductId = Number(product);
+        maxCount = productCount[product];
+      }
+    }
+
+    return {
+      product: products.value.find((product) => product.id === mostPopularProductId)!,
+      count: maxCount
+    }
+  });
 
   const confirmDeleteProductDialog = (product: IProduct) => {
     deleteProductId.value = product.id;
@@ -123,6 +163,8 @@ export const useProductsStore = defineStore('ProductsStore', () => {
     isOpenEditProductDialog,
     currentProduct,
     editProduct,
-    isLoading
+    isLoading,
+    newProductInCurrentMonth,
+    mostPopularProduct
   };
 });

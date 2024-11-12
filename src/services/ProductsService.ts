@@ -1,5 +1,11 @@
 import { API } from '@/shared/api';
-import type { ICreateProduct, IProduct, ResponseDelete } from '@/shared/interfaces'
+import type {
+  ICreateProduct,
+  IProduct,
+  IProductOverviewStatistics,
+  IProductSummaryStatistics,
+  ResponseDelete
+} from '@/shared/interfaces';
 import { removeEmptyFields } from '@/shared/utils'
 import type { AxiosResponse } from 'axios'
 
@@ -24,5 +30,14 @@ export default class ProductsService {
   static async update(product: IProduct): Promise<AxiosResponse<IProduct>> {
     const productData = removeEmptyFields(product);
     return API.put(`/products/${product.id}`, productData);
+  }
+
+  //TODO при FSD вынести
+  static async getSummaryStatistics(): Promise<AxiosResponse<IProductSummaryStatistics>> {
+    return API.get('/statistics/products/summary');
+  }
+
+  static async getOverviewStatistics(): Promise<AxiosResponse<IProductOverviewStatistics>> {
+    return API.get('/statistics/products/overview');
   }
 }
