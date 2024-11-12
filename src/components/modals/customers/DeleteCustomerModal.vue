@@ -3,8 +3,10 @@
   import { computed } from 'vue';
   import { useToast } from 'primevue/usetoast';
 import { AxiosError } from 'axios';
+  import { useCustomersStatisticStore } from '@stores/statistics/CustomersStatisticsStore';
 
   const customersStore = useCustomersStore();
+  const customersStatisticsStore = useCustomersStatisticStore();
   const toast = useToast();
 
   const fullName = computed<string>(() => {
@@ -13,20 +15,22 @@ import { AxiosError } from 'axios';
   });
 
   const submitHandler = async () => {
-    try {
-      await customersStore.deleteCustomer();
-      toast.add({ severity: 'success', summary: 'Успешно', detail: 'Клиент удален', life: 3000 });
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        const message = error.response?.data.message;
-        toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
-      }
-    }
+    await customersStore.deleteCustomer()
+      .then(async () => {
+        toast.add({ severity: 'success', summary: 'Успешно', detail: 'Клиент удален', life: 3000 });
+        await customersStatisticsStore.getSummaryStatistics();
+      })
+      .catch((error) => {
+        if (error instanceof AxiosError) {
+          const message = error.response?.data.message;
+          toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: message, life: 3000 });
+        }
+      });
   }
 </script>
 
 <template>
-  <Dialog v-model:visible="customersStore.isOpenDeleteCustomerDialog" :style="{ width: '450px' }" header="Подтвержение" :modal="true">
+  <Dialog v-model:visible="customersStore.isOpenDeleteCustomerDialog" :style="{ width: '450px' }" header="Подтверждение" :modal="true">
     <div class="flex align-items-center">
       <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
       <span v-if="customersStore.currentCustomer">

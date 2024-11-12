@@ -19,19 +19,19 @@ enum IconColor {
 
 interface IProps {
   title: string;
-  numberTitle: string;
+  numberTitle: string | number;
   icon: string;
   iconColor?: keyof typeof IconColor;
   iconBackground?: keyof typeof IconBackground;
-  number?: string;
+  number?: string | number;
   numberDescription: string;
-  isSoon?: boolean;
+  isLoading?: boolean;
 }
 
 withDefaults(defineProps<IProps>(), {
   iconColor: 'blue',
   iconBackground: 'blue',
-  isSoon: false
+  isLoading: false
 });
 </script>
 
@@ -44,14 +44,14 @@ withDefaults(defineProps<IProps>(), {
             <span class="text-500 font-medium">{{ title }}</span>
             <Tag v-if="false" value="Скоро" severity="secondary" />
           </div>
-          <Skeleton v-if="isSoon" height="1.4rem" class="mb-2"></Skeleton>
+          <Skeleton v-if="isLoading" height="1.4rem" class="mb-2"></Skeleton>
           <div v-else class="text-900 font-medium text-xl">{{ numberTitle }}</div>
         </div>
         <div class="statistic-card__icon border-round" :class="IconBackground[iconBackground]">
           <i class="pi text-xl" :class="[IconColor[iconColor], icon]"></i>
         </div>
       </div>
-      <Skeleton v-if="isSoon" height="1rem" class="mb-2"></Skeleton>
+      <Skeleton v-if="isLoading" height="1rem" class="mb-2"></Skeleton>
       <div v-else class="statistic-card__footer">
         <span v-if="number" class="text-green-500 font-medium">{{ number }}</span>
         <span class="text-500">{{ numberDescription }}</span>

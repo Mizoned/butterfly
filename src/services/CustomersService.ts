@@ -1,5 +1,11 @@
 import { API } from '@/shared/api';
-import type { ICreateCustomer, ICustomer, ResponseDelete } from '@/shared/interfaces'
+import type {
+  ICreateCustomer,
+  ICustomer,
+  ICustomerOverviewStatistics,
+  ICustomerSummaryStatistics,
+  ResponseDelete
+} from '@/shared/interfaces';
 import { normalizePhoneNumber, removeEmptyFields } from '@/shared/utils'
 import type { AxiosResponse } from 'axios'
 
@@ -34,5 +40,14 @@ export default class CustomersService {
     }
     
     return API.put(`/customers/${customer.id}`, customerData);
+  }
+
+  //TODO при FSD вынести
+  static async getSummaryStatistics(): Promise<AxiosResponse<ICustomerSummaryStatistics>> {
+    return API.get('/statistics/customers/summary');
+  }
+
+  static async getOverviewStatistics(): Promise<AxiosResponse<ICustomerOverviewStatistics>> {
+    return API.get('/statistics/customers/overview');
   }
 }

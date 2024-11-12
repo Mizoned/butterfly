@@ -6,9 +6,11 @@
   import { type ServerErrors, useVuelidate } from '@vuelidate/core';
   import type { ICreateCustomer, ResponseError } from '@/shared/interfaces';
   import { useToast } from 'primevue/usetoast';
-import { AxiosError } from 'axios';
+  import { AxiosError } from 'axios';
+  import { useCustomersStatisticStore } from '@stores/statistics/CustomersStatisticsStore';
 
   const customerStore = useCustomersStore();
+  const customersStatisticsStore = useCustomersStatisticStore();
   const toast = useToast();
 
   const rules = computed(() => ({
@@ -51,6 +53,7 @@ import { AxiosError } from 'axios';
     await customerStore.createCustomer(customerData.value)
       .then(() => {
         toast.add({ severity: 'success', summary: 'Успешно', detail: 'Клиент успешно создан', life: 3000 });
+        customersStatisticsStore.getSummaryStatistics();
       })
       .catch((error) => {
         if (error instanceof AxiosError) {

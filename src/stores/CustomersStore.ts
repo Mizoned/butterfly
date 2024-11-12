@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import CustomersService from '@/services/CustomersService';
 import type { ICreateCustomer, ICustomer } from '@/shared/interfaces';
 import type { Ref } from 'vue';
+import { isCurrentMonth } from '@shared/utils';
 
 export const useCustomersStore = defineStore('CustomersStore', () => {
   const customers = ref<ICustomer[]>([]);
@@ -16,6 +17,18 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
   const isOpenDetailCustomerDialog = ref<boolean>(false);
   const isLoading = ref<boolean>(false);
   const isLoadingDetail = ref<boolean>(false);
+
+  const newCustomersInCurrentMonth = computed(() => {
+    let counter: number = 0;
+
+    customers.value.forEach((customer) => {
+      if (isCurrentMonth(customer.createdAt)) {
+        counter++;
+      }
+    });
+
+    return counter;
+  });
 
   const confirmDeleteCustomerDialog = (customer: ICustomer) => {
     deleteCustomerId.value = customer.id;
@@ -118,6 +131,7 @@ export const useCustomersStore = defineStore('CustomersStore', () => {
     openEditCustomerModal,
     openDetailCustomerModal,
     customers,
+    newCustomersInCurrentMonth,
     isOpenDeleteCustomerDialog,
     isOpenCreateCustomerDialog,
     isOpenEditCustomerDialog,

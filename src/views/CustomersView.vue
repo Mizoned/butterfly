@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useCustomersStore } from '@/stores/CustomersStore';
-import { formatPhoneNumber } from '@/shared/utils';
+import { formatPhoneNumber, plural } from '@/shared/utils';
 import DeleteCustomerModal from '@/components/modals/customers/DeleteCustomerModal.vue';
 import CreateCustomerModal from '@/components/modals/customers/CreateCustomerModal.vue';
 import EditCustomerModal from '@/components/modals/customers/EditCustomerModal.vue';
 import CustomerChip from '@/components/customers/CustomerChip.vue';
 import { useToast } from 'primevue/usetoast';
+import { useCustomersStatisticStore } from '@stores/statistics/CustomersStatisticsStore';
+import StatisticCard from '@/components/cards/StatisticCard.vue';
 
 const customersStore = useCustomersStore();
+const customersStatisticsStore = useCustomersStatisticStore();
 const toast = useToast();
 
 onMounted(() => {
@@ -21,6 +24,8 @@ onMounted(() => {
       closable: false
     });
   });
+
+  customersStatisticsStore.getSummaryStatistics();
 });
 </script>
 
@@ -29,34 +34,37 @@ onMounted(() => {
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Всего клиентов"
-        number-title="152"
+        :number-title="customersStatisticsStore.totalCustomers.totalCount"
         icon="pi-users"
         icon-color="blue"
         icon-background="blue"
-        number="24"
-        number-description="новых в этом месяце"
+        :number="String(customersStatisticsStore.totalCustomers.newTotalCount)"
+        :number-description="String(plural(['новая', 'новых', 'новых'], customersStatisticsStore.totalCustomers.newTotalCount) + ' в этом месяце')"
+        :is-loading="customersStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Активный клиент"
-        number-title="Щербинин Валерий"
+        :number-title="customersStatisticsStore.activeCustomer?.customer.lastName + ' ' + customersStatisticsStore.activeCustomer?.customer.firstName"
         icon="pi-user"
         icon-color="orange"
         icon-background="orange"
-        number="12 посещений"
-        number-description="в этом месяце"
+        :number="(customersStatisticsStore.activeCustomer?.visits || 0)"
+        :number-description="plural(['посещение', 'посещения', 'посещений'], customersStatisticsStore.activeCustomer?.visits || 0) + ' в этом месяце'"
+        :is-loading="customersStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
         title="Посещений"
-        number-title="66"
+        :number-title="customersStatisticsStore.totalVisits.totalCount"
         icon="pi-calendar"
         icon-color="purple"
         icon-background="purple"
-        number="5"
+        :number="String(customersStatisticsStore.totalVisits.newTotalCount)"
         number-description="в этом месяце"
+        :is-loading="customersStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12">
@@ -104,32 +112,6 @@ onMounted(() => {
           >
             <template #body="slotProps">
               {{ formatPhoneNumber(slotProps.data.mobilePhone) }}
-            </template>
-          </Column>
-          <Column
-            field="visits"
-            header="Посещений"
-            :sortable="true"
-            style="width: 15%"
-            headerStyle="min-width:10rem;"
-          >
-            <template #body="slotProps">
-              <Chip class="bg-green-100 border-round pr-2 pl-2 pt-0 pb-0 h-2rem">
-                <span class="font-semibold">{{ slotProps.data?.visits ?? 0 }}</span>
-              </Chip>
-            </template>
-          </Column>
-          <Column
-            field="lifeTime"
-            header="Суммарная прибыль"
-            :sortable="true"
-            style="width: 15%"
-            headerStyle="min-width:10rem;"
-          >
-            <template #body="slotProps">
-              <Chip class="border-round">
-                <span class="font-semibold">{{ (slotProps.data?.lifeTime ?? 0) + ' ₽' }}</span>
-              </Chip>
             </template>
           </Column>
           <Column headerStyle="min-width:10rem;">

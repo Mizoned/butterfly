@@ -119,8 +119,34 @@ export const calculateTotalCostProducts = (products: IProduct[]) => {
   let totalCost = 0;
 
   products.forEach((product) => {
-    totalCost += product.additional.priceAtSale * product.additional.quantity;
+    totalCost += product.details.priceAtSale * product.details.quantity;
   });
 
   return totalCost;
+};
+
+export const isCurrentMonth = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+
+  return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+}
+
+export const formatToCurrency = (amount: string, locale: string = 'ru-RU', currency: string = 'RUB') => {
+  return amount.toLocaleString(locale, { style: 'currency', currency });
+}
+
+export const getColorsByNumber = (number: number) => {
+  const colors = [
+    { bg: 'bg-orange-500', color: 'text-orange-500' },
+    { bg: 'bg-cyan-500', color: 'text-cyan-500' },
+    { bg: 'bg-pink-500', color: 'text-pink-500' },
+    { bg: 'bg-green-500', color: 'text-green-500' },
+    { bg: 'bg-purple-500', color: 'text-purple-500' },
+    { bg: 'bg-teal-500', color: 'text-teal-500' }
+  ];
+
+  const index = Math.abs(number) % colors.length;
+
+  return colors[index];
 };
