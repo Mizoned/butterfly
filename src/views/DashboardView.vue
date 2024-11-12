@@ -1,46 +1,19 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import StatisticCard from '@/components/cards/StatisticCard.vue';
 import CustomerChip from '@/components/customers/CustomerChip.vue';
-import { calculateTotalCostProducts } from '@shared/utils';
+import SalesShareLine from '@/components/statistics/SalesShareLine.vue';
+import type { ChartOptions } from 'chart.js';
+import { useDashboardStatisticsStore } from '@stores/statistics/DashboardStatisticsStore';
+import { calculateTotalCostProducts, formatToCurrency, getColorsByNumber, plural } from '@shared/utils';
 
-const products = ref([
-  {
-    firstName: 'Валерий',
-    lastName: 'Щербинин',
-    timeStart: '10:00',
-    timeEnd: '12:00',
-    total: 1000
-  },
-  {
-    firstName: 'Владислав',
-    lastName: 'Щербинин',
-    timeStart: '14:00',
-    timeEnd: '15:00',
-    total: 1267
-  },
-  {
-    firstName: 'Семен',
-    lastName: 'Шмаков',
-    timeStart: '17:00',
-    timeEnd: '18:00',
-    total: 3567
-  }
-]);
+const dashboardStatisticsStore = useDashboardStatisticsStore();
+
 const lineData = reactive({
-  labels: Array.from({length: new Date().getDate()}, (_, i) => i + 1),
+  labels: dashboardStatisticsStore.dailyRevenue.map((d) => d.revenue),
   datasets: [
     {
-      label: 'Март',
-      data: [6559, 4539, 10559, 3659, 6559, 456, 123, 2539, 4586, 5674, 2315, 12356, 250, 698, 6559, 4539, 10559, 3659, 6559, 0, 0, 2539, 4586, 5674, 2315, 12356, 777, 898, 6559, 4539],
-      fill: false,
-      backgroundColor: '#feddc7',
-      borderColor: '#f97316',
-      tension: 0.4
-    },
-    {
-      label: 'Апрель',
-      data: [7559, 14539, 8559, 9659, 5559, 156, 923, 9539, 3586, 9674, 1315, 15356, 1250, 3698, 12559, 3539, 7559, 7659, 8559, 1230, 5550, 2539, 4586, 8674, 4315, 14356, 7777, 2898, 16559, 3539],
+      data: [],
       fill: false,
       backgroundColor: '#d0e1fd',
       borderColor: '#3b82f6',
@@ -48,86 +21,101 @@ const lineData = reactive({
     }
   ]
 });
-const pieData = reactive({
-  labels: ['Депиляция зоны лица', 'Депиляция зоны рук', 'Депиляция ног', 'Депиляция зоны бикини'],
-  datasets: [
-    {
-      data: [6559, 7381, 4506, 2346],
-      backgroundColor: ['#fef9c3', '#dbeafe', '#fee2e2', '#dcfce7'],
-      borderColor: ['#facc15', '#60a5fa', '#f87171', '#4ade80']
+const lineOptions = ref<ChartOptions<'line'>>({
+  plugins: {
+    legend: {
+      display: false
+    },
+    title: {
+      display: true,
+      text: 'Текущий месяц'
+    },
+    tooltip: {
+      callbacks: {
+        title: (tooltipItems) => {
+          return `День: ${tooltipItems[0].label}`;
+        },
+        label: (tooltipItem) => {
+          return `Выручка: ${formatToCurrency(tooltipItem.raw)}`;
+        }
+      }
     }
-  ]
-});
-const pieOptions = ref({
-  labels: {
-    display: false
   },
-  responsive: true,
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: 'День месяца'
+      }
+    },
+    y: {
+      title: {
+        display: true,
+        text: 'Количество'
+      }
+    }
+  },
+  responsive: true
 });
+
 const barData = reactive({
-  labels: ['Март', 'Апрель', 'Май', 'Июнь', 'Июль'],
-  datasets: [
+  labels: ['Количество записей'],
+  datasets: []
+});
+
+const barOptions = ref<ChartOptions<'bar'>>({
+  plugins: {
+    legend: {
+      position: 'bottom',
+      labels: {
+        display: false
+      }
+    },
+    title: {
+      display: true,
+      text: 'Текущий месяц'
+    }
+  },
+  scales: {
+    y: {
+      suggestedMax: 1
+    }
+  },
+  responsive: true
+});
+
+
+const expandedRows = ref({});
+
+onMounted(async () => {
+  await dashboardStatisticsStore.getStatistics();
+
+  lineData.datasets[0].data = dashboardStatisticsStore.dailyRevenue.map((d) => d.revenue);
+  lineData.labels = dashboardStatisticsStore.dailyRevenue.map((d) => d.day);
+  lineOptions.value.scales.y.suggestedMax = Math.max(...lineData.datasets[0].data) * 1.1;
+
+  barData.datasets = [
     {
       label: 'Завершенные записи',
-      data: [38, 24, 18, 14, 31],
+      data: [dashboardStatisticsStore.totalSchedulesByStatuses.successCount],
+      backgroundColor: ['#4ade80'],
+    },
+    {
+      label: 'Активные записи',
+      data: [dashboardStatisticsStore.totalSchedulesByStatuses.processedCount],
       backgroundColor: ['#60a5fa'],
     },
     {
       label: 'Отмененные записи',
-      data: [11, 5, 8, 4, 8],
+      data: [dashboardStatisticsStore.totalSchedulesByStatuses.canceledCount],
       backgroundColor: ['#f87171'],
     }
-  ]
-});
-let delayed: boolean;
+  ];
 
-const barOptions = ref({
-  indexAxis: 'y',
-  responsive: true,
-});
-// 100, 400
-//backgroundColor: ['#fef9c3', '#dbeafe', '#fee2e2', '#dcfce7', '#ffedd5']
-//borderColor: ['#facc15', '#60a5fa', '#f87171', '#4ade80', '#fb923c']
-const lineOptions = ref({});
+  const allBarDatasets = barData.datasets.flatMap(dataset => dataset.data);
 
-const bestSellingProducts = ref([
-  {
-    name: 'Депиляция зоны лица',
-    percent: 50,
-    total: 5533,
-    bg: 'bg-orange-500',
-    color: 'text-orange-500'
-  },
-  {
-    name: 'Депиляция зоны рук',
-    percent: 30,
-    total: 4533,
-    bg: 'bg-cyan-500',
-    color: 'text-cyan-500'
-  },
-  {
-    name: 'Депиляция зоны ног',
-    percent: 10,
-    total: 3533,
-    bg: 'bg-pink-500',
-    color: 'text-pink-500'
-  },
-  {
-    name: 'Депиляция зоны бикини',
-    percent: 10,
-    total: 3533,
-    bg: 'bg-green-500',
-    color: 'text-green-500'
-  },
-  // {
-  //   bg: 'bg-purple-500',
-  //   color: 'text-purple-500'
-  // },
-  // {
-  //   bg: 'bg-teal-500',
-  //   color: 'text-teal-500'
-  // }
-]);
+  barOptions.value.scales.y.suggestedMax = Math.max(...allBarDatasets) * 1.1;
+});
 </script>
 
 <template>
@@ -135,49 +123,55 @@ const bestSellingProducts = ref([
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Записи"
-        number-title="152"
+        :number-title="dashboardStatisticsStore.totalSchedules.totalCount"
         icon="pi-book"
         icon-color="blue"
         icon-background="blue"
-        number="24"
+        :number="String(dashboardStatisticsStore.totalSchedules.newTotalCount)"
         number-description="в этом месяце"
       />
     </div>
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Доход"
-        number-title="15 439 ₽"
+        :number-title="formatToCurrency(dashboardStatisticsStore.totalRevenue.totalRevenue)"
         icon="pi-dollar"
         icon-color="green"
         icon-background="green"
-        number="4 320 ₽"
+        :number="formatToCurrency(dashboardStatisticsStore.totalRevenue.newTotalRevenue)"
         number-description="в этом месяце"
       />
     </div>
     <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
         title="Клиенты"
-        number-title="28441"
+        :number-title="dashboardStatisticsStore.totalCustomers.totalCount"
         icon="pi-users"
         icon-color="cyan"
         icon-background="cyan"
-        number="520"
-        number-description="новых созданных"
+        :number="dashboardStatisticsStore.totalCustomers.newTotalCount"
+        :number-description="String(plural(['новая', 'новых', 'новых'], dashboardStatisticsStore.totalCustomers.newTotalCount) + ' в этом месяце')"
       />
     </div>
-
     <div class="col-12 xl:col-6">
       <div class="card">
         <div class="flex gap-2 align-items-start">
           <h5>Записи на сегодня</h5>
-<!--          <Tag value="Скоро" severity="secondary" />-->
         </div>
-
-        <DataTable :value="products" :rows="5" :paginator="false" responsiveLayout="scroll">
+        <DataTable
+          :value="dashboardStatisticsStore.todaySchedules"
+          :rows="5"
+          v-model:expandedRows="expandedRows"
+          dataKey="id"
+          :paginator="true"
+          responsiveLayout="scroll"
+          :loading="dashboardStatisticsStore.isLoading"
+        >
+          <Column expander style="width: 1rem" />
           <Column header="Клиент" style="width: 40%">
             <template #body="slotProps">
               <CustomerChip
-                :name="slotProps.data.lastName + ' ' + slotProps.data.firstName"
+                :name="slotProps.data.customer.lastName + ' ' + slotProps.data.customer.firstName"
                 :image="slotProps.data?.image"
               />
             </template>
@@ -191,59 +185,74 @@ const bestSellingProducts = ref([
             <template #body="slotsProps">
               <Chip class="border-round">
                 <span class="font-semibold">
-                  {{ slotsProps.data.total.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' }) }}
+                  {{ formatToCurrency(calculateTotalCostProducts(slotsProps.data.products)) }}
                 </span>
               </Chip>
             </template>
           </Column>
+          <template #expansion="slotProps">
+            <div class="p-3">
+              <h5 class="text-lg font-semibold">Выставленные услуги</h5>
+              <DataTable :value="slotProps.data.products">
+                <Column field="name" header="Название"></Column>
+                <Column field="price" header="Стоимость продажи">
+                  <template #body="slotProps">
+                    <Chip class="border-round">
+                      <span class="font-semibold">{{ formatToCurrency(slotProps.data.details.priceAtSale || 0) }}</span>
+                    </Chip>
+                  </template>
+                </Column>
+                <Column field="details" header="Количество">
+                  <template #body="slotProps">
+                    <Chip class="bg-green-100 border-round pr-2 pl-2 pt-0 pb-0 h-2rem">
+                      <span class="font-semibold">{{ slotProps.data.details.quantity }}</span>
+                    </Chip>
+                  </template>
+                </Column>
+              </DataTable>
+            </div>
+          </template>
+          <template #empty>
+            <span v-if="!dashboardStatisticsStore.isLoading">Список записей пуст.</span>
+          </template>
         </DataTable>
       </div>
       <div class="card">
         <div class="flex gap-2 align-items-start">
           <h5>Самые продаваемые услуги</h5>
         </div>
-        <DataTable :value="bestSellingProducts" :rows="5" :paginator="false" responsiveLayout="scroll">
+        <DataTable
+          :value="dashboardStatisticsStore.profitableProducts"
+          :rows="5"
+          :paginator="true"
+          responsiveLayout="scroll"
+          :loading="dashboardStatisticsStore.isLoading"
+        >
           <Column header="Название" style="width: 35%">
             <template #body="slotProps">
-              <span class="text-900 font-medium mr-2 mb-1 md:mb-0">{{ slotProps.data.name }}</span>
+              <span class="text-900 font-medium mr-2 mb-1 md:mb-0">{{ slotProps.data.product.name }}</span>
             </template>
           </Column>
           <Column header="Прибыль" style="width: 30%">
             <template #body="slotsProps">
               <Chip class="border-round">
                 <span class="font-semibold">
-                  {{ slotsProps.data.total.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' }) }}
+                  {{ formatToCurrency(slotsProps.data.totalRevenue) }}
                 </span>
               </Chip>
             </template>
           </Column>
           <Column header="Доля продаж за месяц" style="width: 35%">
             <template #body="slotsProps">
-              <div class="mt-1 flex align-items-center justify-content-end">
-                <div
-                  class="surface-300 border-round overflow-hidden w-12"
-                  style="height: 8px"
-                >
-                  <div :class="[slotsProps.data.bg, 'h-full']" :style="[`width: ${slotsProps.data.percent}%;`]"></div>
-                </div>
-                <span :class="[slotsProps.data.color, 'ml-3 font-medium']">{{ slotsProps.data.percent }}%</span>
-              </div>
+              <SalesShareLine
+                :color="getColorsByNumber(slotsProps.index).color"
+                :bg="getColorsByNumber(slotsProps.index).bg"
+                :percent="slotsProps.data.totalRevenuePercent"
+              />
             </template>
           </Column>
         </DataTable>
       </div>
-<!--      <div class="card">-->
-<!--        <div class="flex gap-2 align-items-start">-->
-<!--          <h5>Отмененные и завершенные записи</h5>-->
-<!--        </div>-->
-<!--        <Chart type="bar" :data="barData" />-->
-<!--      </div>-->
-<!--      <div class="card">-->
-<!--        <div class="flex gap-2 align-items-start">-->
-<!--          <h5>Отмененные и завершенные записи</h5>-->
-<!--        </div>-->
-<!--        <Chart type="bar" :data="barData" :options="barOptions" />-->
-<!--      </div>-->
     </div>
     <div class="col-12 xl:col-6">
       <div class="card">
@@ -252,55 +261,12 @@ const bestSellingProducts = ref([
         </div>
         <Chart type="line" :data="lineData" :options="lineOptions" />
       </div>
-<!--      <div class="card">-->
-<!--        <div class="flex gap-2 align-items-start">-->
-<!--          <h5>Прибыль по услугам</h5>-->
-<!--          &lt;!&ndash;          <Tag value="Скоро" severity="secondary" />&ndash;&gt;-->
-<!--        </div>-->
-<!--        <Chart type="pie" :data="pieData" :options="pieOptions" />-->
-<!--      </div>-->
-<!--      <div class="card">-->
-<!--        <div class="flex gap-2 align-items-start">-->
-<!--          <h5>Уведомления</h5>-->
-<!--          <Tag value="Скоро" severity="secondary" />-->
-<!--        </div>-->
-<!--        <span class="block text-600 font-medium mb-3 text-uppercase">Сегодня</span>-->
-<!--        <ul class="p-0 mx-0 mt-0 mb-4 list-none">-->
-<!--          <li class="flex align-items-center py-2 border-bottom-1 surface-border">-->
-<!--            <div class="flex gap-3 align-items-center w-full">-->
-<!--                <Skeleton shape="circle" size="3rem" class="flex-shrink-0"></Skeleton>-->
-<!--                <Skeleton></Skeleton>-->
-<!--            </div>-->
-<!--            &lt;!&ndash; <div-->
-<!--              class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0"-->
-<!--            >-->
-<!--              <i class="pi pi-dollar text-xl text-blue-500"></i>-->
-<!--            </div>-->
-<!--            <span class="text-900 line-height-3">-->
-<!--              Ричард Джонс-->
-<!--              <span class="text-700"-->
-<!--                >купил синюю футболку за <span class="text-blue-500">79$</span></span-->
-<!--              >-->
-<!--            </span> &ndash;&gt;-->
-<!--          </li>-->
-<!--          <li class="flex align-items-center py-2 border-bottom-1 surface-border">-->
-<!--            <div class="flex gap-3 align-items-center w-full">-->
-<!--                <Skeleton shape="circle" size="3rem" class="flex-shrink-0"></Skeleton>-->
-<!--                <Skeleton></Skeleton>-->
-<!--            </div>-->
-<!--          </li>-->
-<!--        </ul>-->
-
-<!--        <span class="block text-600 font-medium mb-3">Вчера</span>-->
-<!--        <ul class="p-0 m-0 list-none">-->
-<!--          <li class="flex align-items-center py-2 border-bottom-1 surface-border">-->
-<!--            <div class="flex gap-3 align-items-center w-full">-->
-<!--                <Skeleton shape="circle" size="3rem" class="flex-shrink-0"></Skeleton>-->
-<!--                <Skeleton></Skeleton>-->
-<!--            </div>-->
-<!--          </li>-->
-<!--        </ul>-->
-<!--      </div>-->
+      <div class="card">
+        <div class="flex gap-2 align-items-start">
+          <h5>Состояние записей</h5>
+        </div>
+        <Chart type="bar" :data="barData" :options="barOptions" />
+      </div>
     </div>
   </div>
 </template>
