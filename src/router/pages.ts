@@ -18,9 +18,21 @@ export const pages = [
         meta: { requiresAuth: true }
       },
       {
+        path: '/products/overview',
+        name: 'productsOverview',
+        component: () => import('@/views/ProductsOverview.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
         path: '/customers',
         name: 'customers',
         component: () => import('@/views/CustomersView.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/customers/overview',
+        name: 'customersOverview',
+        component: () => import('@/views/CustomersOverview.vue'),
         meta: { requiresAuth: true }
       },
       {
