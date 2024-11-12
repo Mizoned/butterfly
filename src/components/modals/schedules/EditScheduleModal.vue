@@ -8,8 +8,8 @@
   import { useScheduleStore } from '@/stores/ScheduleStore';
   import InputIcon from 'primevue/inputicon';
   import CustomerChip from '@/components/customers/CustomerChip.vue';
-  import { createDateWithTime, plural } from '@/shared/utils';
   import FreeTimeSlots from '@/components/schedules/FreeTimeSlots.vue';
+  import { createDateWithTime, plural } from '@/shared/utils';
   import { isDate } from '@/shared/validators';
   import { useUserStore } from '@/stores/UserStore';
 
@@ -77,7 +77,7 @@
       timeStart: createDateWithTime(scheduleStore.editSchedule!.timeStart),
       timeEnd: createDateWithTime(scheduleStore.editSchedule!.timeEnd),
       customerId: scheduleStore.editSchedule!.customerId,
-      products: scheduleStore.editSchedule!.products?.map((p) => ({ id: p.id, quantity: p.additional.quantity })) || []
+      products: scheduleStore.editSchedule!.products?.map((p) => ({ id: p.id, quantity: p.details.quantity })) || []
     }
   }
 

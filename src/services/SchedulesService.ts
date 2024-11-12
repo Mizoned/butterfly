@@ -1,11 +1,21 @@
 import { API } from '@/shared/api';
-import type { ICreateSchedule, ISchedule, ResponseDelete } from '@/shared/interfaces';
+import type {
+  ICreateSchedule,
+  ISchedule, ISchedulesCanceledStatistics,
+  ISchedulesProcessedStatistics,
+  IScheduleSuccessStatistics,
+  ResponseDelete
+} from '@/shared/interfaces';
 import type { AxiosResponse } from 'axios';
 import { formatDate, getTimeFromDate } from '@/shared/utils'
 
 export default class SchedulesService {
   static async getAll(): Promise<AxiosResponse<ISchedule[]>> {
     return API.get('/schedules');
+  }
+
+  static async getAllProcessed(): Promise<AxiosResponse<ISchedule[]>> {
+    return API.get('/schedules/processed');
   }
 
   static async getAllCompleted(): Promise<AxiosResponse<ISchedule[]>> {
@@ -53,5 +63,18 @@ export default class SchedulesService {
   static async getFreeTimeSlots(date: Date): Promise<AxiosResponse<Array<string>>> {
     const formatedDate = formatDate(date, 'yy-mm-dd');
     return API.get(`/schedules/slots/free/${formatedDate}`);
+  }
+
+  //TODO при FSD вынести
+  static async getProcessedStatistics(): Promise<AxiosResponse<ISchedulesProcessedStatistics>> {
+    return API.get('/statistics/schedules/processed/summary');
+  }
+
+  static async getSuccessStatistics(): Promise<AxiosResponse<IScheduleSuccessStatistics>> {
+    return API.get('/statistics/schedules/success/summary');
+  }
+
+  static async getCanceledStatistics(): Promise<AxiosResponse<ISchedulesCanceledStatistics>> {
+    return API.get('/statistics/schedules/canceled/summary');
   }
 }

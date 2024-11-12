@@ -12,8 +12,10 @@ import { createDateWithTime, plural } from '@/shared/utils';
 import FreeTimeSlots from '@/components/schedules/FreeTimeSlots.vue';
 import { isDate } from '@/shared/validators';
 import { useUserStore } from '@/stores/UserStore';
+import { useScheduleStatisticsStore } from '@stores/statistics/SchedulesStatisticsStore';
 
 const scheduleStore = useScheduleStore();
+const schedulesStatisticsStore = useScheduleStatisticsStore();
 const userStore = useUserStore();
 const toast = useToast();
 
@@ -72,13 +74,15 @@ const submitHandler = async () => {
 
   await scheduleStore
     .createSchedule({ ...scheduleData.value })
-    .then(() => {
+    .then(async () => {
       toast.add({
         severity: 'success',
         summary: 'Успешно',
         detail: 'Запись успешно создана',
         life: 3000
       });
+
+      await schedulesStatisticsStore.getProcessedStatistics();
     })
     .catch((error) => {
       if (error.response.status === 500) {

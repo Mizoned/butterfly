@@ -7,6 +7,7 @@ import ProductsService from '@/services/ProductsService';
 
 export const useScheduleStore = defineStore('ScheduleStore', () => {
   const schedules = ref<ISchedule[]>([]);
+  const schedulesProcessed = ref<ISchedule[]>([]);
   const schedulesCompleted = ref<ISchedule[]>([]);
   const schedulesCanceled = ref<ISchedule[]>([]);
   const customers = ref<ICustomer[]>([]);
@@ -58,6 +59,19 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
       schedules.value = response.data;
     } catch (error) {
       console.error('Не удалось получить записи', error);
+      throw error;
+    } finally {
+      isLoadingCustomers.value = false;
+    }
+  };
+
+  const getAllSchedulesProcessed = async () => {
+    try {
+      isLoadingCustomers.value = true;
+      const response = await SchedulesService.getAllProcessed();
+      schedulesProcessed.value = response.data;
+    } catch (error) {
+      console.error('Не удалось получить завершенные записи', error);
       throw error;
     } finally {
       isLoadingCustomers.value = false;
@@ -122,7 +136,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
       const response = await SchedulesService.create(schedule);
 
       const productData = response.data;
-      schedules.value.push(productData);
+      schedulesProcessed.value.push(productData);
       isOpenCreateScheduleDialog.value = false;
     } catch (error) {
       console.error('Не удалось создать запись', error);
@@ -136,10 +150,10 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     try {
       isLoading.value = true;
       const response = await SchedulesService.update(editSchedule.value!.id, schedule);
-      const index = schedules.value.findIndex((c) => c.id === editSchedule.value!.id);
+      const index = schedulesProcessed.value.findIndex((c) => c.id === editSchedule.value!.id);
 
       if (index !== -1) {
-        schedules.value[index] = response.data;
+        schedulesProcessed.value[index] = response.data;
       }
 
       isOpenEditScheduleDialog.value = false;
@@ -156,7 +170,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     try {
       isLoading.value = true;
       await SchedulesService.complete(currentSchedule.value!.id);
-      schedules.value = [...schedules.value].filter((s) => s.id !== currentSchedule.value!.id);
+      schedulesProcessed.value = [...schedulesProcessed.value].filter((s) => s.id !== currentSchedule.value!.id);
       isOpenCompleteScheduleDialog.value = false;
       currentSchedule.value = null;
     } catch (error) {
@@ -171,7 +185,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     try {
       isLoading.value = true;
       await SchedulesService.cancel(currentSchedule.value!.id);
-      schedules.value = [...schedules.value].filter((val) => val.id !== currentSchedule.value!.id);
+      schedulesProcessed.value = [...schedulesProcessed.value].filter((val) => val.id !== currentSchedule.value!.id);
       isOpenCancelScheduleDialog.value = false;
       currentSchedule.value = null;
     } catch (error) {
@@ -184,6 +198,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
 
   return {
     getAllSchedules,
+    getAllSchedulesProcessed,
     getAllSchedulesCompleted,
     getAllSchedulesCanceled,
     createSchedule,
@@ -197,6 +212,7 @@ export const useScheduleStore = defineStore('ScheduleStore', () => {
     getAllProducts,
     getFreeTimeSlots,
     schedules,
+    schedulesProcessed,
     schedulesCompleted,
     schedulesCanceled,
     customers,

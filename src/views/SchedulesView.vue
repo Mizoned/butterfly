@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import CustomerChip from '@/components/customers/CustomerChip.vue';
-import { formatDate, formatPhoneNumber, calculateTotalCostProducts } from '@/shared/utils';
+import { formatDate, formatPhoneNumber, calculateTotalCostProducts, plural, formatToCurrency } from '@/shared/utils';
 import StatisticCard from '@/components/cards/StatisticCard.vue';
 import { useScheduleStore } from '@/stores/ScheduleStore';
 import CreateScheduleModal from '@/components/modals/schedules/CreateScheduleModal.vue';
@@ -9,17 +9,27 @@ import EditScheduleModal from '@/components/modals/schedules/EditScheduleModal.v
 import CancelScheduleModal from '@/components/modals/schedules/CancelScheduleModal.vue';
 import CompleteScheduleModal from '@/components/modals/schedules/CompleteScheduleModal.vue';
 import { useToast } from 'primevue/usetoast';
+import { useScheduleStatisticsStore } from '@stores/statistics/SchedulesStatisticsStore';
 
 const scheduleStore = useScheduleStore();
+const schedulesStatisticsStore = useScheduleStatisticsStore();
 const toast = useToast();
 
 onMounted(() => {
-  scheduleStore.getAllSchedules().catch(() => {
+  scheduleStore.getAllSchedulesProcessed().catch(() => {
     toast.add({ severity: 'error', summary: 'Произошла ошибка', detail: 'Не удалось получить записи', life: 3000, closable: false });
   });
+
+  schedulesStatisticsStore.getProcessedStatistics();
 });
 
 const expandedRows = ref({});
+
+const nearestScheduleSmallText = computed(() => {
+  if (schedulesStatisticsStore.nearestSchedule === null) return 'Назначьте запись';
+
+  return 'с ' + schedulesStatisticsStore.nearestSchedule.timeStart + ' до ' +schedulesStatisticsStore.nearestSchedule.timeEnd;
+})
 </script>
 
 <template>
@@ -27,33 +37,36 @@ const expandedRows = ref({});
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Записи на сегодня"
-        number-title="5"
+        :number-title="schedulesStatisticsStore.totalCountToday.totalCount"
         icon="pi-play"
         icon-color="blue"
         icon-background="blue"
-        number="3"
-        number-description="завершены"
+        :number="String(schedulesStatisticsStore.totalCountToday.completedTotalCount)"
+        number-description="завершено"
+        :is-loading="schedulesStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Записей на неделе"
-        number-title="15"
+        :number-title="schedulesStatisticsStore.totalCountWeek.totalCount"
         icon="pi-book"
         icon-color="orange"
         icon-background="orange"
-        number="12"
-        number-description="завершены"
+        :number="String(schedulesStatisticsStore.totalCountWeek.completedTotalCount)"
+        number-description="завершено"
+        :is-loading="schedulesStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
         title="Ближайшая запись"
-        number-title="03.15.2024"
+        :number-title="schedulesStatisticsStore.nearestSchedule?.date || 'Нет записи'"
         icon="pi-star-fill"
         icon-color="cyan"
         icon-background="cyan"
-        number-description="с 10:00 до 10:30"
+        :number-description="nearestScheduleSmallText"
+        :is-loading="schedulesStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 xl:col-12">
@@ -67,7 +80,7 @@ const expandedRows = ref({});
           />
         </div>
         <DataTable
-          :value="scheduleStore.schedules"
+          :value="scheduleStore.schedulesProcessed"
           v-model:expandedRows="expandedRows"
           :rows="7"
           :paginator="true"
@@ -130,9 +143,7 @@ const expandedRows = ref({});
           >
             <template #body="slotProps">
               <Chip class="border-round">
-                <span class="font-semibold">{{
-                  calculateTotalCostProducts(slotProps.data.products) + ' ₽'
-                }}</span>
+                <span class="font-semibold">{{ formatToCurrency(calculateTotalCostProducts(slotProps.data.products)) }}</span>
               </Chip>
             </template>
           </Column>
@@ -164,26 +175,17 @@ const expandedRows = ref({});
               <h5 class="text-lg font-semibold">Выставленные услуги</h5>
               <DataTable :value="slotProps.data.products">
                 <Column field="name" header="Название"></Column>
-                <Column field="price" header="Текущая стоимость">
-                  <template #body="slotProps">
-                    <Chip class="border-round">
-                      <span class="font-semibold">{{ (slotProps.data.price ?? 0) + ' ₽' }}</span>
-                    </Chip>
-                  </template>
-                </Column>
                 <Column field="price" header="Стоимость продажи">
                   <template #body="slotProps">
                     <Chip class="border-round">
-                      <span class="font-semibold">{{
-                        (slotProps.data.additional.priceAtSale ?? 0) + ' ₽'
-                      }}</span>
+                      <span class="font-semibold">{{ formatToCurrency(slotProps.data.details.priceAtSale || 0) }}</span>
                     </Chip>
                   </template>
                 </Column>
-                <Column field="additional" header="Количество">
+                <Column field="details" header="Количество">
                   <template #body="slotProps">
                     <Chip class="bg-green-100 border-round pr-2 pl-2 pt-0 pb-0 h-2rem">
-                      <span class="font-semibold">{{ slotProps.data.additional.quantity }}</span>
+                      <span class="font-semibold">{{ slotProps.data.details.quantity }}</span>
                     </Chip>
                   </template>
                 </Column>

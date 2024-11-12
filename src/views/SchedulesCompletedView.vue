@@ -2,25 +2,28 @@
 import { onMounted, ref } from 'vue';
 import type { IProduct } from '@/shared/interfaces';
 import CustomerChip from '@/components/customers/CustomerChip.vue';
-import { formatDate, formatPhoneNumber } from '@/shared/utils';
+import { formatDate, formatPhoneNumber, formatToCurrency } from '@/shared/utils';
 import StatisticCard from '@/components/cards/StatisticCard.vue';
 import { useScheduleStore } from '@/stores/ScheduleStore';
 import CreateScheduleModal from '@/components/modals/schedules/CreateScheduleModal.vue';
 import EditScheduleModal from '@/components/modals/schedules/EditScheduleModal.vue';
 import CancelScheduleModal from '@/components/modals/schedules/CancelScheduleModal.vue';
 import CompleteScheduleModal from '@/components/modals/schedules/CompleteScheduleModal.vue';
+import { useScheduleStatisticsStore } from '@stores/statistics/SchedulesStatisticsStore';
 
 const scheduleStore = useScheduleStore();
+const schedulesStatisticsStore = useScheduleStatisticsStore();
 
 onMounted(() => {
-  scheduleStore.getAllSchedulesCompleted()
+  scheduleStore.getAllSchedulesCompleted();
+  schedulesStatisticsStore.getSuccessStatistics();
 });
 
 const calculateTotalCostProducts = (products: IProduct[]) => {
   let totalCost = 0;
 
   products.forEach(product => {
-    totalCost += product.additional.priceAtSale * product.additional.quantity;
+    totalCost += product.details.priceAtSale * product.details.quantity;
   });
 
   return totalCost;
@@ -35,34 +38,37 @@ const expandedRows = ref({});
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Завершенные записи"
-        number-title="152"
+        :number-title="schedulesStatisticsStore.totalSuccessSchedules.totalCount"
         icon="pi-check"
         icon-color="blue"
         icon-background="blue"
-        number="12"
-        number-description="за этот месяц"
+        :number="String(schedulesStatisticsStore.totalSuccessSchedules.newTotalCount)"
+        number-description="в этом месяце"
+        :is-loading="schedulesStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Доход"
-        number-title="15 439 ₽"
+        :number-title="formatToCurrency(schedulesStatisticsStore.totalRevenue.totalRevenue)"
         icon="pi-dollar"
         icon-color="green"
         icon-background="green"
-        number="4 320 ₽"
+        :number="formatToCurrency(schedulesStatisticsStore.totalRevenue.newTotalRevenue)"
         number-description="в этом месяце"
+        :is-loading="schedulesStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
         title="Средний чек за все время"
-        number-title="3 453 ₽"
+        :number-title="formatToCurrency(schedulesStatisticsStore.avgBill.totalAvg)"
         icon="pi-wallet"
         icon-color="cyan"
         icon-background="cyan"
-        number="4 567 ₽"
+        :number="formatToCurrency(schedulesStatisticsStore.avgBill.newTotalAvg)"
         number-description="в этом месяце"
+        :is-loading="schedulesStatisticsStore.isLoading"
       />
     </div>
     <div class="col-12 xl:col-12">
@@ -103,7 +109,7 @@ const expandedRows = ref({});
           <Column field="products" header="Общая стоимость" style="width: 15%" headerStyle="min-width:12rem;">
             <template #body="slotProps">
               <Chip class="border-round">
-                <span class="font-semibold">{{ calculateTotalCostProducts(slotProps.data.products) + ' ₽' }}</span>
+                <span class="font-semibold">{{ formatToCurrency(calculateTotalCostProducts(slotProps.data.products)) }}</span>
               </Chip>
             </template>
           </Column>
@@ -112,24 +118,17 @@ const expandedRows = ref({});
               <h5 class="text-lg font-semibold">Выставленные услуги</h5>
               <DataTable :value="slotProps.data.products">
                 <Column field="name" header="Название"></Column>
-                <Column field="price" header="Текущая стоимость">
-                  <template #body="slotProps">
-                    <Chip class="border-round">
-                      <span class="font-semibold">{{ (slotProps.data.price ?? 0) + ' ₽' }}</span>
-                    </Chip>
-                  </template>
-                </Column>
                 <Column field="price" header="Стоимость продажи">
                   <template #body="slotProps">
                     <Chip class="border-round">
-                      <span class="font-semibold">{{ (slotProps.data.additional.priceAtSale ?? 0) + ' ₽' }}</span>
+                      <span class="font-semibold">{{ formatToCurrency(slotProps.data.details.priceAtSale || 0) }}</span>
                     </Chip>
                   </template>
                 </Column>
-                <Column field="additional" header="Количество">
+                <Column field="details" header="Количество">
                   <template #body="slotProps">
                     <Chip class="bg-green-100 border-round pr-2 pl-2 pt-0 pb-0 h-2rem">
-                      <span class="font-semibold">{{ slotProps.data.additional.quantity }}</span>
+                      <span class="font-semibold">{{ slotProps.data.details.quantity }}</span>
                     </Chip>
                   </template>
                 </Column>
