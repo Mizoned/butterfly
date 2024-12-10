@@ -55,7 +55,7 @@ export const useProductsStatisticsStore = defineStore('ProductsStatisticsStore',
       profitableProduct.value = data.profitableProduct;
       profitableProducts.value = data.profitableProducts.products;
       servicesCountPerDay.value = data.servicesCountPerDay;
-    } catch (e) {
+    } catch (error) {
       console.error('Не удалось получить статистику', error);
       throw error;
     } finally {

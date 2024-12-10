@@ -72,10 +72,10 @@ export const getTimeFromDate = (date: Date): string => {
 
 export const createDateWithTime = (time: string): Date => {
   const [hoursStr, minutesStr] = time.split(':');
-  
+
   const hours = parseInt(hoursStr, 10);
   const minutes = parseInt(minutesStr, 10);
-  
+
   if (isNaN(hours) || isNaN(minutes)) {
     throw new Error('Переданое время не соответствует формату HH:mm');
   }
@@ -132,7 +132,7 @@ export const isCurrentMonth = (dateString: string) => {
   return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
 }
 
-export const formatToCurrency = (amount: string, locale: string = 'ru-RU', currency: string = 'RUB') => {
+export const formatToCurrency = (amount: number, locale: string = 'ru-RU', currency: string = 'RUB') => {
   return amount.toLocaleString(locale, { style: 'currency', currency });
 }
 

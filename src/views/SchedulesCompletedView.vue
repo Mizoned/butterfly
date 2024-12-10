@@ -19,7 +19,7 @@ onMounted(() => {
   schedulesStatisticsStore.getSuccessStatistics();
 });
 
-const calculateTotalCostProducts = (products: IProduct[]) => {
+const calculateTotalCostProducts = (products: IProduct[]): number => {
   let totalCost = 0;
 
   products.forEach(product => {
@@ -42,7 +42,7 @@ const expandedRows = ref({});
         icon="pi-check"
         icon-color="blue"
         icon-background="blue"
-        :number="String(schedulesStatisticsStore.totalSuccessSchedules.newTotalCount)"
+        :number="String(schedulesStatisticsStore.totalSuccessSchedules.newTotalCount || 0)"
         number-description="в этом месяце"
         :is-loading="schedulesStatisticsStore.isLoading"
       />
@@ -50,11 +50,11 @@ const expandedRows = ref({});
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Доход"
-        :number-title="formatToCurrency(schedulesStatisticsStore.totalRevenue.totalRevenue)"
+        :number-title="formatToCurrency(schedulesStatisticsStore.totalRevenue.totalRevenue || 0)"
         icon="pi-dollar"
         icon-color="green"
         icon-background="green"
-        :number="formatToCurrency(schedulesStatisticsStore.totalRevenue.newTotalRevenue)"
+        :number="formatToCurrency(schedulesStatisticsStore.totalRevenue.newTotalRevenue || 0)"
         number-description="в этом месяце"
         :is-loading="schedulesStatisticsStore.isLoading"
       />
@@ -62,11 +62,11 @@ const expandedRows = ref({});
     <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
         title="Средний чек за все время"
-        :number-title="formatToCurrency(schedulesStatisticsStore.avgBill.totalAvg)"
+        :number-title="formatToCurrency(schedulesStatisticsStore.avgBill.totalAvg || 0)"
         icon="pi-wallet"
         icon-color="cyan"
         icon-background="cyan"
-        :number="formatToCurrency(schedulesStatisticsStore.avgBill.newTotalAvg)"
+        :number="formatToCurrency(schedulesStatisticsStore.avgBill.newTotalAvg || 0)"
         number-description="в этом месяце"
         :is-loading="schedulesStatisticsStore.isLoading"
       />
@@ -109,7 +109,7 @@ const expandedRows = ref({});
           <Column field="products" header="Общая стоимость" style="width: 15%" headerStyle="min-width:12rem;">
             <template #body="slotProps">
               <Chip class="border-round">
-                <span class="font-semibold">{{ formatToCurrency(calculateTotalCostProducts(slotProps.data.products)) }}</span>
+                <span class="font-semibold">{{ formatToCurrency(calculateTotalCostProducts(slotProps.data.products) || 0) }}</span>
               </Chip>
             </template>
           </Column>

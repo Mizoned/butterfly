@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useCustomersStore } from '@/stores/CustomersStore';
 import { formatPhoneNumber, plural } from '@/shared/utils';
 import DeleteCustomerModal from '@/components/modals/customers/DeleteCustomerModal.vue';
@@ -27,6 +27,11 @@ onMounted(() => {
 
   customersStatisticsStore.getSummaryStatistics();
 });
+
+const activeCustomerName = computed(() => customersStatisticsStore.activeCustomer
+  ? customersStatisticsStore.activeCustomer.customer.lastName + ' ' + customersStatisticsStore.activeCustomer.customer.firstName
+  : 'Данных пока нет'
+);
 </script>
 
 <template>
@@ -46,11 +51,11 @@ onMounted(() => {
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Активный клиент"
-        :number-title="customersStatisticsStore.activeCustomer?.customer.lastName + ' ' + customersStatisticsStore.activeCustomer?.customer.firstName"
+        :number-title="activeCustomerName"
         icon="pi-user"
         icon-color="orange"
         icon-background="orange"
-        :number="(customersStatisticsStore.activeCustomer?.visits || 0)"
+        :number="String(customersStatisticsStore.activeCustomer?.visits || 0)"
         :number-description="plural(['посещение', 'посещения', 'посещений'], customersStatisticsStore.activeCustomer?.visits || 0) + ' в этом месяце'"
         :is-loading="customersStatisticsStore.isLoading"
       />

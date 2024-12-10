@@ -62,7 +62,7 @@ onMounted(async () => {
 
   lineData.labels = productsStatisticsStore.servicesCountPerDay.map((p) => p.day);
   lineData.datasets[0].data = productsStatisticsStore.servicesCountPerDay.map((p) => p.count);
-  lineOptions.value.scales.y.suggestedMax = Math.max(...lineData.datasets[0].data) * 1.1;
+  lineOptions.value.scales.y.suggestedMax = Math.max(...lineData.datasets[0].data) * 1.1 || 1;
 });
 </script>
 
@@ -87,7 +87,7 @@ onMounted(async () => {
         icon="pi-star-fill"
         icon-color="orange"
         icon-background="orange"
-        :number="productsStatisticsStore.popularProduct.count"
+        :number="String(productsStatisticsStore.popularProduct.count)"
         number-description="раз заказывали в этом месяце"
         :is-loading="productsStatisticsStore.isLoading"
       />
@@ -112,7 +112,7 @@ onMounted(async () => {
         <DataTable
           :value="productsStatisticsStore.profitableProducts"
           :rows="5"
-          :paginator="true"
+          :paginator="productsStatisticsStore.profitableProducts.length > 5"
           responsiveLayout="scroll"
           :loading="productsStatisticsStore.isLoading"
         >
@@ -139,6 +139,9 @@ onMounted(async () => {
               />
             </template>
           </Column>
+          <template #empty>
+            <span v-if="!productsStatisticsStore.isLoading">Список записей пуст.</span>
+          </template>
         </DataTable>
       </div>
     </div>

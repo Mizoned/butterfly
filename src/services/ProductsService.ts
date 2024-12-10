@@ -32,7 +32,6 @@ export default class ProductsService {
     return API.put(`/products/${product.id}`, productData);
   }
 
-  //TODO при FSD вынести
   static async getSummaryStatistics(): Promise<AxiosResponse<IProductSummaryStatistics>> {
     return API.get('/statistics/products/summary');
   }

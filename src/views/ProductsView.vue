@@ -48,7 +48,7 @@ onMounted(() => {
         icon="pi-star-fill"
         icon-color="orange"
         icon-background="orange"
-        :number="productsStatisticsStore.popularProduct.count"
+        :number="String(productsStatisticsStore.popularProduct.count)"
         number-description="раз заказывали в этом месяце"
         :is-loading="productsStatisticsStore.isLoading"
       />

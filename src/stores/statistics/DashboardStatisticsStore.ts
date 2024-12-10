@@ -51,7 +51,7 @@ export const useDashboardStatisticsStore = defineStore('DashboardStatisticsStore
       todaySchedules.value = data.todaySchedules;
       dailyRevenue.value = data.dailyRevenue;
       totalSchedulesByStatuses.value = data.totalSchedulesByStatuses;
-    } catch (e) {
+    } catch (error) {
       console.error('Не удалось получить статистику', error);
       throw error;
     } finally {

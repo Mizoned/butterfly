@@ -1,25 +1,59 @@
 <script setup lang="ts">
 import { formatPhoneNumber, formatToCurrency, getColorsByNumber, plural } from '@shared/utils';
 import CustomerChip from '@/components/customers/CustomerChip.vue';
-import { onMounted, reactive, ref } from 'vue';
-import type { ChartOptions } from 'chart.js';
+import { computed, onMounted, reactive, ref } from 'vue';
+import type { ChartData, ChartOptions } from 'chart.js';
 import StatisticCard from '@/components/cards/StatisticCard.vue';
 import { useCustomersStatisticStore } from '@stores/statistics/CustomersStatisticsStore';
 import SalesShareLine from '@/components/statistics/SalesShareLine.vue';
 
 const customersStatisticsStore = useCustomersStatisticStore();
 
-const pieData = reactive({
+const plugin = ref({
+  id: 'emptyDoughnut',
+  afterDraw(chart: any, args: any, options: any) {
+    const {datasets} = chart.data;
+    let hasData = datasets[0].data.every((value: number) => value === 0);
+
+    const {color, lineWidth, width, radiusDecrease, backgroundColor} = options;
+    if (hasData) {
+      const {chartArea: {left, top, right, bottom}, ctx} = chart;
+      const centerX = (left + right) / 2;
+      const centerY = (top + bottom) / 2;
+      const r = Math.min(right - left, bottom - top) / 2;
+
+      // Рисуем заливку фона
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.arc(centerX, centerY, r - radiusDecrease, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      // Рисуем внешнюю обводку
+      ctx.beginPath();
+      ctx.lineWidth = width - lineWidth * 2;
+      ctx.strokeStyle = backgroundColor;
+      ctx.arc(centerX, centerY, r - radiusDecrease, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+  }
+});
+
+const pieData = reactive<ChartData<'doughnut'>>({
   labels: ['Новые клиенты', 'Старые клиенты'],
   datasets: [
     {
-      labels: ['Новые клиенты', 'Старые клиенты'],
       data: [],
-      backgroundColor: ['#dcfce7', '#dbeafe', '#fee2e2'],
-      borderColor: ['#4ade80', '#60a5fa', '#f87171']
+      backgroundColor: ['#dcfce7', '#dbeafe'],
+      borderColor: ['#4ade80', '#60a5fa']
     }
   ]
 });
+
+const pieEmptyColors = {
+  color: '#94a3b8',
+  backgroundColor: '#cbd5e1',
+}
 
 const pieOptions = ref<ChartOptions<'doughnut'>>({
   plugins: {
@@ -38,6 +72,13 @@ const pieOptions = ref<ChartOptions<'doughnut'>>({
         }
       }
     },
+    emptyDoughnut: {
+      color: pieEmptyColors.color,
+      backgroundColor: pieEmptyColors.backgroundColor,
+      lineWidth: 2,
+      width: 24,
+      radiusDecrease: 20
+    },
   },
   responsive: true,
   cutout: '80%',
@@ -48,7 +89,18 @@ onMounted(async () => {
   await customersStatisticsStore.getOverviewStatistics();
 
   pieData.datasets[0].data = [customersStatisticsStore.totalCustomers.newTotalCount, customersStatisticsStore.totalCustomers.totalCount - customersStatisticsStore.totalCustomers.newTotalCount]
+
+  if (pieData.datasets[0].data.every((value: number) => value === 0)) {
+    pieData.labels = ['Нет данных']
+    pieData.datasets[0].backgroundColor = [pieEmptyColors.backgroundColor]
+    pieData.datasets[0].borderColor = [pieEmptyColors.color]
+  }
 });
+
+const activeCustomerName = computed(() => customersStatisticsStore.activeCustomer
+    ? customersStatisticsStore.activeCustomer.customer.lastName + ' ' + customersStatisticsStore.activeCustomer.customer.firstName
+    : 'Данных пока нет'
+);
 </script>
 
 <template>
@@ -68,11 +120,11 @@ onMounted(async () => {
   <div class="col-12 lg:col-6 xl:col-4">
     <StatisticCard
       title="Активный клиент"
-      :number-title="customersStatisticsStore.activeCustomer?.customer.lastName + ' ' + customersStatisticsStore.activeCustomer?.customer.firstName"
+      :number-title="activeCustomerName"
       icon="pi-user"
       icon-color="orange"
       icon-background="orange"
-      :number="(customersStatisticsStore.activeCustomer?.visits || 0)"
+      :number="String(customersStatisticsStore.activeCustomer?.visits || 0)"
       :number-description="plural(['посещение', 'посещения', 'посещений'], customersStatisticsStore.activeCustomer?.visits || 0) + ' в этом месяце'"
       :is-loading="customersStatisticsStore.isLoading"
     />
@@ -97,7 +149,7 @@ onMounted(async () => {
       <DataTable
         :value="customersStatisticsStore.untrustedCustomers"
         :rows="5"
-        :paginator="true"
+        :paginator="customersStatisticsStore.untrustedCustomers.length > 5"
         responsiveLayout="scroll"
         :loading="customersStatisticsStore.isLoading"
       >
@@ -127,6 +179,9 @@ onMounted(async () => {
             </Chip>
           </template>
         </Column>
+        <template #empty>
+          <span v-if="!customersStatisticsStore.isLoading">Список записей пуст.</span>
+        </template>
       </DataTable>
     </div>
   </div>
@@ -138,7 +193,7 @@ onMounted(async () => {
       <DataTable
         :value="customersStatisticsStore.profitableCustomers"
         :rows="5"
-        :paginator="true"
+        :paginator="customersStatisticsStore.profitableCustomers.length > 5"
         responsiveLayout="scroll"
         :loading="customersStatisticsStore.isLoading"
       >
@@ -168,6 +223,9 @@ onMounted(async () => {
             />
           </template>
         </Column>
+        <template #empty>
+          <span v-if="!customersStatisticsStore.isLoading">Список записей пуст.</span>
+        </template>
       </DataTable>
     </div>
   </div>
@@ -176,7 +234,7 @@ onMounted(async () => {
       <div class="flex gap-2 align-items-start">
         <h5>Новых клиентов</h5>
       </div>
-      <Chart type="doughnut" :height="300" :data="pieData" :options="pieOptions" />
+      <Chart type="doughnut" :height="300" :data="pieData" :options="pieOptions" :plugins="[plugin]"/>
     </div>
   </div>
 </div>

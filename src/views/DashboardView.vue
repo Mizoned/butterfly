@@ -9,7 +9,16 @@ import { calculateTotalCostProducts, formatToCurrency, getColorsByNumber, plural
 
 const dashboardStatisticsStore = useDashboardStatisticsStore();
 
-const lineData = reactive({
+const lineData = reactive<{
+  labels: number[];
+  datasets: {
+    data: any[];
+    fill: boolean;
+    backgroundColor: string;
+    borderColor: string;
+    tension: number;
+  }[];
+}>({
   labels: dashboardStatisticsStore.dailyRevenue.map((d) => d.revenue),
   datasets: [
     {
@@ -36,7 +45,7 @@ const lineOptions = ref<ChartOptions<'line'>>({
           return `День: ${tooltipItems[0].label}`;
         },
         label: (tooltipItem) => {
-          return `Выручка: ${formatToCurrency(tooltipItem.raw)}`;
+          return `Выручка: ${formatToCurrency(tooltipItem!.raw)}`;
         }
       }
     }
@@ -52,13 +61,17 @@ const lineOptions = ref<ChartOptions<'line'>>({
       title: {
         display: true,
         text: 'Количество'
-      }
+      },
+      suggestedMax: 1
     }
   },
   responsive: true
 });
 
-const barData = reactive({
+const barData = reactive<{
+  labels: string[];
+  datasets: any[];
+}>({
   labels: ['Количество записей'],
   datasets: []
 });
@@ -66,10 +79,7 @@ const barData = reactive({
 const barOptions = ref<ChartOptions<'bar'>>({
   plugins: {
     legend: {
-      position: 'bottom',
-      labels: {
-        display: false
-      }
+      position: 'bottom'
     },
     title: {
       display: true,
@@ -92,7 +102,9 @@ onMounted(async () => {
 
   lineData.datasets[0].data = dashboardStatisticsStore.dailyRevenue.map((d) => d.revenue);
   lineData.labels = dashboardStatisticsStore.dailyRevenue.map((d) => d.day);
-  lineOptions.value.scales.y.suggestedMax = Math.max(...lineData.datasets[0].data) * 1.1;
+  lineOptions.value.scales.y.suggestedMax = Math.max(...lineData.datasets[0].data) * 1.1 || 1;
+
+  console.log(lineOptions);
 
   barData.datasets = [
     {
@@ -114,7 +126,7 @@ onMounted(async () => {
 
   const allBarDatasets = barData.datasets.flatMap(dataset => dataset.data);
 
-  barOptions.value.scales.y.suggestedMax = Math.max(...allBarDatasets) * 1.1;
+  barOptions.value.scales!.y!.suggestedMax = Math.max(...allBarDatasets) * 1.1 || 1;
 });
 </script>
 
@@ -149,7 +161,7 @@ onMounted(async () => {
         icon="pi-users"
         icon-color="cyan"
         icon-background="cyan"
-        :number="dashboardStatisticsStore.totalCustomers.newTotalCount"
+        :number="String(dashboardStatisticsStore.totalCustomers.newTotalCount)"
         :number-description="String(plural(['новая', 'новых', 'новых'], dashboardStatisticsStore.totalCustomers.newTotalCount) + ' в этом месяце')"
       />
     </div>
@@ -163,7 +175,7 @@ onMounted(async () => {
           :rows="5"
           v-model:expandedRows="expandedRows"
           dataKey="id"
-          :paginator="true"
+          :paginator="dashboardStatisticsStore.todaySchedules.length > 5"
           responsiveLayout="scroll"
           :loading="dashboardStatisticsStore.isLoading"
         >
@@ -224,7 +236,7 @@ onMounted(async () => {
         <DataTable
           :value="dashboardStatisticsStore.profitableProducts"
           :rows="5"
-          :paginator="true"
+          :paginator="dashboardStatisticsStore.profitableProducts.length > 5"
           responsiveLayout="scroll"
           :loading="dashboardStatisticsStore.isLoading"
         >
@@ -251,6 +263,9 @@ onMounted(async () => {
               />
             </template>
           </Column>
+          <template #empty>
+            <span v-if="!dashboardStatisticsStore.isLoading">Список записей пуст.</span>
+          </template>
         </DataTable>
       </div>
     </div>

@@ -38,33 +38,33 @@ const expandedRows = ref({});
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Отменено записей"
-        :number-title="schedulesStatisticsStore.totalCanceledSchedules.totalCount"
+        :number-title="schedulesStatisticsStore.totalCanceledSchedules.totalCount || 0"
         icon="pi-times"
         icon-color="red"
         icon-background="red"
-        :number="String(schedulesStatisticsStore.totalCanceledSchedules.newTotalCount)"
+        :number="String(schedulesStatisticsStore.totalCanceledSchedules.newTotalCount || 0)"
         number-description="в этом месяце"
       />
     </div>
     <div class="col-12 lg:col-6 xl:col-4">
       <StatisticCard
         title="Процент отмененных записей"
-        :number-title="schedulesStatisticsStore.percentCanceledSchedules.allTime + '%'"
+        :number-title="schedulesStatisticsStore.percentCanceledSchedules.allTime || 0 + '%'"
         icon="pi-percentage"
         icon-color="orange"
         icon-background="orange"
-        :number="schedulesStatisticsStore.percentCanceledSchedules.currentMonth + '%'"
+        :number="schedulesStatisticsStore.percentCanceledSchedules.currentMonth || 0 + '%'"
         number-description="в этом месяце"
       />
     </div>
     <div class="col-12 lg:col-12 xl:col-4">
       <StatisticCard
         title="Упущенная прибыль"
-        :number-title="formatToCurrency(schedulesStatisticsStore.lostRevenue.totalLostRevenue)"
+        :number-title="formatToCurrency(schedulesStatisticsStore.lostRevenue.totalLostRevenue || 0)"
         icon="pi-star-fill"
         icon-color="cyan"
         icon-background="cyan"
-        :number="formatToCurrency(schedulesStatisticsStore.lostRevenue.newTotalLostRevenue)"
+        :number="formatToCurrency(schedulesStatisticsStore.lostRevenue.newTotalLostRevenue || 0)"
         number-description="в этом месяце"
       />
     </div>

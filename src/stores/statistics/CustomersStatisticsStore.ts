@@ -35,7 +35,7 @@ export const useCustomersStatisticStore = defineStore('CustomersStatisticsStore'
       totalCustomers.value = data.totalCustomers;
       activeCustomer.value = data.activeCustomer;
       totalVisits.value = data.totalVisits;
-    } catch (e) {
+    } catch (error) {
       console.error('Не удалось получить статистику', error);
       throw error;
     } finally {
@@ -52,7 +52,7 @@ export const useCustomersStatisticStore = defineStore('CustomersStatisticsStore'
       totalVisits.value = data.totalVisits;
       profitableCustomers.value = data.profitableCustomers.customers;
       untrustedCustomers.value = data.untrustedCustomers;
-    } catch (e) {
+    } catch (error) {
       console.error('Не удалось получить статистику', error);
       throw error;
     } finally {

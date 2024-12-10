@@ -61,7 +61,7 @@ export const useScheduleStatisticsStore = defineStore('ScheduleStatisticsStore',
       nearestSchedule.value = data.nearestSchedule;
       totalCountToday.value = data.totalCountToday;
       totalCountWeek.value = data.totalCountWeek;
-    } catch (e) {
+    } catch (error) {
       console.error('Не удалось получить статистику', error);
       throw error;
     } finally {
@@ -77,7 +77,7 @@ export const useScheduleStatisticsStore = defineStore('ScheduleStatisticsStore',
       totalSuccessSchedules.value = data.totalSchedules;
       totalRevenue.value = data.totalRevenue;
       avgBill.value = data.avgBill;
-    } catch (e) {
+    } catch (error) {
       console.error('Не удалось получить статистику', error);
       throw error;
     } finally {
@@ -93,7 +93,7 @@ export const useScheduleStatisticsStore = defineStore('ScheduleStatisticsStore',
       percentCanceledSchedules.value = data.percentCanceledSchedules;
       totalCanceledSchedules.value = data.totalSchedules;
       lostRevenue.value = data.lostRevenue;
-    } catch (e) {
+    } catch (error) {
       console.error('Не удалось получить статистику', error);
       throw error;
     } finally {
